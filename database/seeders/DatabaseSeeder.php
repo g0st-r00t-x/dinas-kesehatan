@@ -3,7 +3,11 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+
+
 use Illuminate\Database\Seeder;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class DatabaseSeeder extends Seeder
 {
@@ -12,11 +16,18 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // \App\Models\User::factory(10)->create();
+        // Buat role super_admin
+    $superAdmin = Role::firstOrCreate(['name' => 'super_admin']);
 
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+    // Buat permission
+    Permission::firstOrCreate(['name' => 'view shield']);
+    Permission::firstOrCreate(['name' => 'manage shield']);
+
+    // Assign permission ke role
+    $superAdmin->givePermissionTo(['view shield', 'manage shield']);
+
+    // Assign role ke user
+    $user = \App\Models\User::find(1); // Ganti 1 dengan ID user Anda
+    $user->assignRole('super_admin');
     }
 }

@@ -34,6 +34,8 @@ class PengajuanAJJResource extends Resource
 
     protected static ?string $navigationGroup = 'Manajemen Data';
 
+    
+
     public static function form(Form $form): Form
     {
         return $form
