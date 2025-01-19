@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Exports\UsulanPenerbitanAJJExporter;
+use App\Filament\Imports\UsulanPenerbitanAJJImporter;
 use App\Filament\Resources\PengajuanAJJResource\Pages;
 use App\Models\PengajuanAJJ;
 use App\Models\UsulanPenerbitanAjj;
@@ -13,6 +15,8 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\ExportAction;
+use Filament\Tables\Actions\ImportAction;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -25,7 +29,6 @@ class PengajuanAJJResource extends Resource
 {
     protected static ?string $model = UsulanPenerbitanAjj::class;
 
-
     protected static ?string $navigationIcon = 'heroicon-o-home';
 
     protected static ?string $label = 'Usulan Penerbitan AJJ';
@@ -33,8 +36,6 @@ class PengajuanAJJResource extends Resource
     protected static ?string $pluralLabel = 'Usulan Penerbitan AJJ';
 
     protected static ?string $navigationGroup = 'Manajemen Data';
-
-    
 
     public static function form(Form $form): Form
     {
@@ -48,19 +49,26 @@ class PengajuanAJJResource extends Resource
                     ->label('NIP')
                     ->required(),
 
-                TextInput::make('unit_kerja')
+                Select::make('unit_kerja')
                     ->label('Unit Kerja')
+                    ->options(function () {
+                        return UsulanPenerbitanAjj::distinct()
+                            ->pluck('unit_kerja', 'unit_kerja')
+                            ->toArray();
+                    })
+                    ->searchable()
                     ->required(),
 
                 DatePicker::make('tmt_pemberian_tunjangan')
                     ->label('TMT Pemberian Tunjangan')
                     ->required(),
 
-                Select::make('SK Jabatan')
-                ->options([
-                    'ada' => 'Ada',
-                    'tidak ada' => 'Tidak Ada',
-                ]),
+                Select::make('sk_jabatan')
+                    ->label('SK Jabatan')
+                    ->options([
+                        'ada' => 'Ada',
+                        'tidak ada' => 'Tidak Ada',
+                    ]),
 
                 FileUpload::make('upload_berkas')
                     ->preserveFilenames()
@@ -74,7 +82,6 @@ class PengajuanAJJResource extends Resource
                     ->acceptedFileTypes(['application/pdf'])
                     ->maxSize(1024)
                     ->required(),
-                    
 
                 FileUpload::make('surat_pengantar_unit_kerja')
                     ->preserveFilenames()
@@ -87,9 +94,6 @@ class PengajuanAJJResource extends Resource
                     ->acceptedFileTypes(['application/pdf'])
                     ->maxSize(512)
                     ->required(),
-
-                
-
             ]);
     }
 
@@ -97,31 +101,54 @@ class PengajuanAJJResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('nama')->label('Nama'),
-                TextColumn::make('nip')->label('NIP'),
-                TextColumn::make('unit_kerja')->label('Unit Kerja'),
-                TextColumn::make('tmt_pemberian_tunjangan')->label('TMT Pemberian Tunjangan'),
+                TextColumn::make('nama')
+                    ->label('Nama')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('nip')
+                    ->label('NIP')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('unit_kerja')
+                    ->label('Unit Kerja')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('tmt_pemberian_tunjangan')
+                    ->label('TMT Pemberian Tunjangan')
+                    ->date()
+                    ->sortable(),
                 TextColumn::make('sk_jabatan')
-                    ->label('SK Jabatan')
-                    ->url(fn ($record) => Storage::url($record->sk_jabatan))
-                    ->openUrlInNewTab(),
-
+                    ->label('SK Jabatan'),
                 TextColumn::make('upload_berkas')
                     ->label('Upload Berkas')
                     ->url(fn ($record) => Storage::url($record->upload_berkas))
                     ->openUrlInNewTab(),
-
                 TextColumn::make('surat_pengantar_unit_kerja')
                     ->label('Surat Pengantar Unit Kerja')
                     ->url(fn ($record) => Storage::url($record->surat_pengantar_unit_kerja))
                     ->openUrlInNewTab(),
             ])
             ->filters([
-                // Add filters here if needed
+                Tables\Filters\SelectFilter::make('unit_kerja')
+                    ->label('Unit Kerja')
+                    ->options(function () {
+                        return UsulanPenerbitanAjj::distinct()
+                            ->orderBy('unit_kerja')
+                            ->pluck('unit_kerja', 'unit_kerja')
+                            ->toArray();
+                    })
+                    ->multiple()
+                    ->searchable(),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
+            ])
+            ->headerActions([
+                ImportAction::make()
+                    ->importer(UsulanPenerbitanAJJImporter::class),
+                ExportAction::make()
+                    ->exporter(UsulanPenerbitanAJJExporter::class)
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
