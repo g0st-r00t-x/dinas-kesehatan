@@ -2,11 +2,12 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Exports\UsulanPenerbitanAJJExporter;
-use App\Filament\Imports\UsulanPenerbitanAJJImporter;
+use App\Filament\Exports\InventarisAJJExporter;
+use App\Filament\Imports\InventarisAJJImporter;
 use App\Filament\Resources\PengajuanAJJResource\Pages;
 use App\Models\PengajuanAJJ;
-use App\Models\UsulanPenerbitanAjj;
+use App\Models\InventarisAJJ;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
@@ -21,13 +22,15 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class PengajuanAJJResource extends Resource
 {
-    protected static ?string $model = UsulanPenerbitanAjj::class;
+    protected static ?string $model = InventarisAJJ::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-home';
 
@@ -36,6 +39,8 @@ class PengajuanAJJResource extends Resource
     protected static ?string $pluralLabel = 'Usulan Penerbitan AJJ';
 
     protected static ?string $navigationGroup = 'Manajemen Data';
+
+    protected static ?string $path = 'inventaris-ajj';
 
     public static function form(Form $form): Form
     {
@@ -49,14 +54,8 @@ class PengajuanAJJResource extends Resource
                     ->label('NIP')
                     ->required(),
 
-                Select::make('unit_kerja')
+                TextInput::make('unit_kerja')
                     ->label('Unit Kerja')
-                    ->options(function () {
-                        return UsulanPenerbitanAjj::distinct()
-                            ->pluck('unit_kerja', 'unit_kerja')
-                            ->toArray();
-                    })
-                    ->searchable()
                     ->required(),
 
                 DatePicker::make('tmt_pemberian_tunjangan')
@@ -132,7 +131,7 @@ class PengajuanAJJResource extends Resource
                 Tables\Filters\SelectFilter::make('unit_kerja')
                     ->label('Unit Kerja')
                     ->options(function () {
-                        return UsulanPenerbitanAjj::distinct()
+                        return InventarisAJJ::distinct()
                             ->orderBy('unit_kerja')
                             ->pluck('unit_kerja', 'unit_kerja')
                             ->toArray();
@@ -143,12 +142,23 @@ class PengajuanAJJResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
+                                Tables\Actions\Action::make('pdf') 
+                    ->label('PDF')
+                    ->color('success')
+                    ->icon('heroicon-o-home')
+                    ->action(function (Model $record) {
+                        return response()->streamDownload(function () use ($record) {
+                            echo Pdf::loadHtml(
+                                Blade::render('pdf', ['record' => $record])
+                            )->stream();
+                        }, $record->nip . '.pdf');
+                    }), 
             ])
             ->headerActions([
                 ImportAction::make()
-                    ->importer(UsulanPenerbitanAJJImporter::class),
+                    ->importer(InventarisAJJImporter::class),
                 ExportAction::make()
-                    ->exporter(UsulanPenerbitanAJJExporter::class)
+                    ->exporter(InventarisAJJExporter::class)
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),

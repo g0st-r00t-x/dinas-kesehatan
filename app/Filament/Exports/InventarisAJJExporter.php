@@ -2,14 +2,14 @@
 
 namespace App\Filament\Exports;
 
-use App\Models\UsulanPenerbitanAJJ;
+use App\Models\InventarisAJJ;
 use Filament\Actions\Exports\ExportColumn;
 use Filament\Actions\Exports\Exporter;
 use Filament\Actions\Exports\Models\Export;
 
-class UsulanPenerbitanAJJExporter extends Exporter
+class InventarisAJJExporter extends Exporter
 {
-    protected static ?string $model = UsulanPenerbitanAJJ::class;
+    protected static ?string $model = InventarisAJJ::class;
 
     public static function getColumns(): array
     {

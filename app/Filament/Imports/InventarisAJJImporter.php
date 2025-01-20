@@ -1,15 +1,15 @@
 <?php
 namespace App\Filament\Imports;
 
-use App\Models\UsulanPenerbitanAJJ;
+use App\Models\InventarisAJJ;
 use Filament\Actions\Imports\ImportColumn;
 use Filament\Actions\Imports\Importer;
 use Filament\Actions\Imports\Models\Import;
 use Carbon\Carbon;
 
-class UsulanPenerbitanAJJImporter extends Importer
+class InventarisAJJImporter extends Importer
 {
-    protected static ?string $model = UsulanPenerbitanAJJ::class;
+    protected static ?string $model = InventarisAJJ::class;
 
     public static function getColumns(): array
     {
@@ -36,9 +36,9 @@ class UsulanPenerbitanAJJImporter extends Importer
         ];
     }
 
-    public function resolveRecord(): ?UsulanPenerbitanAJJ
+    public function resolveRecord(): ?InventarisAJJ
     {
-        return new UsulanPenerbitanAJJ();
+        return new InventarisAJJ();
     }
 
     public static function getCompletedNotificationBody(Import $import): string

@@ -25,7 +25,13 @@ class UsulanRevisiSkPangkatResource extends Resource
 
     protected static ?string $navigationLabel = 'Usulan Revisi SK Pangkat';
     
-    protected static ?string $modelLabel = 'Usulan Revisi SK';
+    protected static ?string $modelLabel = 'Manajemen Data';
+
+    protected static ?string $navigationGroup = 'Manajemen Data';
+
+    protected static ?string $label = 'Usulan Revisi SK Pangkat';
+
+    protected static ?string $pluralLabel = 'Usulan Revisi SK Pangkat';
 
     protected static ?int $navigationSort = 1;
 

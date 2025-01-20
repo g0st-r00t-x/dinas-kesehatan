@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
-class UsulanPenerbitanAjj extends Model
+class InventarisAJJ extends Model
 {
     use HasFactory;
 
@@ -122,6 +122,11 @@ class UsulanPenerbitanAjj extends Model
             return null;
         }
 
+        // Cek apakah file adalah URL eksternal
+        if (is_string($files) && filter_var($files, FILTER_VALIDATE_URL)) {
+            return $files;  // Jika URL eksternal, langsung kembalikan URL tersebut
+        }
+
         $files = is_string($files) ? json_decode($files, true) : $files;
         
         if (is_array($files)) {
@@ -130,4 +135,5 @@ class UsulanPenerbitanAjj extends Model
 
         return asset('storage/' . $files);
     }
+
 }
