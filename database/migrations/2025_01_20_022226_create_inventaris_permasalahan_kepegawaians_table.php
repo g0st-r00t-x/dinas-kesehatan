@@ -6,22 +6,28 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
+    public function up()
     {
-        Schema::create('inventaris_permasalahan_kepegawaians', function (Blueprint $table) {
+        Schema::create('permasalahan_kepegawaian', function (Blueprint $table) {
             $table->id();
+            $table->string('nama');
+            $table->string('nip')->unique();
+            $table->string('pangkat_golongan');
+            $table->string('jabatan');
+            $table->string('unit_kerja');
+            $table->text('permasalahan');
+            $table->unsignedBigInteger('data_dukungan_id'); // Foreign Key
+            $table->string('file_upload')->nullable();
+            $table->string('surat_pengantar_unit_kerja')->nullable();
             $table->timestamps();
+
+            // Define Foreign Key Constraint
+            $table->foreign('data_dukungan_id')->references('id')->on('jenis_data_dukungans')->onDelete('cascade');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
+    public function down()
     {
-        Schema::dropIfExists('inventaris_permasalahan_kepegawaians');
+        Schema::dropIfExists('permasalahan_kepegawaian');
     }
 };

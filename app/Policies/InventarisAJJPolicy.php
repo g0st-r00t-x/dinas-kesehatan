@@ -15,7 +15,7 @@ class InventarisAJJPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_inventarisajj');
+        return $user->can('view_any_pengajuan::a::j::j');
     }
 
     /**
@@ -23,7 +23,7 @@ class InventarisAJJPolicy
      */
     public function view(User $user, InventarisAJJ $inventarisAJJ): bool
     {
-        return $user->can('view_inventarisajj');
+        return $user->can('view_pengajuan::a::j::j');
     }
 
     /**
@@ -31,7 +31,7 @@ class InventarisAJJPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_inventarisajj');
+        return $user->can('create_pengajuan::a::j::j');
     }
 
     /**
@@ -39,7 +39,7 @@ class InventarisAJJPolicy
      */
     public function update(User $user, InventarisAJJ $inventarisAJJ): bool
     {
-        return $user->can('update_inventarisajj');
+        return $user->can('update_pengajuan::a::j::j');
     }
 
     /**
@@ -47,62 +47,62 @@ class InventarisAJJPolicy
      */
     public function delete(User $user, InventarisAJJ $inventarisAJJ): bool
     {
-        return $user->can('delete_inventarisajj');
+        return $user->can('delete_pengajuan::a::j::j');
     }
 
     /**
-     * Determine whether the user can bulk delete models.
+     * Determine whether the user can bulk delete.
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_inventarisajj');
+        return $user->can('delete_any_pengajuan::a::j::j');
     }
 
     /**
-     * Determine whether the user can permanently delete the model.
+     * Determine whether the user can permanently delete.
      */
     public function forceDelete(User $user, InventarisAJJ $inventarisAJJ): bool
     {
-        return $user->can('force_delete_inventarisajj');
+        return $user->can('force_delete_pengajuan::a::j::j');
     }
 
     /**
-     * Determine whether the user can permanently bulk delete models.
+     * Determine whether the user can permanently bulk delete.
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_inventarisajj');
+        return $user->can('force_delete_any_pengajuan::a::j::j');
     }
 
     /**
-     * Determine whether the user can restore the model.
+     * Determine whether the user can restore.
      */
     public function restore(User $user, InventarisAJJ $inventarisAJJ): bool
     {
-        return $user->can('restore_inventarisajj');
+        return $user->can('restore_pengajuan::a::j::j');
     }
 
     /**
-     * Determine whether the user can bulk restore models.
+     * Determine whether the user can bulk restore.
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_inventarisajj');
+        return $user->can('restore_any_pengajuan::a::j::j');
     }
 
     /**
-     * Determine whether the user can replicate the model.
+     * Determine whether the user can replicate.
      */
     public function replicate(User $user, InventarisAJJ $inventarisAJJ): bool
     {
-        return $user->can('replicate_inventarisajj');
+        return $user->can('replicate_pengajuan::a::j::j');
     }
 
     /**
-     * Determine whether the user can reorder models.
+     * Determine whether the user can reorder.
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_inventarisajj');
+        return $user->can('reorder_pengajuan::a::j::j');
     }
 }

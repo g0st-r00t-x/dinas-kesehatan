@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('unggah_dokumens', function (Blueprint $table) {
+        Schema::create('usulan_s_k_berkalas', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
         });
@@ -22,6 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('unggah_dokumens');
+        Schema::dropIfExists('usulan_s_k_berkalas');
     }
 };

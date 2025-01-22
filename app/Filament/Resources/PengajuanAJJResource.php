@@ -32,13 +32,13 @@ class PengajuanAJJResource extends Resource
 {
     protected static ?string $model = InventarisAJJ::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-home';
+    protected static ?string $navigationIcon = 'letsicon-paper-light';
 
-    protected static ?string $label = 'Usulan Penerbitan AJJ';
+    protected static ?string $label = 'Penerbitan AJJ';
 
-    protected static ?string $pluralLabel = 'Usulan Penerbitan AJJ';
+    protected static ?string $pluralLabel = 'Penerbitan AJJ';
 
-    protected static ?string $navigationGroup = 'Manajemen Data';
+    protected static ?string $navigationGroup = 'Inventaris';
 
     protected static ?string $path = 'inventaris-ajj';
 

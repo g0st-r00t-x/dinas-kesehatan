@@ -1,15 +1,16 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class InventarisPermasalahanKepegawaian extends Model
+class InventarisirPermasalahanKepegawaian extends Model
 {
     use HasFactory;
-    
-    protected $table = 'inventaris_permasalahan_kepegawaian';
-    
+
+    protected $table = 'inventarisir_permasalahan_kepegawaian';
+
     protected $fillable = [
         'nama',
         'nip',
@@ -17,14 +18,14 @@ class InventarisPermasalahanKepegawaian extends Model
         'jabatan',
         'unit_kerja',
         'permasalahan',
-        'data_dukungan',
+        'data_dukungan_id',
         'file_upload',
         'surat_pengantar_unit_kerja',
     ];
 
-    // Relasi ke model UnggahDokumen
-    public function dokumen()
+    // Relasi ke DataDukungan
+    public function dataDukungan()
     {
-        return $this->hasMany(UnggahDokumen::class, 'inventaris_id', 'id');
+        return $this->belongsTo(DataDukungan::class, 'data_dukungan_id');
     }
 }

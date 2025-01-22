@@ -21,13 +21,13 @@ class UsulanRevisiSkPangkatResource extends Resource
 {
     protected static ?string $model = UsulanRevisiSkPangkat::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-pencil';
 
     protected static ?string $navigationLabel = 'Usulan Revisi SK Pangkat';
     
-    protected static ?string $modelLabel = 'Manajemen Data';
+    protected static ?string $modelLabel = 'Usulan Revisi SK Pangkat';
 
-    protected static ?string $navigationGroup = 'Manajemen Data';
+    protected static ?string $navigationGroup = 'Usulan';
 
     protected static ?string $label = 'Usulan Revisi SK Pangkat';
 

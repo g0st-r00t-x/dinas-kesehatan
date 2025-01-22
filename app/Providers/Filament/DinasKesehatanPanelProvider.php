@@ -27,6 +27,7 @@ class DinasKesehatanPanelProvider extends PanelProvider
             ->id('dinas-kesehatan')
             ->path('dinas-kesehatan')
             ->login()
+            ->registration()
             ->colors([
                 'primary' => Color::Amber,
             ])
