@@ -13,7 +13,6 @@ class DataDukungan extends Model
 
     protected $fillable = [
         'jenis',
-        'file_path',
     ];
 
     // Relasi ke InventarisirPermasalahanKepegawaian

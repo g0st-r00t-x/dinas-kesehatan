@@ -17,7 +17,7 @@ class UsulanPermohonanCutiResource extends Resource
 {
     protected static ?string $model = UsulanPermohonanCuti::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-rocket-launch';
 
     protected static ?string $navigationGroup = 'Usulan';
 

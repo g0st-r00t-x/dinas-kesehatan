@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dinas Kesehatan Kabupaten Sumenep</title>
+    {{-- Favicon --}}
+    <link rel="icon" href="{{ asset('images/logo.png') }}">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- GSAP -->

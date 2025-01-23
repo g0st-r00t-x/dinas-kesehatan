@@ -6,22 +6,28 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
+    public function up()
     {
         Schema::create('usulan_rekomendasi_penelitians', function (Blueprint $table) {
             $table->id();
+            $table->string('nama');
+            $table->string('judul_penelitian');
+            $table->string('asal_lembaga_pendidikan');
+            $table->enum('tujuan_penelitian', [
+                'magang_pkl', 
+                'penyusunan_tesis', 
+                'penyusunan_skripsi', 
+                'penyusunan_riset'
+            ]);
+            $table->string('nim_nip');
+            $table->string('surat_pengantar_path')->nullable();
+            $table->string('no_telp_wa');
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
+    public function down()
     {
-        Schema::dropIfExists('usulan_rekomendasi_penelitians');
+        Schema::dropIfExists('rekomendasi_penelitian');
     }
 };

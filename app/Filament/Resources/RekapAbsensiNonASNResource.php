@@ -17,7 +17,7 @@ class RekapAbsensiNonASNResource extends Resource
 {
     protected static ?string $model = RekapAbsensiNonASN::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-document-chart-bar';
 
     protected static ?string $navigationGroup = 'Manajemen Data';
 

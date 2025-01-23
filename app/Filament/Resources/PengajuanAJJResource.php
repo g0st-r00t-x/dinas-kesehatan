@@ -5,7 +5,6 @@ namespace App\Filament\Resources;
 use App\Filament\Exports\InventarisAJJExporter;
 use App\Filament\Imports\InventarisAJJImporter;
 use App\Filament\Resources\PengajuanAJJResource\Pages;
-use App\Models\PengajuanAJJ;
 use App\Models\InventarisAJJ;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Forms;
@@ -42,6 +41,7 @@ class PengajuanAJJResource extends Resource
 
     protected static ?string $path = 'inventaris-ajj';
 
+    
     public static function form(Form $form): Form
     {
         return $form
@@ -76,7 +76,7 @@ class PengajuanAJJResource extends Resource
                     })
                     ->label('Upload Berkas')
                     ->helperText(str('**Jika Tidak memiliki SK Jabatan Fungsional Maka Upload SK Pemberian Tunjangan**')->inlineMarkdown()->toHtmlString())
-                    ->directory('upload_berkas')
+                    ->directory('pengajua-ajj/upload_berkas')
                     ->disk('public')
                     ->acceptedFileTypes(['application/pdf'])
                     ->maxSize(1024)
@@ -88,7 +88,7 @@ class PengajuanAJJResource extends Resource
                         return now()->timestamp . '_' . $file->getClientOriginalName();
                     })
                     ->label('Surat Pengantar Unit Kerja')
-                    ->directory('surat_pengantar_unit_kerja')
+                    ->directory('pengajua-ajj/surat_pengantar_unit_kerja')
                     ->disk('public')
                     ->acceptedFileTypes(['application/pdf'])
                     ->maxSize(512)
@@ -145,7 +145,7 @@ class PengajuanAJJResource extends Resource
                                 Tables\Actions\Action::make('pdf') 
                     ->label('PDF')
                     ->color('success')
-                    ->icon('heroicon-o-home')
+                    ->icon('heroicon-o-arrow-down-tray')
                     ->action(function (Model $record) {
                         return response()->streamDownload(function () use ($record) {
                             echo Pdf::loadHtml(
