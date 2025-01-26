@@ -8,20 +8,27 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
+     *
+     * @return void
      */
-    public function up(): void
+    public function up()
     {
-        Schema::create('rekap_absen_a_s_n_s', function (Blueprint $table) {
+        Schema::create('rekap_absen_asn', function (Blueprint $table) {
             $table->id();
+            $table->string('bulan');
+            $table->string('upload_excel');
             $table->timestamps();
         });
     }
 
     /**
      * Reverse the migrations.
+     *
+     * @return void
      */
-    public function down(): void
+    public function down()
     {
-        Schema::dropIfExists('rekap_absen_a_s_n_s');
+        Schema::dropIfExists('rekap_absen_asn');
     }
 };
+

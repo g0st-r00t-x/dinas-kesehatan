@@ -15,9 +15,14 @@ class PermohonanCuti extends Model
 
 
     public function pegawai()
-    {
-        return $this->belongsTo(Pegawai::class, 'pegawai_id');
-    }
+{
+    return $this->belongsTo(Pegawai::class);
+}
+
+public function unitKerja()
+{
+    return $this->belongsTo(UnitKerja::class);
+}
 
     public function jenisCuti()
     {

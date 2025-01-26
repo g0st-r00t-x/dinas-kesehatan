@@ -143,7 +143,7 @@ return [
         'driver' => 'file',
         // 'store' => 'redis',
     ],
-
+    'default_phone_number' => env('DEFAULT_PHONE_NUMBER', '6287880433119'),
     /*
     |--------------------------------------------------------------------------
     | Autoloaded Service Providers

@@ -9,6 +9,7 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -23,29 +24,31 @@ class RekapAbsenASNResource extends Resource
 
     public static function form(Form $form): Form
     {
-        return $form
+       return $form
             ->schema([
-                //
+                Forms\Components\TextInput::make('bulan')
+                    ->required()
+                    ->label('Bulan'),
+                Forms\Components\FileUpload::make('upload_excel')
+                    ->required()
+                    ->label('Upload Excel'),
             ]);
     }
 
     public static function table(Table $table): Table
     {
-        return $table
+         return $table
             ->columns([
-                //
+                TextColumn::make('bulan')
+                    ->label('Bulan')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('upload_excel')
+                    ->label('Upload Excel')
+                    ->url(fn ($record) => asset('storage/' . $record->upload_excel))
+                    ->openUrlInNewTab(),
             ])
-            ->filters([
-                //
-            ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ]);
+            ->defaultSort('bulan');
     }
 
     public static function getRelations(): array

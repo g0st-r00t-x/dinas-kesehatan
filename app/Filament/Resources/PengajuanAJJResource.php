@@ -120,7 +120,11 @@ class PengajuanAJJResource extends Resource
                     ->label('SK Jabatan'),
                 TextColumn::make('upload_berkas')
                     ->label('Upload Berkas')
-                    ->url(fn ($record) => Storage::url($record->upload_berkas))
+                    ->url(fn ($record) => 
+                        str_starts_with($record->upload_berkas, 'http') 
+                            ? $record->upload_berkas 
+                            : Storage::url($record->upload_berkas)
+                    )
                     ->openUrlInNewTab(),
                 TextColumn::make('surat_pengantar_unit_kerja')
                     ->label('Surat Pengantar Unit Kerja')
@@ -142,7 +146,7 @@ class PengajuanAJJResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
-                                Tables\Actions\Action::make('pdf') 
+                Tables\Actions\Action::make('pdf') 
                     ->label('PDF')
                     ->color('success')
                     ->icon('heroicon-o-arrow-down-tray')
