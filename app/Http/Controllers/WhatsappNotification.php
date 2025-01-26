@@ -1,21 +1,12 @@
 <?php
-
 namespace App\Http\Controllers;
-
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use App\Models\PermohonanCuti;
-
 class WhatsappNotification extends Controller
 {
-    /**
-     * Send a single WhatsApp notification.
-     *
-     * @param string $target
-     * @param string $message
-     * @return bool
-     */
+
     public function send($target, $message)
     {
         if (empty($target) || empty($message)) {
@@ -25,7 +16,6 @@ class WhatsappNotification extends Controller
             ]);
             return false;
         }
-
         try {
             $response = Http::withHeaders([
                 'Authorization' => config('services.fonnte.token'),
@@ -33,7 +23,6 @@ class WhatsappNotification extends Controller
                 'target' => $target,
                 'message' => $message,
             ]);
-
             if ($response->successful()) {
                 Log::info('WhatsApp notification sent successfully', [
                     'target' => $target,
@@ -41,7 +30,6 @@ class WhatsappNotification extends Controller
                 ]);
                 return true;
             }
-
             Log::error('Failed to send WhatsApp notification', [
                 'target' => $target,
                 'response' => $response->body()
@@ -55,24 +43,21 @@ class WhatsappNotification extends Controller
             return false;
         }
     }
-
-    /**
-     * Send bulk WhatsApp notifications for all permohonan cuti records.
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
+    // /
+    //  * Send bulk WhatsApp notifications for all permohonan cuti records.
+    //  *
+    //  * @param Request $request
+    //  * @return \Illuminate\Http\JsonResponse
+    //  */
     public function sendBulkNotification(Request $request)
     {
         try {
             $permohonanCutis = PermohonanCuti::with('pegawai', 'jenisCuti')->paginate(50);
             $successCount = 0;
             $failedCount = 0;
-
             foreach ($permohonanCutis as $permohonan) {
                 $message = $this->formatNotificationMessage($permohonan);
                 $target = $permohonan->pegawai->no_telepon;
-
                 if (empty($target)) {
                     Log::warning('Skipped notification due to missing phone number', [
                         'permohonan_id' => $permohonan->id,
@@ -81,14 +66,12 @@ class WhatsappNotification extends Controller
                     $failedCount++;
                     continue;
                 }
-
                 if ($this->send($target, $message)) {
                     $successCount++;
                 } else {
                     $failedCount++;
                 }
             }
-
             return response()->json([
                 'status' => 'success',
                 'message' => 'Bulk notifications processed',
@@ -99,14 +82,12 @@ class WhatsappNotification extends Controller
             Log::error('Exception in bulk notification processing', [
                 'error' => $e->getMessage(),
             ]);
-
             return response()->json([
                 'status' => 'error',
                 'message' => 'Failed to process bulk notifications',
             ], 500);
         }
     }
-
     /**
      * Format the notification message.
      *

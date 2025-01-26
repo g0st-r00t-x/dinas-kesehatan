@@ -10,11 +10,7 @@ return new class extends Migration
     {
         Schema::create('permasalahan_kepegawaian', function (Blueprint $table) {
             $table->id();
-            $table->string('nama');
-            $table->string('nip')->unique();
-            $table->string('pangkat_golongan');
-            $table->string('jabatan');
-            $table->string('unit_kerja');
+            $table->foreignId('pegawai_id')->constrained("pegawai");
             $table->text('permasalahan');
             $table->unsignedBigInteger('data_dukungan_id'); // Foreign Key
             $table->string('file_upload')->nullable();

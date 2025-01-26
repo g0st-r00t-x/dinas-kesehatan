@@ -5,24 +5,16 @@ namespace App\Filament\Resources;
 use App\Filament\Exports\PermasalahanKepegawaianExporter;
 use App\Filament\Imports\PermasalahanKepegawaianImporter;
 use App\Filament\Resources\InventarisPermasalahanKepegawaianResource\Pages;
-use App\Filament\Resources\InventarisPermasalahanKepegawaianResource\RelationManagers;
+use App\Http\Controllers\PermasalahanPegawaiWA;
+use App\Http\Controllers\WhatsappNotificationController;
 use App\Models\InventarisirPermasalahanKepegawaian;
-use App\Models\InventarisPermasalahanKepegawaian;
-use Filament\Tables\Actions\ExportAction;
-use Filament\Tables\Actions\ImportAction;
 use Filament\Forms;
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Illuminate\Support\Facades\Storage;
+use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\BulkAction;
+use Illuminate\Database\Eloquent\Model;
 
 class InventarisPermasalahanKepegawaianResource extends Resource
 {
@@ -35,109 +27,139 @@ class InventarisPermasalahanKepegawaianResource extends Resource
 
     protected static ?string $navigationGroup = 'Inventaris';
 
-    public static function form(Form $form): Form
+    public static function form(Forms\Form $form): Forms\Form
     {
         return $form
             ->schema([
-                TextInput::make('nama')
-                    ->required()
-                    ->maxLength(255),
-                TextInput::make('nip')
-                    ->required()
-                    ->unique(ignoreRecord: true)
-                    ->maxLength(255),
-                TextInput::make('pangkat_golongan')
-                    ->required()
-                    ->maxLength(255),
-                TextInput::make('jabatan')
-                    ->required()
-                    ->maxLength(255),
-                TextInput::make('unit_kerja')
-                    ->required()
-                    ->maxLength(255),
-                Textarea::make('permasalahan')
+                Forms\Components\Select::make('pegawai_id')
+                    ->label('Pegawai')
+                    ->relationship('pegawai', 'nama')
+                    ->searchable()
+                    ->required(),
+                Forms\Components\Textarea::make('permasalahan')
+                    ->label('Permasalahan')
                     ->required()
                     ->rows(4),
-                Select::make('data_dukungan_id')
+                Forms\Components\Select::make('data_dukungan_id')
                     ->relationship('dataDukungan', 'jenis')
+                    ->label('Data Dukungan')
                     ->required(),
-                FileUpload::make('file_upload')
+                Forms\Components\FileUpload::make('file_upload')
+                    ->label('File Upload')
                     ->directory('permasalahan-pegawai/permasalahan-files')
                     ->preserveFilenames(),
-                FileUpload::make('surat_pengantar_unit_kerja')
+                Forms\Components\FileUpload::make('surat_pengantar_unit_kerja')
+                    ->label('Surat Pengantar Unit Kerja')
                     ->directory('permasalahan-pegawai/surat-pengantar')
                     ->preserveFilenames(),
             ]);
     }
 
-    public static function table(Table $table): Table
+    public static function table(Tables\Table $table): Tables\Table
     {
         return $table
-        ->headerActions([
-            ImportAction::make()
-                ->importer(PermasalahanKepegawaianImporter::class),
-            ExportAction::make()
-                ->exporter(PermasalahanKepegawaianExporter::class)
-        ])
-            ->columns([
-                TextColumn::make('id')
-                    ->sortable(),
-                TextColumn::make('nama')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('nip')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('pangkat_golongan')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('jabatan')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('unit_kerja')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('permasalahan')
-                    ->limit(50)
-                    ->searchable(),
-                TextColumn::make('dataDukungan.jenis')
-                    ->label('Data Dukungan')
-                    ->sortable(),
-                TextColumn::make('file_upload')
-                    ->url(fn ($record) => Storage::url($record->file_upload))
-                    ->openUrlInNewTab()
-                    ->label('File Upload'),
-                TextColumn::make('surat_pengantar_unit_kerja')
-                    ->url(fn ($record) => Storage::url($record->surat_pengantar_unit_kerja))
-                    ->openUrlInNewTab()
-                    ->label('Surat Pengantar'),
-
-                TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable(),
-                TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable(),
+            ->headerActions([
+                Tables\Actions\ImportAction::make()
+                    ->importer(PermasalahanKepegawaianImporter::class),
+                Tables\Actions\ExportAction::make()
+                    ->exporter(PermasalahanKepegawaianExporter::class),
             ])
-            ->filters([
-                //
+            ->columns([
+                Tables\Columns\TextColumn::make('pegawai.nama')
+                    ->label('Nama Pegawai')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('pegawai.nip')
+                    ->label('NIP')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('permasalahan')
+                    ->label('Permasalahan')
+                    ->limit(50),
+                Tables\Columns\TextColumn::make('dataDukungan.jenis')
+                    ->label('Data Dukungan'),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Dibuat Pada')
+                    ->dateTime()
+                    ->sortable(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Action::make('send_wa')
+                    ->label('Kirim Notifikasi')
+                    ->icon('heroicon-o-paper-airplane')
+                    ->color('success')
+                    ->action(function (Model $record) {
+                        $target = $record->pegawai->no_telepon;
+                        $message = implode("\n", [
+                            "Notifikasi Permasalahan Kepegawaian",
+                            "Nama Pegawai: {$record->pegawai->nama}",
+                            "Permasalahan: {$record->permasalahan}",
+                            "Status: Menunggu Tindak Lanjut"
+                        ]);
+
+                        if (empty($target)) {
+                            Notification::make()
+                                ->danger()
+                                ->title('Gagal Mengirim Notifikasi')
+                                ->body('Nomor telepon tidak tersedia.')
+                                ->send();
+                            return;
+                        }
+
+                        $whatsappNotification = new PermasalahanPegawaiWA();
+                        if ($whatsappNotification->send($target, $message)) {
+                            Notification::make()
+                                ->success()
+                                ->title('Notifikasi Terkirim')
+                                ->body("Pesan WhatsApp dikirim ke {$record->pegawai->nama}")
+                                ->send();
+                        } else {
+                            Notification::make()
+                                ->danger()
+                                ->title('Gagal Mengirim Notifikasi')
+                                ->body('Terjadi kesalahan saat mengirim pesan.')
+                                ->send();
+                        }
+                    }),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                BulkAction::make('send_bulk_wa')
+                    ->label('Kirim Notifikasi Massal')
+                    ->icon('heroicon-o-paper-airplane')
+                    ->color('success')
+                    ->action(function ($records) {
+                        $whatsappNotification = new PermasalahanPegawaiWA();
+                        $successCount = 0;
+                        $failedCount = 0;
+
+                        foreach ($records as $record) {
+                            $target = $record->pegawai->no_telepon;
+                            $message = implode("\n", [
+                                "Notifikasi Permasalahan Kepegawaian",
+                                "Nama Pegawai: {$record->pegawai->nama}",
+                                "Permasalahan: {$record->permasalahan}",
+                                "Status: Menunggu Tindak Lanjut"
+                            ]);
+
+                            if (!empty($target) && $whatsappNotification->send($target, $message)) {
+                                $successCount++;
+                            } else {
+                                $failedCount++;
+                            }
+                        }
+
+                        Notification::make()
+                            ->success()
+                            ->title('Notifikasi Massal Diproses')
+                            ->body("Berhasil: {$successCount}, Gagal: {$failedCount}")
+                            ->send();
+                    }),
             ]);
     }
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array
