@@ -6,7 +6,9 @@ use App\Filament\Exports\InventarisAJJExporter;
 use App\Filament\Imports\InventarisAJJImporter;
 use App\Filament\Resources\PengajuanAJJResource\Pages;
 use App\Models\InventarisAJJ;
+use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
@@ -15,6 +17,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\ExportAction;
 use Filament\Tables\Actions\ImportAction;
 use Filament\Tables\Columns\ImageColumn;
@@ -27,8 +30,20 @@ use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
-class PengajuanAJJResource extends Resource
+class PengajuanAJJResource extends Resource implements HasShieldPermissions
 {
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'view',
+            'view_any',
+            'create',
+            'update',
+            'delete',
+            'delete_any',
+            'kirim_notif'
+        ];
+    }
     protected static ?string $model = InventarisAJJ::class;
 
     protected static ?string $navigationIcon = 'letsicon-paper-light';
@@ -146,7 +161,7 @@ class PengajuanAJJResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
-                Tables\Actions\Action::make('pdf') 
+                Action::make('pdf') 
                     ->label('PDF')
                     ->color('success')
                     ->icon('heroicon-o-arrow-down-tray')
@@ -157,6 +172,14 @@ class PengajuanAJJResource extends Resource
                             )->stream();
                         }, $record->nip . '.pdf');
                     }), 
+                Action::make('kirim_notif')
+                    ->label('Kirim Notifikasi')
+                    ->icon('heroicon-o-paper-airplane')
+                    ->color('success')
+                    ->visible(fn (User $user) => $user->can('kirim_notif'))
+                    ->action(function (Model $record) {
+                        
+                    }),
             ])
             ->headerActions([
                 ImportAction::make()

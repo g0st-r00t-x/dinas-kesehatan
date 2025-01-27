@@ -26,6 +26,11 @@ class InventarisAJJPolicy
         return $user->can('view_pengajuan::a::j::j');
     }
 
+    
+    public function kirimNotif(User $user,): bool
+    {
+        return $user->can('kirim_notif_pengajuan::a::j::j');
+    }
     /**
      * Determine whether the user can create models.
      */

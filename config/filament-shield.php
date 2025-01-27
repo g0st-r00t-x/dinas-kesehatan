@@ -35,6 +35,10 @@ return [
         'resource' => [
             'view',
             'view_own',
+            'kirim_notif',
+            'download_file',
+            'import_file',
+            'export_file',
             'view_any',
             'create',
             'update',
