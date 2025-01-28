@@ -5,10 +5,9 @@ namespace App\Filament\Resources;
 use App\Filament\Imports\PermohonanCutiImporter;
 use App\Filament\Resources\UsulanPermohonanCutiResource\Pages;
 use App\Http\Controllers\WhatsappNotification;
-use App\Models\Pegawai;
 use Filament\Tables\Actions\ImportAction;
 use App\Models\PermohonanCuti;
-use App\Models\JenisCuti;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -22,8 +21,20 @@ use Filament\Support\Enums\ActionSize;
 use Filament\Tables\Actions\ActionGroup;
 use Illuminate\Database\Eloquent\Model;
 
-class UsulanPermohonanCutiResource extends Resource
+class UsulanPermohonanCutiResource extends Resource implements HasShieldPermissions
 {
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'view',
+            'view_any',
+            'create',
+            'update',
+            'delete',
+            'delete_any',
+            'kirim_notif'
+        ];
+    }
     protected static ?string $model = PermohonanCuti::class;
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
     protected static ?string $navigationGroup = 'Kepegawaian';
@@ -127,6 +138,7 @@ class UsulanPermohonanCutiResource extends Resource
                 ->label('Kirim Notifikasi')
                 ->color('success')
                 ->icon('heroicon-o-paper-airplane')
+                ->visible(fn () => auth()->user()?->hasPermissionTo('kirim_notif_usulan::permohonan::cuti'))
                 ->action(function (Model $record) {
                     $message = implode("\n", [
                         "Notifikasi Permohonan Cuti",
@@ -165,6 +177,7 @@ class UsulanPermohonanCutiResource extends Resource
                 Tables\Actions\BulkAction::make('kirim_notifikasi_massal')
                     ->label('Kirim Notifikasi Massal')
                     ->icon('heroicon-o-paper-airplane')
+                    ->visible(fn () => auth()->user()?->hasPermissionTo('kirim_notif_usulan::permohonan::cuti'))
                     ->color('success')
                     ->action(function (\Illuminate\Database\Eloquent\Collection $records) {
                         foreach ($records as $record) {

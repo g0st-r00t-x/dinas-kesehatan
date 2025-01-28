@@ -63,7 +63,7 @@ class RekapAbsenASNPolicy
      */
     public function forceDelete(User $user, RekapAbsenASN $rekapAbsenASN): bool
     {
-        return $user->can('force_delete_rekap::absen::a::s::n');
+        return $user->can('{{ ForceDelete }}');
     }
 
     /**
@@ -71,7 +71,7 @@ class RekapAbsenASNPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_rekap::absen::a::s::n');
+        return $user->can('{{ ForceDeleteAny }}');
     }
 
     /**
@@ -79,7 +79,7 @@ class RekapAbsenASNPolicy
      */
     public function restore(User $user, RekapAbsenASN $rekapAbsenASN): bool
     {
-        return $user->can('restore_rekap::absen::a::s::n');
+        return $user->can('{{ Restore }}');
     }
 
     /**
@@ -87,7 +87,7 @@ class RekapAbsenASNPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_rekap::absen::a::s::n');
+        return $user->can('{{ RestoreAny }}');
     }
 
     /**

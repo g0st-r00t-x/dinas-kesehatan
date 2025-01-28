@@ -63,7 +63,7 @@ class DataSerkomPolicy
      */
     public function forceDelete(User $user, DataSerkom $dataSerkom): bool
     {
-        return $user->can('force_delete_data::serkom');
+        return $user->can('{{ ForceDelete }}');
     }
 
     /**
@@ -71,7 +71,7 @@ class DataSerkomPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_data::serkom');
+        return $user->can('{{ ForceDeleteAny }}');
     }
 
     /**
@@ -79,7 +79,7 @@ class DataSerkomPolicy
      */
     public function restore(User $user, DataSerkom $dataSerkom): bool
     {
-        return $user->can('restore_data::serkom');
+        return $user->can('{{ Restore }}');
     }
 
     /**
@@ -87,7 +87,7 @@ class DataSerkomPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_data::serkom');
+        return $user->can('{{ RestoreAny }}');
     }
 
     /**

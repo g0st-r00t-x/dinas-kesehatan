@@ -63,7 +63,7 @@ class UsulanSKPemberhentianSementaraPolicy
      */
     public function forceDelete(User $user, UsulanSKPemberhentianSementara $usulanSKPemberhentianSementara): bool
     {
-        return $user->can('force_delete_usulan::s::k::pemberhentian::sementara');
+        return $user->can('{{ ForceDelete }}');
     }
 
     /**
@@ -71,7 +71,7 @@ class UsulanSKPemberhentianSementaraPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_usulan::s::k::pemberhentian::sementara');
+        return $user->can('{{ ForceDeleteAny }}');
     }
 
     /**
@@ -79,7 +79,7 @@ class UsulanSKPemberhentianSementaraPolicy
      */
     public function restore(User $user, UsulanSKPemberhentianSementara $usulanSKPemberhentianSementara): bool
     {
-        return $user->can('restore_usulan::s::k::pemberhentian::sementara');
+        return $user->can('{{ Restore }}');
     }
 
     /**
@@ -87,7 +87,7 @@ class UsulanSKPemberhentianSementaraPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_usulan::s::k::pemberhentian::sementara');
+        return $user->can('{{ RestoreAny }}');
     }
 
     /**

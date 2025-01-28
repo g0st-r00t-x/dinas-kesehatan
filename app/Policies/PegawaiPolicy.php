@@ -63,7 +63,7 @@ class PegawaiPolicy
      */
     public function forceDelete(User $user, Pegawai $pegawai): bool
     {
-        return $user->can('force_delete_pegawai');
+        return $user->can('{{ ForceDelete }}');
     }
 
     /**
@@ -71,7 +71,7 @@ class PegawaiPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_pegawai');
+        return $user->can('{{ ForceDeleteAny }}');
     }
 
     /**
@@ -79,7 +79,7 @@ class PegawaiPolicy
      */
     public function restore(User $user, Pegawai $pegawai): bool
     {
-        return $user->can('restore_pegawai');
+        return $user->can('{{ Restore }}');
     }
 
     /**
@@ -87,7 +87,7 @@ class PegawaiPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_pegawai');
+        return $user->can('{{ RestoreAny }}');
     }
 
     /**

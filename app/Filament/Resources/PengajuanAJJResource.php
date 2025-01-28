@@ -172,13 +172,13 @@ class PengajuanAJJResource extends Resource implements HasShieldPermissions
                             )->stream();
                         }, $record->nip . '.pdf');
                     }), 
-                Action::make('kirim_notif')
+                Action::make('wa_notif')
                     ->label('Kirim Notifikasi')
                     ->icon('heroicon-o-paper-airplane')
                     ->color('success')
-                    ->visible(fn (User $user) => $user->can('kirim_notif'))
+                    ->visible(fn (Model $user) => auth()->user()?->hasPermissionTo('kirim_notif_pengajuan::a::j::j'))
                     ->action(function (Model $record) {
-                        
+                        // Your action code
                     }),
             ])
             ->headerActions([

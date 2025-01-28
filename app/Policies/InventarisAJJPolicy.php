@@ -26,10 +26,9 @@ class InventarisAJJPolicy
         return $user->can('view_pengajuan::a::j::j');
     }
 
-    
-    public function kirimNotif(User $user,): bool
+    public function kirimNotif(User $user, InventarisAJJ $inventarisAJJ): bool
     {
-        return $user->can('kirim_notif_pengajuan::a::j::j');
+        return $user->can('kirim_notif_pengajuan_ajj');
     }
     /**
      * Determine whether the user can create models.
@@ -68,7 +67,7 @@ class InventarisAJJPolicy
      */
     public function forceDelete(User $user, InventarisAJJ $inventarisAJJ): bool
     {
-        return $user->can('force_delete_pengajuan::a::j::j');
+        return $user->can('{{ ForceDelete }}');
     }
 
     /**
@@ -76,7 +75,7 @@ class InventarisAJJPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_pengajuan::a::j::j');
+        return $user->can('{{ ForceDeleteAny }}');
     }
 
     /**
@@ -84,7 +83,7 @@ class InventarisAJJPolicy
      */
     public function restore(User $user, InventarisAJJ $inventarisAJJ): bool
     {
-        return $user->can('restore_pengajuan::a::j::j');
+        return $user->can('{{ Restore }}');
     }
 
     /**
@@ -92,7 +91,7 @@ class InventarisAJJPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_pengajuan::a::j::j');
+        return $user->can('{{ RestoreAny }}');
     }
 
     /**
@@ -100,7 +99,7 @@ class InventarisAJJPolicy
      */
     public function replicate(User $user, InventarisAJJ $inventarisAJJ): bool
     {
-        return $user->can('replicate_pengajuan::a::j::j');
+        return $user->can('{{ Replicate }}');
     }
 
     /**
@@ -108,6 +107,6 @@ class InventarisAJJPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_pengajuan::a::j::j');
+        return $user->can('{{ Reorder }}');
     }
 }

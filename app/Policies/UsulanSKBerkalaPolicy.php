@@ -63,7 +63,7 @@ class UsulanSKBerkalaPolicy
      */
     public function forceDelete(User $user, UsulanSKBerkala $usulanSKBerkala): bool
     {
-        return $user->can('force_delete_usulan::s::k::berkala');
+        return $user->can('{{ ForceDelete }}');
     }
 
     /**
@@ -71,7 +71,7 @@ class UsulanSKBerkalaPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_usulan::s::k::berkala');
+        return $user->can('{{ ForceDeleteAny }}');
     }
 
     /**
@@ -79,7 +79,7 @@ class UsulanSKBerkalaPolicy
      */
     public function restore(User $user, UsulanSKBerkala $usulanSKBerkala): bool
     {
-        return $user->can('restore_usulan::s::k::berkala');
+        return $user->can('{{ Restore }}');
     }
 
     /**
@@ -87,7 +87,7 @@ class UsulanSKBerkalaPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_usulan::s::k::berkala');
+        return $user->can('{{ RestoreAny }}');
     }
 
     /**

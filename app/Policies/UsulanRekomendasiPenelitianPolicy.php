@@ -63,7 +63,7 @@ class UsulanRekomendasiPenelitianPolicy
      */
     public function forceDelete(User $user, UsulanRekomendasiPenelitian $usulanRekomendasiPenelitian): bool
     {
-        return $user->can('force_delete_usulan::rekomendasi::penelitian');
+        return $user->can('{{ ForceDelete }}');
     }
 
     /**
@@ -71,7 +71,7 @@ class UsulanRekomendasiPenelitianPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_usulan::rekomendasi::penelitian');
+        return $user->can('{{ ForceDeleteAny }}');
     }
 
     /**
@@ -79,7 +79,7 @@ class UsulanRekomendasiPenelitianPolicy
      */
     public function restore(User $user, UsulanRekomendasiPenelitian $usulanRekomendasiPenelitian): bool
     {
-        return $user->can('restore_usulan::rekomendasi::penelitian');
+        return $user->can('{{ Restore }}');
     }
 
     /**
@@ -87,7 +87,7 @@ class UsulanRekomendasiPenelitianPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_usulan::rekomendasi::penelitian');
+        return $user->can('{{ RestoreAny }}');
     }
 
     /**
