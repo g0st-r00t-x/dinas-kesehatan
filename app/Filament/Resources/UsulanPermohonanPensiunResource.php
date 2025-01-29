@@ -8,6 +8,7 @@ use App\Filament\Resources\UsulanPermohonanPensiunResource\Pages;
 use App\Filament\Resources\UsulanPermohonanPensiunResource\RelationManagers;
 use App\Models\UsulanPermohonanPensiun;
 use Filament\Forms;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -35,22 +36,30 @@ class UsulanPermohonanPensiunResource extends Resource
             ->schema([
                 Forms\Components\Section::make('Data Pribadi')
                     ->schema([
-                        Forms\Components\TextInput::make('nama')
-                            ->required()
-                            ->maxLength(255),
-                        Forms\Components\TextInput::make('nip')
-                            ->required()
-                            ->maxLength(255),
-                        Forms\Components\TextInput::make('pangkat_golongan')
-                            ->required()
-                            ->maxLength(255),
-                        Forms\Components\TextInput::make('jabatan')
-                            ->required()
-                            ->maxLength(255),
-                        Forms\Components\TextInput::make('nomor_telepon')
-                            ->required()
-                            ->tel()
-                            ->maxLength(255),
+                        Select::make('pegawai_nip')
+                        ->label('Pegawai')
+                        ->relationship('pegawai', 'nama')
+                        ->searchable()
+                        ->required()
+                        ->createOptionForm([
+                            Forms\Components\TextInput::make('nip')
+                                ->required()
+                                ->unique(),
+                            Forms\Components\TextInput::make('nama')
+                                ->required(),
+                            Forms\Components\TextInput::make('no_telepon')
+                                ->required(),
+                            Forms\Components\Select::make('unit_kerja_id')
+                                ->relationship('unitKerja', 'nama')
+                                ->required(),
+                            Forms\Components\TextInput::make('jabatan'),
+                            Forms\Components\Select::make('status_kepegawaian')
+                                ->options([
+                                    'PNS' => 'PNS',
+                                    'PPPK' => 'PPPK',
+                                    'Honorer' => 'Honorer'
+                                ])
+                        ]),
                     ])->columns(2),
 
                 Forms\Components\Section::make('Dokumen Wajib')

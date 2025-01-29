@@ -10,10 +10,7 @@ return new class extends Migration
     {
         Schema::create('usulan_sk_pemberhentian_sementara', function (Blueprint $table) {
             $table->id();
-            $table->string('nama');
-            $table->string('nip')->unique();
-            $table->string('unit_kerja');
-            $table->string('pangkat_golongan');
+            $table->unsignedInteger('pegawai_nip');
             $table->date('tmt_sk_pangkat_terakhir');
             $table->date('tmt_sk_jabatan_terakhir');
             $table->string('file_sk_jabatan_fungsional_terakhir');
@@ -21,6 +18,11 @@ return new class extends Migration
             $table->string('file_pak');
             $table->string('surat_pengantar');
             $table->timestamps();
+
+            $table->foreign('pegawai_nip')
+                ->references('nip')
+                ->on('pegawai')
+                ->onDelete('cascade');
         });
     }
 

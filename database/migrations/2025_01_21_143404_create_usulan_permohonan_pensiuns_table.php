@@ -11,10 +11,7 @@ return new class extends Migration
     {
         Schema::create('usulan_pensiun', function (Blueprint $table) {
             $table->id();
-            $table->string('nama');
-            $table->string('nip');
-            $table->string('pangkat_golongan');
-            $table->string('jabatan');
+            $table->unsignedInteger('pegawai_nip');
             $table->string('surat_pengantar_unit');
             $table->string('sk_pangkat_terakhir');
             $table->string('sk_cpcns');
@@ -33,6 +30,11 @@ return new class extends Migration
             $table->string('foto');
             $table->string('nomor_telepon');
             $table->timestamps();
+
+            $table->foreign('pegawai_nip')
+                ->references('nip')
+                ->on('pegawai')
+                ->onDelete('cascade');
         });
     }
 

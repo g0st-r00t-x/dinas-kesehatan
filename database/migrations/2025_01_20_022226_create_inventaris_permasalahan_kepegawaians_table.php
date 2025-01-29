@@ -10,15 +10,22 @@ return new class extends Migration
     {
         Schema::create('permasalahan_kepegawaian', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('pegawai_id')->constrained("pegawai");
+            $table->unsignedInteger('pegawai_nip');
             $table->text('permasalahan');
-            $table->unsignedBigInteger('data_dukungan_id'); // Foreign Key
+            $table->unsignedInteger('data_dukungan_id');
             $table->string('file_upload')->nullable();
             $table->string('surat_pengantar_unit_kerja')->nullable();
             $table->timestamps();
 
             // Define Foreign Key Constraint
-            $table->foreign('data_dukungan_id')->references('id')->on('jenis_data_dukungans')->onDelete('cascade');
+            $table->foreign('data_dukungan_id')
+                ->references('data_dukungan_id')
+                ->on('data_dukungan')
+                ->onDelete('cascade');
+            $table->foreign('pegawai_nip')
+                ->references('nip')
+                ->on('pegawai')
+                ->onDelete('cascade');
         });
     }
 

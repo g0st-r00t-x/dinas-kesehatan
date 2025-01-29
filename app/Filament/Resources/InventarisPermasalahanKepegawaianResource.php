@@ -31,7 +31,7 @@ class InventarisPermasalahanKepegawaianResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('pegawai_id')
+                Forms\Components\Select::make('pegawai_nip')
                     ->label('Pegawai')
                     ->relationship('pegawai', 'nama')
                     ->searchable()

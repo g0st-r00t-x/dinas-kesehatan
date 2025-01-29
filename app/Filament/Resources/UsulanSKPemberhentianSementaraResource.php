@@ -6,6 +6,7 @@ use App\Filament\Resources\UsulanSKPemberhentianSementaraResource\Pages;
 use App\Filament\Resources\UsulanSKPemberhentianSementaraResource\RelationManagers;
 use App\Models\UsulanSKPemberhentianSementara;
 use Filament\Forms;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -27,19 +28,30 @@ class UsulanSKPemberhentianSementaraResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('nama')
-                    ->required()
-                    ->label('Nama'),
-                Forms\Components\TextInput::make('nip')
-                    ->required()
-                    ->label('NIP')
-                    ->unique(),
-                Forms\Components\TextInput::make('unit_kerja')
-                    ->required()
-                    ->label('Unit Kerja'),
-                Forms\Components\TextInput::make('pangkat_golongan')
-                    ->required()
-                    ->label('Pangkat/Golongan'),
+                Select::make('pegawai_nip')
+                        ->label('Pegawai')
+                        ->relationship('pegawai', 'nama')
+                        ->searchable()
+                        ->required()
+                        ->createOptionForm([
+                            Forms\Components\TextInput::make('nip')
+                                ->required()
+                                ->unique(),
+                            Forms\Components\TextInput::make('nama')
+                                ->required(),
+                            Forms\Components\TextInput::make('no_telepon')
+                                ->required(),
+                            Forms\Components\Select::make('unit_kerja_id')
+                                ->relationship('unitKerja', 'nama')
+                                ->required(),
+                            Forms\Components\TextInput::make('jabatan'),
+                            Forms\Components\Select::make('status_kepegawaian')
+                                ->options([
+                                    'PNS' => 'PNS',
+                                    'PPPK' => 'PPPK',
+                                    'Honorer' => 'Honorer'
+                                ])
+                        ]),
                 Forms\Components\DatePicker::make('tmt_sk_pangkat_terakhir')
                     ->required()
                     ->label('TMT SK Pangkat Terakhir'),

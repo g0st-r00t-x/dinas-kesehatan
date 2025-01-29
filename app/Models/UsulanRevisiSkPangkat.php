@@ -12,19 +12,14 @@ class UsulanRevisiSkPangkat extends Model
 
     protected $table = 'usulan_revisi_sk_pangkat';
     
-    protected $primaryKey = 'id_usulan';
 
     protected $fillable = [
-        'id_user',
-        'nama',
-        'nip',
-        'pangkat_golongan',
+        'pegawai_nip',
         'alasan_revisi_sk',
         'kesalahan_tertulis_sk',
         'upload_sk_salah',
         'upload_data_dukung',
         'surat_pengantar',
-        'no_wa',
     ];
 
     protected $casts = [
@@ -32,6 +27,11 @@ class UsulanRevisiSkPangkat extends Model
         'updated_at' => 'datetime',
         'processed_at' => 'datetime'
     ];
+
+    public function pegawai()
+    {
+        return $this->belongsTo(Pegawai::class, 'pegawai_nip', 'nip');
+    }
 
     protected static function boot()
     {

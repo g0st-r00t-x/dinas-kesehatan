@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('rekap_absensi_non_a_s_n_s', function (Blueprint $table) {
+        Schema::create('rekap_absensi_non_asn', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
         });

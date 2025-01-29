@@ -28,9 +28,8 @@ class PermohonanCutiPolicy
 
     public function kirimNotif(User $user, PermohonanCuti $permohonanCuti): bool
     {
-        return $user->can('kirim_notif_usulan_permohonan_cuti');
+        return $user->can('kirim_notif_usulan::permohonan::cuti');
     }
-
     /**
      * Determine whether the user can create models.
      */
@@ -100,7 +99,7 @@ class PermohonanCutiPolicy
      */
     public function replicate(User $user, PermohonanCuti $permohonanCuti): bool
     {
-        return $user->can('replicate_usulan::permohonan::cuti');
+        return $user->can('{{ Replicate }}');
     }
 
     /**
@@ -108,6 +107,6 @@ class PermohonanCutiPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_usulan::permohonan::cuti');
+        return $user->can('{{ Reorder }}');
     }
 }

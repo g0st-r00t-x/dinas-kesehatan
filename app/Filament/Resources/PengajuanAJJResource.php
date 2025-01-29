@@ -61,17 +61,30 @@ class PengajuanAJJResource extends Resource implements HasShieldPermissions
     {
         return $form
             ->schema([
-                TextInput::make('nama')
-                    ->label('Nama')
-                    ->required(),
-
-                TextInput::make('nip')
-                    ->label('NIP')
-                    ->required(),
-
-                TextInput::make('unit_kerja')
-                    ->label('Unit Kerja')
-                    ->required(),
+                Select::make('pegawai_nip')
+                        ->label('Pegawai')
+                        ->relationship('pegawai', 'nama')
+                        ->searchable()
+                        ->required()
+                        ->createOptionForm([
+                            Forms\Components\TextInput::make('nip')
+                                ->required()
+                                ->unique(),
+                            Forms\Components\TextInput::make('nama')
+                                ->required(),
+                            Forms\Components\TextInput::make('no_telepon')
+                                ->required(),
+                            Forms\Components\Select::make('unit_kerja_id')
+                                ->relationship('unitKerja', 'nama')
+                                ->required(),
+                            Forms\Components\TextInput::make('jabatan'),
+                            Forms\Components\Select::make('status_kepegawaian')
+                                ->options([
+                                    'PNS' => 'PNS',
+                                    'PPPK' => 'PPPK',
+                                    'Honorer' => 'Honorer'
+                                ])
+                        ]),
 
                 DatePicker::make('tmt_pemberian_tunjangan')
                     ->label('TMT Pemberian Tunjangan')

@@ -7,6 +7,7 @@ use App\Filament\Resources\UsulanRevisiSkPangkatResource\RelationManagers;
 use App\Models\UsulanRevisiSkPangkat;
 use Filament\Forms;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -41,18 +42,32 @@ class UsulanRevisiSkPangkatResource extends Resource
             ->schema([
                 Section::make('Informasi Pegawai')
                     ->schema([
-                        Forms\Components\TextInput::make('nama')
-                            ->required()
-                            ->maxLength(255),
-                        Forms\Components\TextInput::make('nip')
-                            ->required()
-                            ->maxLength(50),
-                        Forms\Components\TextInput::make('pangkat_golongan')
-                            ->maxLength(50),
-                        Forms\Components\TextInput::make('no_wa')
-                            ->required()
-                            ->tel()
-                            ->maxLength(20),
+                        Select::make('pegawai_nip')
+                        ->label('Pegawai')
+                        ->relationship('pegawai', 'nama')
+                        ->searchable()
+                        ->required()
+                        ->createOptionForm([
+                            Forms\Components\TextInput::make('nip')
+                                ->required()
+                                ->unique(),
+                            Forms\Components\TextInput::make('nama')
+                                ->required(),
+                            Forms\Components\TextInput::make('no_telepon')
+                                ->tel()
+                                ->maxLength(20)
+                                ->required(),
+                            Forms\Components\Select::make('unit_kerja_id')
+                                ->relationship('unitKerja', 'nama')
+                                ->required(),
+                            Forms\Components\TextInput::make('jabatan'),
+                            Forms\Components\Select::make('status_kepegawaian')
+                                ->options([
+                                    'PNS' => 'PNS',
+                                    'PPPK' => 'PPPK',
+                                    'Honorer' => 'Honorer'
+                                ])
+                        ]),
                     ])->columns(2),
 
                     Section::make('Detail Revisi')

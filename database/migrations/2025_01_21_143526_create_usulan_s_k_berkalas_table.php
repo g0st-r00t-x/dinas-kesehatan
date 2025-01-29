@@ -9,13 +9,9 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        Schema::create('usulan_sk_berkalas', function (Blueprint $table) {
+        Schema::create('usulan_sk_berkala', function (Blueprint $table) {
             $table->id();
-            $table->string('nama');
-            $table->string('nip')->unique();
-            $table->string('unit_kerja');
-            $table->string('pangkat_golongan');
-            $table->string('jabatan');
+            $table->unsignedInteger('pegawai_nip');
             $table->date('tmt_sk_pangkat_terakhir');
             $table->date('tanggal_penerbitan_pangkat_terakhir');
             $table->date('tmt_sk_berkala_terakhir');
@@ -24,6 +20,11 @@ return new class extends Migration {
             $table->string('upload_sk_berkala_terakhir');
             $table->string('upload_surat_pengantar');
             $table->timestamps();
+
+            $table->foreign('pegawai_nip')
+                ->references('nip')
+                ->on('pegawai')
+                ->onDelete('cascade');
         });
     }
 

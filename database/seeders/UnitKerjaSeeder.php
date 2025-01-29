@@ -16,16 +16,16 @@ class UnitKerjaSeeder extends Seeder
     public function run()
     {
         $unit_kerja = [
-            ['nama' => 'RSUD Kalianget'],
-            ['nama' => 'RSUD Sumekar'],
-            ['nama' => 'RSUD MOH.Anwar'],
-            ['nama' => 'Puskesmas Guluk-Guluk'],
-            ['nama' => 'Puskesmas Pragaan'],
+            ['unit_kerja_id' => 001, 'nama' => 'RSUD Kalianget'],
+            ['unit_kerja_id' => 002, 'nama' => 'RSUD Sumekar'],
+            ['unit_kerja_id' => 003, 'nama' => 'RSUD MOH.Anwar'],
+            ['unit_kerja_id' => 004, 'nama' => 'Puskesmas Guluk-Guluk'],
+            ['unit_kerja_id' => 005, 'nama' => 'Puskesmas Pragaan'],
         ];
 
         foreach ($unit_kerja as $data) {
             UnitKerja::updateOrCreate(
-                ['nama' => $data['nama']],
+                ['unit_kerja_id' => $data['unit_kerja_id'], 'nama' => $data['nama']],
                 $data
             );
         }

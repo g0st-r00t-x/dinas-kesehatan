@@ -47,7 +47,7 @@ class UsulanPermohonanCutiResource extends Resource implements HasShieldPermissi
             ->schema([
                 Section::make('Permohonan Cuti')
                     ->schema([
-                    Forms\Components\Select::make('pegawai_id')
+                    Forms\Components\Select::make('pegawai_nip')
                         ->label('Pegawai')
                         ->relationship('pegawai', 'nama')
                         ->searchable()
@@ -57,6 +57,8 @@ class UsulanPermohonanCutiResource extends Resource implements HasShieldPermissi
                                 ->required()
                                 ->unique(),
                             Forms\Components\TextInput::make('nama')
+                                ->required(),
+                            Forms\Components\TextInput::make('no_telepon')
                                 ->required(),
                             Forms\Components\Select::make('unit_kerja_id')
                                 ->relationship('unitKerja', 'nama')

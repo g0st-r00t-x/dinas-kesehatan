@@ -12,10 +12,7 @@ class UsulanSkPemberhentianSementara extends Model
     protected $table = 'usulan_sk_pemberhentian_sementara';
 
     protected $fillable = [
-        'nama',
-        'nip',
-        'unit_kerja',
-        'pangkat_golongan',
+        'pegadwai_nip',
         'tmt_sk_pangkat_terakhir',
         'tmt_sk_jabatan_terakhir',
         'file_sk_jabatan_fungsional_terakhir',
@@ -23,5 +20,10 @@ class UsulanSkPemberhentianSementara extends Model
         'file_pak',
         'surat_pengantar',
     ];
+
+    public function pegawai()
+    {
+        return $this->belongsTo(Pegawai::class, 'pegawai_nip', 'nip');
+    }
 }
 

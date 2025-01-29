@@ -13,14 +13,17 @@ class InventarisAJJ extends Model
     protected $table = 'usulan_penerbitan_ajj';
 
     protected $fillable = [
-        'nama',
-        'nip',
-        'unit_kerja',
+        'pegadwai_nip',
         'tmt_pemberian_tunjangan',
         'sk_jabatan',
         'upload_berkas',
         'surat_pengantar_unit_kerja',
     ];
+
+    public function pegawai()
+    {
+        return $this->belongsTo(Pegawai::class, 'pegawai_nip', 'nip');
+    }
 
     // Cast attributes untuk menangani array/json
 

@@ -18,6 +18,7 @@ class PermohonanCutiImporter extends Importer
     {
         return [
             ImportColumn::make('alasan'),
+            ImportColumn::make('jenis_cuti_id'),
         ];
     }
 
@@ -34,17 +35,11 @@ public function resolveRecord(): ?PermohonanCuti
         ]
     );
 
-    $jenisCuti = JenisCuti::firstOrCreate(
-        ['nama' => $this->data['jenis_cuti']]
-    );
 
-    if (!$pegawai || !$jenisCuti) {
-        throw new \Exception('Pegawai atau Jenis Cuti tidak valid.');
-    }
 
     return PermohonanCuti::create([
-        'pegawai_id' => $pegawai->id,
-        'jenis_cuti_id' => $jenisCuti->id,
+        'pegawai_nip' => $pegawai->nip,
+        'jenis_cuti_id' => $this->data['jenis_cuti_id'],
         'alasan' => $this->data['alasan'],
         'tanggal_mulai' => $this->data['tanggal_mulai'] ?? now(),
         'tanggal_selesai' => $this->data['tanggal_selesai'] ?? now()->addDays(1),

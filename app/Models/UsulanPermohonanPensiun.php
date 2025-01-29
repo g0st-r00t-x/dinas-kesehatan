@@ -10,10 +10,7 @@ class UsulanPermohonanPensiun extends Model
     protected $table = 'usulan_pensiun';
 
     protected $fillable = [
-        'nama',
-        'nip',
-        'pangkat_golongan',
-        'jabatan',
+        'pegawai_nip',
         'surat_pengantar_unit',
         'sk_pangkat_terakhir',
         'sk_cpcns',
@@ -32,6 +29,11 @@ class UsulanPermohonanPensiun extends Model
         'foto',
         'nomor_telepon',
     ];
+
+    public function pegawai()
+    {
+        return $this->belongsTo(Pegawai::class, 'pegawai_nip', 'nip');
+    }
 
     /**
      * Boot method to handle model events

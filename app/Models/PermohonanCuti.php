@@ -9,28 +9,18 @@ class PermohonanCuti extends Model
 {
     protected $table = 'permohonan_cuti';
     protected $fillable = [
-        'pegawai_id', 'jenis_cuti_id', 'tanggal_mulai', 
+        'pegawai_nip', 'jenis_cuti_id', 'tanggal_mulai', 
         'tanggal_selesai', 'alasan', 'status'
     ];
 
 
     public function pegawai()
-{
-    return $this->belongsTo(Pegawai::class);
-}
-
-public function unitKerja()
-{
-    return $this->belongsTo(UnitKerja::class);
-}
+    {
+        return $this->belongsTo(Pegawai::class, 'pegawai_nip', 'nip');
+    }
 
     public function jenisCuti()
     {
-        return $this->belongsTo(JenisCuti::class);
-    }
-
-    public function dokumenCuti()
-    {
-        return $this->hasMany(DokumenCuti::class);
+        return $this->belongsTo(JenisCuti::class, 'jenis_cuti_id', 'jenis_cuti_id');
     }
 }

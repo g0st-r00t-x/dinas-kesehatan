@@ -13,7 +13,7 @@ class InventarisirPermasalahanKepegawaian extends Model
     protected $table = 'permasalahan_kepegawaian';
 
     protected $fillable = [
-        'pegawai_id',
+        'pegawai_nip',
         'permasalahan',
         'data_dukungan_id',
         'file_upload',
@@ -23,13 +23,13 @@ class InventarisirPermasalahanKepegawaian extends Model
     // Relasi ke tabel pegawai
     public function pegawai()
     {
-        return $this->belongsTo(Pegawai::class);
+        return $this->belongsTo(Pegawai::class, 'pegawai_nip', 'nip');
     }
 
     // Relasi ke tabel data dukungan
     public function dataDukungan()
     {
-        return $this->belongsTo(DataDukungan::class, 'data_dukungan_id');
+        return $this->belongsTo(DataDukungan::class, 'data_dukungan_id', 'data_dukungan_id');
     }
 
     /**

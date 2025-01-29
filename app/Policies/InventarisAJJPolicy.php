@@ -28,8 +28,9 @@ class InventarisAJJPolicy
 
     public function kirimNotif(User $user, InventarisAJJ $inventarisAJJ): bool
     {
-        return $user->can('kirim_notif_pengajuan_ajj');
+        return $user->can('kirim_notif_pengajuan::a::j::j');
     }
+
     /**
      * Determine whether the user can create models.
      */

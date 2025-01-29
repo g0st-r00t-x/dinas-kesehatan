@@ -12,6 +12,7 @@ return new class extends Migration
         // Tabel Unit Kerja
         Schema::create('unit_kerja', function (Blueprint $table) {
             $table->id();
+            $table->unsignedInteger("unit_kerja_id")->unique();
             $table->string('nama', 255);
             $table->timestamps();
         });
@@ -20,7 +21,7 @@ return new class extends Migration
         Schema::create('pegawai', function (Blueprint $table) {
             $table->id();
             $table->string('nama', 255);
-            $table->string('nip', 50)->unique();
+            $table->unsignedInteger('nip')->unique();
             $table->foreignId('unit_kerja_id')->constrained('unit_kerja');
             $table->string('pangkat_golongan', 50)->nullable();
             $table->string('jabatan', 255)->nullable();
@@ -36,6 +37,7 @@ return new class extends Migration
         // Tabel Jenis Cuti
         Schema::create('jenis_cuti', function (Blueprint $table) {
             $table->id();
+            $table->unsignedInteger('jenis_cuti_id')->unique();
             $table->string('nama', 100);
             $table->text('deskripsi')->nullable();
             $table->timestamps();
@@ -44,33 +46,32 @@ return new class extends Migration
         // Tabel Permohonan Cuti
         Schema::create('permohonan_cuti', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('pegawai_id')->constrained('pegawai');
-            $table->foreignId('jenis_cuti_id')->constrained('jenis_cuti');
+            $table->unsignedInteger('pegawai_nip');
+            $table->unsignedInteger('jenis_cuti_id');
             $table->date('tanggal_mulai')->nullable();
             $table->date('tanggal_selesai')->nullable();
             $table->text('alasan')->nullable();
-            $table->string('status', 50)->default('diajukan'); // misalnya: diajukan, disetujui, ditolak
+            $table->string('status', 50)->default('diajukan');
             $table->timestamps();
-        });
 
-        // Tabel Dokumen Pendukung Cuti
-        Schema::create('dokumen_cuti', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('permohonan_cuti_id')->constrained('permohonan_cuti');
-            $table->string('jenis_dokumen', 100);
-            $table->string('path_file')->nullable();
-            $table->string('nama_file')->nullable();
-            $table->timestamps();
+            $table->foreign('pegawai_nip')
+                ->references('nip')
+                ->on('pegawai')
+                ->onDelete('cascade');
+            $table->foreign('jenis_cuti_id')
+                ->references('jenis_cuti_id')
+                ->on('jenis_cuti')
+                ->onDelete('cascade');
         });
 
         // Seed data jenis cuti
         DB::table('jenis_cuti')->insert([
-            ['nama' => 'Cuti Tahunan'],
-            ['nama' => 'Cuti Melahirkan'],
-            ['nama' => 'Cuti Sakit'],
-            ['nama' => 'Cuti Alasan Penting'],
-            ['nama' => 'Cuti Besar'],
-            ['nama' => 'Cuti Di Luar Tanggungan']
+            ['jenis_cuti_id' => 1, 'nama' => 'Cuti Tahunan'],
+            ['jenis_cuti_id' => 2, 'nama' => 'Cuti Melahirkan'],
+            ['jenis_cuti_id' => 3, 'nama' => 'Cuti Sakit'],
+            ['jenis_cuti_id' => 4, 'nama' => 'Cuti Alasan Penting'],
+            ['jenis_cuti_id' => 5, 'nama' => 'Cuti Besar'],
+            ['jenis_cuti_id' => 6, 'nama' => 'Cuti Di Luar Tanggungan']
         ]);
     }
 

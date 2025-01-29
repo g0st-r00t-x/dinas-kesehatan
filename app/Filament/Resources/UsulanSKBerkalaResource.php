@@ -6,6 +6,10 @@ use App\Filament\Resources\UsulanSKBerkalaResource\Pages;
 use App\Filament\Resources\UsulanSKBerkalaResource\RelationManagers;
 use App\Models\UsulanSKBerkala;
 use Filament\Forms;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -27,41 +31,49 @@ class UsulanSKBerkalaResource extends Resource
     {
          return $form
             ->schema([
-                Forms\Components\TextInput::make('nama')
-                    ->required()
-                    ->label('Nama'),
-                Forms\Components\TextInput::make('nip')
-                    ->required()
-                    ->label('NIP')
-                    ->unique(),
-                Forms\Components\TextInput::make('unit_kerja')
-                    ->required()
-                    ->label('Unit Kerja'),
-                Forms\Components\TextInput::make('pangkat_golongan')
-                    ->required()
-                    ->label('Pangkat/Golongan'),
-                Forms\Components\TextInput::make('jabatan')
-                    ->required()
-                    ->label('Jabatan'),
-                Forms\Components\DatePicker::make('tmt_sk_pangkat_terakhir')
+                Select::make('pegawai_nip')
+                        ->label('Pegawai')
+                        ->relationship('pegawai', 'nama')
+                        ->searchable()
+                        ->required()
+                        ->createOptionForm([
+                            TextInput::make('nip')
+                                ->required()
+                                ->unique(),
+                            TextInput::make('nama')
+                                ->required(),
+                            TextInput::make('no_telepon')
+                                ->required(),
+                            Select::make('unit_kerja_id')
+                                ->relationship('unitKerja', 'nama')
+                                ->required(),
+                            TextInput::make('jabatan'),
+                            Select::make('status_kepegawaian')
+                                ->options([
+                                    'PNS' => 'PNS',
+                                    'PPPK' => 'PPPK',
+                                    'Honorer' => 'Honorer'
+                                ])
+                        ]),
+                DatePicker::make('tmt_sk_pangkat_terakhir')
                     ->required()
                     ->label('TMT SK Pangkat Terakhir'),
-                Forms\Components\DatePicker::make('tanggal_penerbitan_pangkat_terakhir')
+                DatePicker::make('tanggal_penerbitan_pangkat_terakhir')
                     ->required()
                     ->label('Tanggal Penerbitan Pangkat Terakhir'),
-                Forms\Components\DatePicker::make('tmt_sk_berkala_terakhir')
+                DatePicker::make('tmt_sk_berkala_terakhir')
                     ->required()
                     ->label('TMT SK Berkala Terakhir'),
-                Forms\Components\DatePicker::make('tanggal_penerbitan_sk_berkala_terakhir')
+                DatePicker::make('tanggal_penerbitan_sk_berkala_terakhir')
                     ->required()
                     ->label('Tanggal Penerbitan SK Berkala Terakhir'),
-                Forms\Components\FileUpload::make('upload_sk_pangkat_terakhir')
+                FileUpload::make('upload_sk_pangkat_terakhir')
                     ->required()
                     ->label('Upload SK Pangkat Terakhir'),
-                Forms\Components\FileUpload::make('upload_sk_berkala_terakhir')
+                FileUpload::make('upload_sk_berkala_terakhir')
                     ->required()
                     ->label('Upload SK Berkala Terakhir'),
-                Forms\Components\FileUpload::make('upload_surat_pengantar')
+                FileUpload::make('upload_surat_pengantar')
                     ->required()
                     ->label('Upload Surat Pengantar'),
             ]);

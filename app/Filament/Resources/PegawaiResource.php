@@ -120,22 +120,6 @@ class PegawaiResource extends Resource
                     ])
                     ->label('Status Kepegawaian'),
             ])
-            ->filters([
-                Tables\Filters\SelectFilter::make('unit_kerja_id')
-                    ->relationship('unitKerja', 'nama')
-                    ->label('Unit Kerja'),
-                Tables\Filters\SelectFilter::make('status_kepegawaian')
-                    ->options([
-                        'aktif' => 'Aktif',
-                        'non-aktif' => 'Non-Aktif',
-                    ])
-                    ->label('Status Kepegawaian'),
-            ])
-            ->filters([
-                Tables\Filters\SelectFilter::make('unit_kerja_id')
-                    ->relationship('unitKerja', 'nama')
-                    ->label('Unit Kerja'),
-            ])
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\ViewAction::make(),
