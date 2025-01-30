@@ -124,86 +124,85 @@ class PengajuanAJJResource extends Resource implements HasShieldPermissions
             ]);
     }
 
-    public static function table(Table $table): Table
-    {
-        return $table
-            ->columns([
-                TextColumn::make('nama')
-                    ->label('Nama')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('nip')
-                    ->label('NIP')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('unit_kerja')
-                    ->label('Unit Kerja')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('tmt_pemberian_tunjangan')
-                    ->label('TMT Pemberian Tunjangan')
-                    ->date()
-                    ->sortable(),
-                TextColumn::make('sk_jabatan')
-                    ->label('SK Jabatan'),
-                TextColumn::make('upload_berkas')
-                    ->label('Upload Berkas')
-                    ->url(fn ($record) => 
-                        str_starts_with($record->upload_berkas, 'http') 
-                            ? $record->upload_berkas 
-                            : Storage::url($record->upload_berkas)
-                    )
-                    ->openUrlInNewTab(),
-                TextColumn::make('surat_pengantar_unit_kerja')
-                    ->label('Surat Pengantar Unit Kerja')
-                    ->url(fn ($record) => Storage::url($record->surat_pengantar_unit_kerja))
-                    ->openUrlInNewTab(),
-            ])
-            ->filters([
-                Tables\Filters\SelectFilter::make('unit_kerja')
-                    ->label('Unit Kerja')
-                    ->options(function () {
-                        return InventarisAJJ::distinct()
-                            ->orderBy('unit_kerja')
-                            ->pluck('unit_kerja', 'unit_kerja')
-                            ->toArray();
-                    })
-                    ->multiple()
-                    ->searchable(),
-            ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
-                Action::make('pdf') 
-                    ->label('PDF')
-                    ->color('success')
-                    ->icon('heroicon-o-arrow-down-tray')
-                    ->action(function (Model $record) {
-                        return response()->streamDownload(function () use ($record) {
-                            echo Pdf::loadHtml(
-                                Blade::render('pdf', ['record' => $record])
-                            )->stream();
-                        }, $record->nip . '.pdf');
-                    }), 
-                Action::make('wa_notif')
-                    ->label('Kirim Notifikasi')
-                    ->icon('heroicon-o-paper-airplane')
-                    ->color('success')
-                    ->visible(fn (Model $user) => auth()->user()?->hasPermissionTo('kirim_notif_pengajuan::a::j::j'))
-                    ->action(function (Model $record) {
-                        // Your action code
-                    }),
-            ])
-            ->headerActions([
-                ImportAction::make()
-                    ->importer(InventarisAJJImporter::class),
-                ExportAction::make()
-                    ->exporter(InventarisAJJExporter::class)
-            ])
-            ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
-            ]);
+   public static function table(Table $table): Table
+{
+    return $table
+        ->columns([
+            TextColumn::make('pegawai.nama') // Relasi pegawai berdasarkan model
+                ->label('Nama Pegawai')
+                ->searchable()
+                ->sortable(),
+            TextColumn::make('pegawai_nip') // Menggunakan pegawai_nip karena di model memakai ini
+                ->label('NIP Pegawai')
+                ->searchable()
+                ->sortable(),
+            TextColumn::make('unitKerja.nama') // Menggunakan nama unit kerja
+                ->label('Unit Kerja')
+                ->searchable()
+                ->sortable(),
+            TextColumn::make('tmt_pemberian_tunjangan')
+                ->label('TMT Pemberian Tunjangan')
+                ->date('Y-m-d') // Format Y-m-d
+                ->sortable(),
+            TextColumn::make('sk_jabatan')
+                ->label('SK Jabatan'),
+            TextColumn::make('upload_berkas')
+                ->label('Upload Berkas')
+                ->url(fn ($record) => $record->upload_berkas 
+                    ? (str_starts_with($record->upload_berkas, 'http') 
+                        ? $record->upload_berkas 
+                        : Storage::url($record->upload_berkas))
+                    : null
+                )
+                ->openUrlInNewTab(),
+            TextColumn::make('surat_pengantar_unit_kerja')
+                ->label('Surat Pengantar Unit Kerja')
+                ->url(fn ($record) => $record->surat_pengantar_unit_kerja 
+                    ? Storage::url($record->surat_pengantar_unit_kerja) 
+                    : null
+                )
+                ->openUrlInNewTab(),
+        ])
+        ->filters([
+            Tables\Filters\SelectFilter::make('unit_kerja_id') // Menggunakan unit_kerja_id sesuai di database
+                ->label('Unit Kerja')
+                ->options(fn () => \App\Models\UnitKerja::all()->pluck('nama', 'id')->toArray())
+                ->multiple()
+                ->searchable(),
+        ])
+        ->actions([
+            Tables\Actions\EditAction::make(),
+            Tables\Actions\DeleteAction::make(),
+            Action::make('pdf')
+                ->label('PDF')
+                ->color('success')
+                ->icon('heroicon-o-arrow-down-tray')
+                ->action(function (Model $record) {
+                    return response()->streamDownload(function () use ($record) {
+                        echo Pdf::loadView('pdf', ['record' => $record])->stream();
+                    }, $record->pegawai_nip . '.pdf');
+                }),
+            Action::make('wa_notif')
+                ->label('Kirim Notifikasi')
+                ->icon('heroicon-o-paper-airplane')
+                ->color('success')
+                ->visible(fn (Model $user) => auth()->user()?->hasPermissionTo('kirim_notif_pengajuan::a::j::j'))
+                ->action(function (Model $record) {
+                    // Your action code
+                }),
+        ])
+        ->headerActions([
+            ImportAction::make()
+                ->importer(InventarisAJJImporter::class),
+            ExportAction::make()
+                ->exporter(InventarisAJJExporter::class)
+        ])
+        ->bulkActions([
+            Tables\Actions\DeleteBulkAction::make(),
+        ]);
     }
+
+
 
     public static function getRelations(): array
     {

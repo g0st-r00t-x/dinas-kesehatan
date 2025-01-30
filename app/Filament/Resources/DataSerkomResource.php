@@ -21,6 +21,12 @@ class DataSerkomResource extends Resource
 
     protected static ?string $navigationGroup = 'Manajemen Data';
 
+    protected static ?string $label = 'Data Serkom';
+
+    protected static ?string $pluralLabel = 'Data Serkom';
+
+    protected static ?string $path = 'data-serkom';
+
     public static function form(Form $form): Form
     {
         return $form

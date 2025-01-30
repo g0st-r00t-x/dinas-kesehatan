@@ -41,6 +41,8 @@ class UsulanPermohonanCutiResource extends Resource implements HasShieldPermissi
     protected static ?string $label = 'Permohonan Cuti';
     protected static ?string $pluralLabel = 'Permohonan Cuti';
 
+    protected static ?string $path = 'usulan-permohonan-cuti';
+
     public static function form(Form $form): Form
     {
         return $form

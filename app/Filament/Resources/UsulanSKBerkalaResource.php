@@ -26,6 +26,16 @@ class UsulanSKBerkalaResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-queue-list';
 
     protected static ?string $navigationGroup = 'Usulan';
+    protected static ?string $navigationLabel = 'SK Berkala';
+    
+    protected static ?string $modelLabel = 'SK Berkala';
+
+
+    protected static ?string $label = 'SK Berkala';
+
+    protected static ?string $pluralLabel = 'SK Berkala';
+
+    protected static ?string $path = 'usulan-sk-pangkat';
 
     public static function form(Form $form): Form
     {
@@ -83,20 +93,20 @@ class UsulanSKBerkalaResource extends Resource
     {
        return $table
             ->columns([
-                TextColumn::make('nama')
+                TextColumn::make('pegawai.nama')
                     ->label('Nama')
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('nip')
+                TextColumn::make('pegawai.nip')
                     ->label('NIP')
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('unit_kerja')
+                TextColumn::make('pegawai.unit_kerja')
                     ->label('Unit Kerja')
                     ->sortable(),
-                TextColumn::make('pangkat_golongan')
+                TextColumn::make('pegawai.pangkat_golongan')
                     ->label('Pangkat/Golongan'),
-                TextColumn::make('jabatan')
+                TextColumn::make('pegawai.jabatan')
                     ->label('Jabatan'),
                 TextColumn::make('tmt_sk_pangkat_terakhir')
                     ->label('TMT SK Pangkat Terakhir')
@@ -114,14 +124,8 @@ class UsulanSKBerkalaResource extends Resource
             ->filters([
                 SelectFilter::make('pangkat_golongan')
                     ->label('Filter Pangkat/Golongan')
-                    ->options(function () {
-                        return UsulanSkBerkala::query()
-                            ->distinct()
-                            ->pluck('pangkat_golongan', 'pangkat_golongan')
-                            ->toArray();
-                    }),
             ])
-            ->defaultSort('nama');
+            ->defaultSort('pegawai.nama');
     }
 
     public static function getRelations(): array

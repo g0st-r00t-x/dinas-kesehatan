@@ -17,6 +17,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Storage;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class UsulanRevisiSkPangkatResource extends Resource
 {
@@ -24,16 +25,17 @@ class UsulanRevisiSkPangkatResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-pencil';
 
-    protected static ?string $navigationLabel = 'Usulan Revisi SK Pangkat';
+    protected static ?string $navigationLabel = 'Revisi SK Pangkat';
     
-    protected static ?string $modelLabel = 'Usulan Revisi SK Pangkat';
+    protected static ?string $modelLabel = 'Revisi SK Pangkat';
 
     protected static ?string $navigationGroup = 'Usulan';
 
-    protected static ?string $label = 'Usulan Revisi SK Pangkat';
+    protected static ?string $label = 'Revisi SK Pangkat';
 
-    protected static ?string $pluralLabel = 'Usulan Revisi SK Pangkat';
+    protected static ?string $pluralLabel = 'Revisi SK Pangkat';
 
+    protected static ?string $path = 'usulan-revisi-sk-pangkat';
     protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
@@ -83,22 +85,34 @@ class UsulanRevisiSkPangkatResource extends Resource
                 Section::make('Upload Dokumen')
                     ->schema([
                         Forms\Components\FileUpload::make('upload_sk_salah')
+                            ->preserveFilenames()
+                            ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                                return now()->timestamp . '_' . $file->getClientOriginalName();
+                            })
                             ->required()
-                            ->directory('sk_salah')
+                            ->directory('revisi_sk_pangkat/sk_salah')
                             ->preserveFilenames()
                             ->acceptedFileTypes(['application/pdf'])
                             ->maxSize(5120), // 5MB
                         
                         Forms\Components\FileUpload::make('upload_data_dukung')
+                            ->preserveFilenames()
+                            ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                                return now()->timestamp . '_' . $file->getClientOriginalName();
+                            })
                             ->required()
-                            ->directory('data_dukung')
+                            ->directory('revisi_sk_pangkat/data_dukungan')
                             ->preserveFilenames()
                             ->acceptedFileTypes(['application/pdf'])
                             ->maxSize(5120),
                             
                         Forms\Components\FileUpload::make('surat_pengantar')
+                            ->preserveFilenames()
+                            ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                                return now()->timestamp . '_' . $file->getClientOriginalName();
+                            })
                             ->required()
-                            ->directory('surat_pengantar')
+                            ->directory('revisi_sk_pangkat/surat_pengantar')
                             ->preserveFilenames()
                             ->acceptedFileTypes(['application/pdf'])
                             ->maxSize(5120),

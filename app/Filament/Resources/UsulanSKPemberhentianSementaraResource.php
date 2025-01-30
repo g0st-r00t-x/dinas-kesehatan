@@ -6,6 +6,7 @@ use App\Filament\Resources\UsulanSKPemberhentianSementaraResource\Pages;
 use App\Filament\Resources\UsulanSKPemberhentianSementaraResource\RelationManagers;
 use App\Models\UsulanSKPemberhentianSementara;
 use Filament\Forms;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -15,6 +16,8 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Storage;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class UsulanSKPemberhentianSementaraResource extends Resource
 {
@@ -23,6 +26,17 @@ class UsulanSKPemberhentianSementaraResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-newspaper';
 
     protected static ?string $navigationGroup = 'Usulan';
+
+    protected static ?string $navigationLabel = 'SK Pemberhentian Sementara';
+    
+    protected static ?string $modelLabel = 'SK Pemberhentian Sementara';
+
+
+    protected static ?string $label = 'SK Pemberhentian Sementara';
+
+    protected static ?string $pluralLabel = 'SK Pemberhentian Sementara';
+
+    protected static ?string $path = 'usulan-sk-pemberhentian-sementara';
 
     public static function form(Form $form): Form
     {
@@ -52,14 +66,20 @@ class UsulanSKPemberhentianSementaraResource extends Resource
                                     'Honorer' => 'Honorer'
                                 ])
                         ]),
-                Forms\Components\DatePicker::make('tmt_sk_pangkat_terakhir')
+                DatePicker::make('tmt_sk_pangkat_terakhir')
                     ->required()
                     ->label('TMT SK Pangkat Terakhir'),
-                Forms\Components\DatePicker::make('tmt_sk_jabatan_terakhir')
+                DatePicker::make('tmt_sk_jabatan_terakhir')
                     ->required()
                     ->label('TMT SK Jabatan Terakhir'),
                 Forms\Components\FileUpload::make('file_sk_jabatan_fungsional_terakhir')
-                    ->required()
+                ->preserveFilenames()
+                            ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                                return now()->timestamp . '_' . $file->getClientOriginalName();
+                            })
+                ->storeFiles()    
+                ->required()
+                    ->directory('usulan_pemberhentian_sementara/file_sk_jabatan_fungsional_terakhir')
                     ->label('File SK Jabatan Fungsional Terakhir'),
                 Forms\Components\Select::make('alasan')
                     ->required()
@@ -69,10 +89,22 @@ class UsulanSKPemberhentianSementaraResource extends Resource
                         'melanjutkan_pendidikan' => 'Melanjutkan Pendidikan',
                     ]),
                 Forms\Components\FileUpload::make('file_pak')
-                    ->required()
+                ->preserveFilenames()
+                            ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                                return now()->timestamp . '_' . $file->getClientOriginalName();
+                            })
+                ->storeFiles()    
+                ->required()
+                    ->directory('usulan_pemberhentian_sementara/file_pak')
                     ->label('File PAK'),
                 Forms\Components\FileUpload::make('surat_pengantar')
-                    ->required()
+                ->preserveFilenames()
+                            ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                                return now()->timestamp . '_' . $file->getClientOriginalName();
+                            })
+                ->storeFiles()    
+                ->required()
+                    ->directory('usulan_pemberhentian_sementara/surat_pengantar')
                     ->label('Surat Pengantar'),
             ]);
     }
@@ -81,17 +113,17 @@ class UsulanSKPemberhentianSementaraResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('nama')
+                TextColumn::make('pegawai.nama')
                     ->label('Nama')
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('nip')
+                TextColumn::make('pegawai.nip')
                     ->label('NIP')
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('unit_kerja')
+                TextColumn::make('pegawai.unit_kerja')
                     ->label('Unit Kerja'),
-                TextColumn::make('pangkat_golongan')
+                TextColumn::make('pegawai.pangkat_golongan')
                     ->label('Pangkat/Golongan'),
                 TextColumn::make('tmt_sk_pangkat_terakhir')
                     ->label('TMT SK Pangkat Terakhir')
@@ -101,6 +133,41 @@ class UsulanSKPemberhentianSementaraResource extends Resource
                     ->date(),
                 TextColumn::make('alasan')
                     ->label('Alasan'),
+               TextColumn::make('file_pak')
+    ->label('File Pak')
+    ->icon('heroicon-o-eye')
+    ->formatStateUsing(fn ($state) => $state ? 'Lihat File' : '-')
+    ->url(fn ($record) => $record->file_pak 
+        ? (str_starts_with($record->file_pak, 'http') 
+            ? $record->file_pak 
+            : Storage::url($record->file_pak))
+        : null
+    )
+    ->openUrlInNewTab(),
+
+TextColumn::make('file_sk_jabatan_fungsional_terakhir')
+    ->label('File SK Jabatan Fungsional Terakhir')
+    ->icon('heroicon-o-eye')
+    ->formatStateUsing(fn ($state) => $state ? 'Lihat File' : '-')
+    ->url(fn ($record) => $record->file_sk_jabatan_fungsional_terakhir 
+        ? (str_starts_with($record->file_sk_jabatan_fungsional_terakhir, 'http') 
+            ? $record->file_sk_jabatan_fungsional_terakhir 
+            : Storage::url($record->file_sk_jabatan_fungsional_terakhir))
+        : null
+    )
+    ->openUrlInNewTab(),
+
+TextColumn::make('surat_pengantar')
+    ->label('Surat Pengantar')
+    ->icon('heroicon-o-eye')
+    ->formatStateUsing(fn ($state) => $state ? 'Lihat File' : '-')
+    ->url(fn ($record) => $record->surat_pengantar 
+        ? (str_starts_with($record->surat_pengantar, 'http') 
+            ? $record->surat_pengantar 
+            : Storage::url($record->surat_pengantar))
+        : null
+    )
+    ->openUrlInNewTab()
             ])
             ->filters([
                 SelectFilter::make('alasan')
@@ -110,7 +177,7 @@ class UsulanSKPemberhentianSementaraResource extends Resource
                         'melanjutkan_pendidikan' => 'Melanjutkan Pendidikan',
                     ]),
             ])
-            ->defaultSort('nama');
+            ->defaultSort('pegawai.nama');
     }
 
     public static function getRelations(): array

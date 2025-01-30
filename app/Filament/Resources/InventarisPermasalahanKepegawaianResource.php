@@ -6,8 +6,8 @@ use App\Filament\Exports\PermasalahanKepegawaianExporter;
 use App\Filament\Imports\PermasalahanKepegawaianImporter;
 use App\Filament\Resources\InventarisPermasalahanKepegawaianResource\Pages;
 use App\Http\Controllers\PermasalahanPegawaiWA;
-use App\Http\Controllers\WhatsappNotificationController;
-use App\Models\InventarisirPermasalahanKepegawaian;
+use App\Models\User;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use Filament\Forms;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
@@ -15,10 +15,25 @@ use Filament\Tables;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\BulkAction;
 use Illuminate\Database\Eloquent\Model;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
-class InventarisPermasalahanKepegawaianResource extends Resource
+class InventarisPermasalahanKepegawaianResource extends Resource implements HasShieldPermissions
 {
-    protected static ?string $model = InventarisirPermasalahanKepegawaian::class;
+
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'view',
+            'view_any',
+            'create',
+            'update',
+            'delete',
+            'delete_any',
+            'kirim_notif'
+        ];
+    }
+    protected static ?string $model = \App\Models\InventarisirPermasalahanKepegawaian::class;
+
 
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
 
@@ -26,6 +41,8 @@ class InventarisPermasalahanKepegawaianResource extends Resource
     protected static ?string $pluralLabel = 'Permasalahan Pegawai';
 
     protected static ?string $navigationGroup = 'Inventaris';
+
+    protected static ?string $path = 'permasalahan-pegawai';
 
     public static function form(Forms\Form $form): Forms\Form
     {
@@ -45,10 +62,18 @@ class InventarisPermasalahanKepegawaianResource extends Resource
                     ->label('Data Dukungan')
                     ->required(),
                 Forms\Components\FileUpload::make('file_upload')
+                    ->preserveFilenames()
+                    ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                        return now()->timestamp . '_' . $file->getClientOriginalName();
+                    })
                     ->label('File Upload')
                     ->directory('permasalahan-pegawai/permasalahan-files')
                     ->preserveFilenames(),
                 Forms\Components\FileUpload::make('surat_pengantar_unit_kerja')
+                    ->preserveFilenames()
+                    ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                        return now()->timestamp . '_' . $file->getClientOriginalName();
+                    })
                     ->label('Surat Pengantar Unit Kerja')
                     ->directory('permasalahan-pegawai/surat-pengantar')
                     ->preserveFilenames(),
@@ -88,6 +113,7 @@ class InventarisPermasalahanKepegawaianResource extends Resource
                     ->label('Kirim Notifikasi')
                     ->icon('heroicon-o-paper-airplane')
                     ->color('success')
+                    ->visible(fn () => auth()->user()?->hasPermissionTo('kirim_notif_pengajuan::a::j::j'))
                     ->action(function (Model $record) {
                         $target = $record->pegawai->no_telepon;
                         $message = implode("\n", [
@@ -127,6 +153,7 @@ class InventarisPermasalahanKepegawaianResource extends Resource
                     ->label('Kirim Notifikasi Massal')
                     ->icon('heroicon-o-paper-airplane')
                     ->color('success')
+                    ->visible(fn () => auth()->user()?->hasPermissionTo('kirim_notif_pengajuan::a::j::j'))
                     ->action(function ($records) {
                         $whatsappNotification = new PermasalahanPegawaiWA();
                         $successCount = 0;

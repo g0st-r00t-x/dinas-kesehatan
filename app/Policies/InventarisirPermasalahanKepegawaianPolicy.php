@@ -26,6 +26,11 @@ class InventarisirPermasalahanKepegawaianPolicy
         return $user->can('view_inventaris::permasalahan::kepegawaian');
     }
 
+    public function kirimNotif(User $user, InventarisirPermasalahanKepegawaian $inventarisirPermasalahanKepegawaian): bool
+    {
+        return $user->can('kirim_notif_inventaris::permasalahan::kepegawaian');
+    }
+
     /**
      * Determine whether the user can create models.
      */

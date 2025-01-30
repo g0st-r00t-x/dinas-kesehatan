@@ -13,6 +13,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class RekapAbsenASNResource extends Resource
 {
@@ -22,6 +23,12 @@ class RekapAbsenASNResource extends Resource
 
     protected static ?string $navigationGroup = 'Manajemen Data';
 
+    protected static ?string $label = 'Rekap Absen ASN';
+
+    protected static ?string $pluralLabel = 'Rekap Absen ASN';
+
+    protected static ?string $path = 'rekap-absen-asn';
+
     public static function form(Form $form): Form
     {
        return $form
@@ -30,6 +37,10 @@ class RekapAbsenASNResource extends Resource
                     ->required()
                     ->label('Bulan'),
                 Forms\Components\FileUpload::make('upload_excel')
+                    ->preserveFilenames()
+                    ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                        return now()->timestamp . '_' . $file->getClientOriginalName();
+                    })
                     ->required()
                     ->label('Upload Excel'),
             ]);

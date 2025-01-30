@@ -16,6 +16,7 @@ class InventarisAJJ extends Model
         'pegadwai_nip',
         'tmt_pemberian_tunjangan',
         'sk_jabatan',
+        'unit_kerja_id',
         'upload_berkas',
         'surat_pengantar_unit_kerja',
     ];
@@ -24,6 +25,12 @@ class InventarisAJJ extends Model
     {
         return $this->belongsTo(Pegawai::class, 'pegawai_nip', 'nip');
     }
+
+    public function unitKerja()
+{
+    return $this->belongsTo(UnitKerja::class, 'unit_kerja_id');
+}
+
 
     // Cast attributes untuk menangani array/json
 

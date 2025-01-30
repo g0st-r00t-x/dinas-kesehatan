@@ -18,6 +18,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Storage;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class UsulanPermohonanPensiunResource extends Resource
 {
@@ -28,6 +29,8 @@ class UsulanPermohonanPensiunResource extends Resource
     protected static ?string $navigationLabel = 'Permohonan Pensiun';
     protected static ?string $modelLabel = 'Permohonan Pensiun';
     protected static ?string $pluralModelLabel = 'Permohonan Pensiun';
+    protected static ?string $path = 'usulan-permohonan-pensiun';
+
     protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
@@ -65,21 +68,45 @@ class UsulanPermohonanPensiunResource extends Resource
                 Forms\Components\Section::make('Dokumen Wajib')
                     ->schema([
                         Forms\Components\FileUpload::make('surat_pengantar_unit')
+                            ->preserveFilenames()
+                            ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                                return now()->timestamp . '_' . $file->getClientOriginalName();
+                            })
                             ->required()
                             ->directory('pensiun_files/surat-pengantar'),
                         Forms\Components\FileUpload::make('sk_pangkat_terakhir')
+                            ->preserveFilenames()
+                            ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                                return now()->timestamp . '_' . $file->getClientOriginalName();
+                            })
                             ->required()
                             ->directory('pensiun_files/sk-pangkat'),
                         Forms\Components\FileUpload::make('sk_cpcns')
+                            ->preserveFilenames()
+                            ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                                return now()->timestamp . '_' . $file->getClientOriginalName();
+                            })
                             ->required()
                             ->directory('pensiun_files/sk-cpcns'),
                         Forms\Components\FileUpload::make('sk_pns')
+                            ->preserveFilenames()
+                            ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                                return now()->timestamp . '_' . $file->getClientOriginalName();
+                            })
                             ->required()
                             ->directory('pensiun_files/sk-pns'),
                         Forms\Components\FileUpload::make('sk_berkala_terakhir')
+                            ->preserveFilenames()
+                            ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                                return now()->timestamp . '_' . $file->getClientOriginalName();
+                            })
                             ->required()
                             ->directory('pensiun_files/sk-berkala'),
                         Forms\Components\FileUpload::make('skp_terakhir')
+                            ->preserveFilenames()
+                            ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                                return now()->timestamp . '_' . $file->getClientOriginalName();
+                            })
                             ->required()
                             ->directory('pensiun_files/skp'),
                     ])->columns(2),
@@ -87,13 +114,25 @@ class UsulanPermohonanPensiunResource extends Resource
                 Forms\Components\Section::make('Dokumen Pendukung')
                     ->schema([
                         Forms\Components\FileUpload::make('akte_nikah')
+                            ->preserveFilenames()
+                            ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                                return now()->timestamp . '_' . $file->getClientOriginalName();
+                            })
                             ->required()
                             ->directory('pensiun_files/akte-nikah'),
                         Forms\Components\FileUpload::make('ktp_pasangan')
-                            ->required()
+                        ->preserveFilenames()
+                            ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                                return now()->timestamp . '_' . $file->getClientOriginalName();
+                            })    
+                        ->required()
                             ->directory('pensiun_files/ktp'),
                         Forms\Components\FileUpload::make('karis_karsu')
-                            ->required()
+                        ->preserveFilenames()
+                            ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                                return now()->timestamp . '_' . $file->getClientOriginalName();
+                            })    
+                        ->required()
                             ->directory('pensiun_files/karis-karsu'),
                         Forms\Components\FileUpload::make('akte_anak')
                             ->directory('pensiun_files/akte-anak'),
@@ -105,19 +144,27 @@ class UsulanPermohonanPensiunResource extends Resource
 
                 Forms\Components\Section::make('Data Bank')
                     ->schema([
-                        Forms\Components\TextInput::make('nama_bank')
-                            ->required()
+                        Forms\Components\TextInput::make('nama_bank')   
+                        ->required()
                             ->maxLength(255),
-                        Forms\Components\TextInput::make('nomor_rekening')
-                            ->required()
+                        Forms\Components\TextInput::make('nomor_rekening')   
+                        ->required()
                             ->maxLength(255),
-                        Forms\Components\TextInput::make('npwp')
-                            ->required()
+                        Forms\Components\TextInput::make('npwp')   
+                        ->required()
                             ->maxLength(255),
                         Forms\Components\FileUpload::make('foto')
+                            ->preserveFilenames()
+                                ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                                    return now()->timestamp . '_' . $file->getClientOriginalName();
+                                })    
                             ->required()
-                            ->directory('pensiun_files/foto')
-                            ->image(),
+                            ->previewable()
+                            ->directory('pensiun_files/foto'),
+                        Forms\Components\TextInput::make('nomor_telepon')
+                            ->tel()
+                            ->maxLength(15)
+                            ->required()
                     ])->columns(2),
             ]);
     }

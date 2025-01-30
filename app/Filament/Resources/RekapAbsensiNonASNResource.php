@@ -20,6 +20,9 @@ class RekapAbsensiNonASNResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-document-chart-bar';
 
     protected static ?string $navigationGroup = 'Manajemen Data';
+    protected static ?string $label = 'Rekap Absen Non-ASN';
+    protected static ?string $pluralLabel = 'Rekap Absen Non-ASN';
+    protected static ?string $path = 'rekap-absensi-non-ASN';
 
     public static function form(Form $form): Form
     {

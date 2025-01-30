@@ -12,7 +12,7 @@ class UsulanSkPemberhentianSementara extends Model
     protected $table = 'usulan_sk_pemberhentian_sementara';
 
     protected $fillable = [
-        'pegadwai_nip',
+        'pegawai_nip',
         'tmt_sk_pangkat_terakhir',
         'tmt_sk_jabatan_terakhir',
         'file_sk_jabatan_fungsional_terakhir',
