@@ -28,14 +28,17 @@ class DinasKesehatanPanelProvider extends PanelProvider
             ->path('dinas-kesehatan')
             ->login()
             ->registration()
-                    ->colors([
-                        'danger' => Color::Rose,
-                        'gray' => Color::Slate,
-                        'info' => Color::Blue,
-                        'primary' => Color::Indigo,
-                        'success' => Color::Emerald,
-                        'warning' => Color::Orange,
-                    ])
+            ->passwordReset()
+            ->emailVerification()
+            ->profile()
+            ->colors([
+                'danger' => Color::Rose,
+                'gray' => Color::Slate,
+                'info' => Color::Blue,
+                'primary' => Color::Indigo,
+                'success' => Color::Emerald,
+                'warning' => Color::Orange,
+            ])
             ->font('Poppins')
             ->favicon(asset('images/logo.png'))
             ->brandName('Dinkes Sumenep')

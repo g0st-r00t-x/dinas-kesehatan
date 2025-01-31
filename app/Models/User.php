@@ -46,15 +46,16 @@ class User extends Authenticatable
     ];
 
     protected static function boot()
-{
-    parent::boot();
+    {
+        parent::boot();
 
-    static::created(function ($user) {
-        $role = Role::where('name', 'staff')->first();
-        if ($role) {
-            $user->assignRole($role);
-        }
-    });
-}
+        static::created(function ($user) {
+            $role = Role::where('name', 'user')->first();
+            if ($role) {
+                $user->assignRole($role);
+            }
+        });
+    }
+
 
 }

@@ -100,7 +100,7 @@ class InventarisirPermasalahanKepegawaianPolicy
      */
     public function replicate(User $user, InventarisirPermasalahanKepegawaian $inventarisirPermasalahanKepegawaian): bool
     {
-        return $user->can('replicate_inventaris::permasalahan::kepegawaian');
+        return $user->can('{{ Replicate }}');
     }
 
     /**
@@ -108,6 +108,6 @@ class InventarisirPermasalahanKepegawaianPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_inventaris::permasalahan::kepegawaian');
+        return $user->can('{{ Reorder }}');
     }
 }

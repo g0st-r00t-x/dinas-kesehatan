@@ -13,7 +13,7 @@ class InventarisAJJ extends Model
     protected $table = 'usulan_penerbitan_ajj';
 
     protected $fillable = [
-        'pegadwai_nip',
+        'pegawai_nip',
         'tmt_pemberian_tunjangan',
         'sk_jabatan',
         'unit_kerja_id',
@@ -27,123 +27,124 @@ class InventarisAJJ extends Model
     }
 
     public function unitKerja()
-{
-    return $this->belongsTo(UnitKerja::class, 'unit_kerja_id');
-}
+    {
+        return $this->belongsTo(UnitKerja::class, 'unit_kerja_id');
+    }
+
 
 
     // Cast attributes untuk menangani array/json
 
-    protected static function boot()
-    {
-        parent::boot();
+    // protected static function boot()
+    // {
+    //     parent::boot();
 
-        static::saving(function ($model) {
-            // Handle multiple files for each field
-            $fields = [ 'upload_berkas', 'surat_pengantar_unit_kerja'];
+    //     static::saving(function ($model) {
+    //         // Handle multiple files for each field
+    //         $fields = [ 'upload_berkas', 'surat_pengantar_unit_kerja'];
             
-            foreach ($fields as $field) {
-                if (!empty($model->$field)) {
-                    $files = is_array($model->$field) ? $model->$field : [$model->$field];
-                    $processedFiles = [];
+    //         foreach ($fields as $field) {
+    //             if (!empty($model->$field)) {
+    //                 $files = is_array($model->$field) ? $model->$field : [$model->$field];
+    //                 $processedFiles = [];
                     
-                    foreach ($files as $file) {
-                        $targetDir = match($field) {
-                            'upload_berkas' => 'upload_berkas',
-                            'surat_pengantar_unit_kerja' => 'surat_pengantar'
-                        };
+    //                 foreach ($files as $file) {
+    //                     $targetDir = match($field) {
+    //                         'upload_berkas' => 'upload_berkas',
+    //                         'surat_pengantar_unit_kerja' => 'surat_pengantar'
+    //                     };
                         
-                        $processedFiles[] = self::moveFileFromTmp($file, $targetDir);
-                    }
+    //                     $processedFiles[] = self::moveFileFromTmp($file, $targetDir);
+    //                 }
                     
-                    $model->$field = count($processedFiles) > 1 ? $processedFiles : $processedFiles[0];
-                }
-            }
-        });
+    //                 $model->$field = count($processedFiles) > 1 ? $processedFiles : $processedFiles[0];
+    //             }
+    //         }
+    //     });
 
-        static::saved(function () {
-            // Bersihkan folder temporary setelah penyimpanan
-            if (Storage::disk('public')->exists('tmp')) {
-                Storage::disk('public')->deleteDirectory('tmp');
-            }
-        });
-    }
+    //     static::saved(function () {
+    //         // Bersihkan folder temporary setelah penyimpanan
+    //         if (Storage::disk('public')->exists('tmp')) {
+    //             Storage::disk('public')->deleteDirectory('tmp');
+    //         }
+    //     });
+    // }
 
-    private static function moveFileFromTmp($filePath, $targetDirectory)
-    {
-        if (empty($filePath)) {
-            return null;
-        }
+    // private static function moveFileFromTmp($filePath, $targetDirectory)
+    // {
+    //     if (empty($filePath)) {
+    //         return null;
+    //     }
 
-        $filePath = str_replace('public/', '', $filePath);
-        $tmpPath = 'tmp/' . $filePath;
-        $newPath = $targetDirectory . '/' . $filePath;
+    //     $filePath = str_replace('public/', '', $filePath);
+    //     $tmpPath = 'tmp/' . $filePath;
+    //     $newPath = $targetDirectory . '/' . $filePath;
 
-        if (Storage::disk('public')->exists($tmpPath)) {
-            Storage::disk('public')->move($tmpPath, $newPath);
-            return $newPath;
-        }
+    //     if (Storage::disk('public')->exists($tmpPath)) {
+    //         Storage::disk('public')->move($tmpPath, $newPath);
+    //         return $newPath;
+    //     }
 
-        return $filePath; // Return original path if file doesn't exist in tmp
-    }
+    //     return $filePath; // Return original path if file doesn't exist in tmp
+    // }
 
-    // Mutators
-
-
-    public function setUploadBerkasAttribute($value)
-    {
-        $this->attributes['upload_berkas'] = $this->processFileAttribute($value);
-    }
-
-    public function setSuratPengantarUnitKerjaAttribute($value)
-    {
-        $this->attributes['surat_pengantar_unit_kerja'] = $this->processFileAttribute($value);
-    }
-
-    private function processFileAttribute($value)
-    {
-        if (empty($value)) {
-            return null;
-        }
-
-        if (is_array($value)) {
-            return json_encode(array_map(fn($file) => str_replace('public/', '', $file), $value));
-        }
-
-        return str_replace('public/', '', $value);
-    }
-
-    // Accessors
+    // // Mutators
 
 
-    public function getUploadBerkasUrlAttribute()
-    {
-        return $this->getFileUrls($this->upload_berkas);
-    }
+    // public function setUploadBerkasAttribute($value)
+    // {
+    //     $this->attributes['upload_berkas'] = $this->processFileAttribute($value);
+    // }
 
-    public function getSuratPengantarUnitKerjaUrlAttribute()
-    {
-        return $this->getFileUrls($this->surat_pengantar_unit_kerja);
-    }
+    // public function setSuratPengantarUnitKerjaAttribute($value)
+    // {
+    //     $this->attributes['surat_pengantar_unit_kerja'] = $this->processFileAttribute($value);
+    // }
 
-    private function getFileUrls($files)
-    {
-        if (empty($files)) {
-            return null;
-        }
+    // private function processFileAttribute($value)
+    // {
+    //     if (empty($value)) {
+    //         return null;
+    //     }
 
-        // Cek apakah file adalah URL eksternal
-        if (is_string($files) && filter_var($files, FILTER_VALIDATE_URL)) {
-            return $files;  // Jika URL eksternal, langsung kembalikan URL tersebut
-        }
+    //     if (is_array($value)) {
+    //         return json_encode(array_map(fn($file) => str_replace('public/', '', $file), $value));
+    //     }
 
-        $files = is_string($files) ? json_decode($files, true) : $files;
+    //     return str_replace('public/', '', $value);
+    // }
+
+    // // Accessors
+
+
+    // public function getUploadBerkasUrlAttribute()
+    // {
+    //     return $this->getFileUrls($this->upload_berkas);
+    // }
+
+    // public function getSuratPengantarUnitKerjaUrlAttribute()
+    // {
+    //     return $this->getFileUrls($this->surat_pengantar_unit_kerja);
+    // }
+
+    // private function getFileUrls($files)
+    // {
+    //     if (empty($files)) {
+    //         return null;
+    //     }
+
+    //     // Cek apakah file adalah URL eksternal
+    //     if (is_string($files) && filter_var($files, FILTER_VALIDATE_URL)) {
+    //         return $files;  // Jika URL eksternal, langsung kembalikan URL tersebut
+    //     }
+
+    //     $files = is_string($files) ? json_decode($files, true) : $files;
         
-        if (is_array($files)) {
-            return array_map(fn($file) => asset('storage/' . $file), $files);
-        }
+    //     if (is_array($files)) {
+    //         return array_map(fn($file) => asset('storage/' . $file), $files);
+    //     }
 
-        return asset('storage/' . $files);
-    }
+    //     return asset('storage/' . $files);
+    // }
 
 }

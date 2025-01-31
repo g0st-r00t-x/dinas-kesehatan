@@ -26,6 +26,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
@@ -44,6 +45,7 @@ class PengajuanAJJResource extends Resource implements HasShieldPermissions
             'kirim_notif'
         ];
     }
+
     protected static ?string $model = InventarisAJJ::class;
 
     protected static ?string $navigationIcon = 'letsicon-paper-light';
@@ -55,8 +57,8 @@ class PengajuanAJJResource extends Resource implements HasShieldPermissions
     protected static ?string $navigationGroup = 'Inventaris';
 
     protected static ?string $path = 'inventaris-ajj';
-
-    
+    protected static string $resource = PengajuanAJJResource::class;
+ 
     public static function form(Form $form): Form
     {
         return $form
@@ -85,7 +87,6 @@ class PengajuanAJJResource extends Resource implements HasShieldPermissions
                                     'Honorer' => 'Honorer'
                                 ])
                         ]),
-
                 DatePicker::make('tmt_pemberian_tunjangan')
                     ->label('TMT Pemberian Tunjangan')
                     ->required(),
@@ -123,7 +124,6 @@ class PengajuanAJJResource extends Resource implements HasShieldPermissions
                     ->required(),
             ]);
     }
-
    public static function table(Table $table): Table
 {
     return $table

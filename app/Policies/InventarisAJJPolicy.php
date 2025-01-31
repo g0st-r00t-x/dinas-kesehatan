@@ -23,7 +23,7 @@ class InventarisAJJPolicy
      */
     public function view(User $user, InventarisAJJ $inventarisAJJ): bool
     {
-        return $user->can('view_pengajuan::a::j::j');
+        return $user->can('view_any_pengajuan::a::j::j');
     }
 
     public function kirimNotif(User $user, InventarisAJJ $inventarisAJJ): bool

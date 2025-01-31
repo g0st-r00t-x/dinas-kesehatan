@@ -30,6 +30,7 @@ class PermohonanCutiPolicy
     {
         return $user->can('kirim_notif_usulan::permohonan::cuti');
     }
+
     /**
      * Determine whether the user can create models.
      */
