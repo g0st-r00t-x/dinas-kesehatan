@@ -12,6 +12,7 @@ use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -30,6 +31,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
+use Illuminate\Support\Facades\Log;
 
 class PengajuanAJJResource extends Resource implements HasShieldPermissions
 {
@@ -37,6 +39,7 @@ class PengajuanAJJResource extends Resource implements HasShieldPermissions
     {
         return [
             'view',
+            'view_own',
             'view_any',
             'create',
             'update',
@@ -45,6 +48,21 @@ class PengajuanAJJResource extends Resource implements HasShieldPermissions
             'kirim_notif'
         ];
     }
+
+    //ANCHOR - This is used for filter data when data is showing in the resource
+     public static function getEloquentQuery(): Builder
+    {   
+        $user = Auth::user();
+        $query = parent::getEloquentQuery();
+        //!SECTION And this is used to lets the user view only their own data when has permission to Viow Own
+        if($user?->hasPermissionTo('view_own_pengajuan::a::j::j')){
+            return $query
+                ->where('user_id', $user->id);
+        }
+        //! But when user has permission to view_any, it will show all data
+        return parent::getEloquentQuery();
+    }
+
 
     protected static ?string $model = InventarisAJJ::class;
 
@@ -63,6 +81,8 @@ class PengajuanAJJResource extends Resource implements HasShieldPermissions
     {
         return $form
             ->schema([
+                Forms\Components\Hidden::make('user_id')
+                    ->default(5),
                 Select::make('pegawai_nip')
                         ->label('Pegawai')
                         ->relationship('pegawai', 'nama')
@@ -126,6 +146,7 @@ class PengajuanAJJResource extends Resource implements HasShieldPermissions
     }
    public static function table(Table $table): Table
 {
+    $user = auth()->user();
     return $table
         ->columns([
             TextColumn::make('pegawai.nama') // Relasi pegawai berdasarkan model
@@ -146,6 +167,8 @@ class PengajuanAJJResource extends Resource implements HasShieldPermissions
                 ->sortable(),
             TextColumn::make('sk_jabatan')
                 ->label('SK Jabatan'),
+            TextColumn::make('user_id')
+                ->label('Id User'),
             TextColumn::make('upload_berkas')
                 ->label('Upload Berkas')
                 ->url(fn ($record) => $record->upload_berkas 
@@ -164,7 +187,7 @@ class PengajuanAJJResource extends Resource implements HasShieldPermissions
                 ->openUrlInNewTab(),
         ])
         ->filters([
-            Tables\Filters\SelectFilter::make('unit_kerja_id') // Menggunakan unit_kerja_id sesuai di database
+            Tables\Filters\SelectFilter::make('unit_kerja_id')
                 ->label('Unit Kerja')
                 ->options(fn () => \App\Models\UnitKerja::all()->pluck('nama', 'id')->toArray())
                 ->multiple()

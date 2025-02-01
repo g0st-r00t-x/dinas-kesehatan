@@ -22,8 +22,31 @@ class InventarisAJJPolicy
      * Determine whether the user can view the model.
      */
     public function view(User $user, InventarisAJJ $inventarisAJJ): bool
+{
+    Log::info('View Policy Check:', [
+        'user_id' => $user->id,
+        'inventaris_user_id' => $inventarisAJJ->user_id,
+        'has_view_any' => $user->can('view_any_pengajuan::a::j::j'),
+        'has_view_own' => $user->can('view_own_pengajuan::a::j::j'),
+        'matches_user' => $user->id === $inventarisAJJ->user_id
+    ]);
+
+    // Jika user memiliki view_any, izinkan mereka melihat semua data
+    if ($user->can('view_any_pengajuan::a::j::j')) {
+        return true;
+    }
+
+    // Jika user memiliki view_own, hanya izinkan melihat data miliknya
+    if ($user->can('view_own_pengajuan::a::j::j')) {
+        return $user->id === $inventarisAJJ->user_id;
+    }
+
+    return false;
+}
+
+    public function viewOwn(User $user, InventarisAJJ $inventarisAJJ): bool
     {
-        return $user->can('view_any_pengajuan::a::j::j');
+        return $user->can('view_own_pengajuan::a::j::j');
     }
 
     public function kirimNotif(User $user, InventarisAJJ $inventarisAJJ): bool

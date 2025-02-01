@@ -45,6 +45,11 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
+    public function usulanPenerbitanAjj()
+    {
+        return $this->hasMany(InventarisAJJ::class);
+    }
+
     protected static function boot()
     {
         parent::boot();

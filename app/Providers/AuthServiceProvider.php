@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\Models\InventarisAJJ;
+use App\Policies\InventarisAJJPolicy;
+
 // use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
