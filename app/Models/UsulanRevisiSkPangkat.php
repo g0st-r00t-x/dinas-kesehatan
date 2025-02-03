@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Storage;
 
 class UsulanRevisiSkPangkat extends Model
@@ -32,7 +33,10 @@ class UsulanRevisiSkPangkat extends Model
     {
         return $this->belongsTo(Pegawai::class, 'pegawai_nip', 'nip');
     }
-
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
     protected static function boot()
     {
         parent::boot();

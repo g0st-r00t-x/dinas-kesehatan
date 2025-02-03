@@ -19,6 +19,10 @@ return new class extends Migration
             $table->string('surat_pengantar');
             $table->timestamps();
 
+            $table
+                ->foreignId('user_id')
+                ->constrained()
+                ->onDelete('cascade');
             $table->foreign('pegawai_nip')
                 ->references('nip')
                 ->on('pegawai')

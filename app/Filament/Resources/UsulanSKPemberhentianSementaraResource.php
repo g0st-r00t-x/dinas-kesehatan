@@ -134,16 +134,16 @@ class UsulanSKPemberhentianSementaraResource extends Resource
                 TextColumn::make('alasan')
                     ->label('Alasan'),
                TextColumn::make('file_pak')
-    ->label('File Pak')
-    ->icon('heroicon-o-eye')
-    ->formatStateUsing(fn ($state) => $state ? 'Lihat File' : '-')
-    ->url(fn ($record) => $record->file_pak 
-        ? (str_starts_with($record->file_pak, 'http') 
-            ? $record->file_pak 
-            : Storage::url($record->file_pak))
-        : null
-    )
-    ->openUrlInNewTab(),
+                ->label('File Pak')
+                ->icon('heroicon-o-eye')
+                ->formatStateUsing(fn ($state) => $state ? 'Lihat File' : '-')
+                ->url(fn ($record) => $record->file_pak 
+                    ? (str_starts_with($record->file_pak, 'http') 
+                        ? $record->file_pak 
+                        : Storage::url($record->file_pak))
+                    : null
+                )
+                ->openUrlInNewTab(),
 
 TextColumn::make('file_sk_jabatan_fungsional_terakhir')
     ->label('File SK Jabatan Fungsional Terakhir')

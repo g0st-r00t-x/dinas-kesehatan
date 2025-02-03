@@ -9,6 +9,7 @@ use App\Models\DataDukungan;
 use Filament\Actions\Imports\ImportColumn;
 use Filament\Actions\Imports\Importer;
 use Filament\Actions\Imports\Models\Import;
+use Illuminate\Support\Facades\Auth;
 
 class PermasalahanKepegawaianImporter extends Importer
 {
@@ -27,6 +28,7 @@ class PermasalahanKepegawaianImporter extends Importer
 
     public function resolveRecord(): ?InventarisirPermasalahanKepegawaian
     {
+        $user = Auth::user();
         // Cari atau buat Pegawai berdasarkan NIP
         $pegawai = Pegawai::firstOrCreate(
             ['nip' => $this->data['pegawai_nip'] ?? '0000000000'], // Default NIP
@@ -53,6 +55,7 @@ class PermasalahanKepegawaianImporter extends Importer
 
         // Buat atau update record
         return InventarisirPermasalahanKepegawaian::create([
+            'user_id' => $user->id,
             'pegawai_nip' => $pegawai->nip,
             'permasalahan' => $this->data['permasalahan'] ?? 'Permasalahan tidak diketahui',
             'data_dukungan_id' => $this->data['data_dukungan_id'],

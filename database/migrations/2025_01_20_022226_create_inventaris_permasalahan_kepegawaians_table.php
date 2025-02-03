@@ -18,6 +18,10 @@ return new class extends Migration
             $table->timestamps();
 
             // Define Foreign Key Constraint
+            $table
+                ->foreignId('user_id')
+                ->constrained()
+                ->onDelete('cascade');
             $table->foreign('data_dukungan_id')
                 ->references('data_dukungan_id')
                 ->on('data_dukungan')

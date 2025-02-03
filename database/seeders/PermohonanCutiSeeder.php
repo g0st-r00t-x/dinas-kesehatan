@@ -4,51 +4,35 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\PermohonanCuti;
+use App\Models\Pegawai;
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 class PermohonanCutiSeeder extends Seeder
 {
     /**
      * Run the database seeds.
-     *
-     * @return void
      */
-    public function run()
+    public function run(): void
     {
-        PermohonanCuti::create([
-            'pegawai_id' => 1,
-            'jenis_cuti_id' => 1,
-            'tanggal_mulai' => '2025-02-01',
-            'tanggal_selesai' => '2025-02-07',
-            'alasan' => 'Cuti tahunan',
-            'status' => 'Disetujui'
-        ]);
+        // Ambil daftar user dan pegawai yang ada di database
+        $users = User::pluck('id')->toArray();
+        $pegawaiNips = Pegawai::pluck('nip')->toArray();
 
-        PermohonanCuti::create([
-            'pegawai_id' => 2,
-            'jenis_cuti_id' => 2,
-            'tanggal_mulai' => '2025-03-01',
-            'tanggal_selesai' => '2025-03-10',
-            'alasan' => 'Cuti melahirkan',
-            'status' => 'Diajukan'
-        ]);
+        if (empty($users) || empty($pegawaiNips)) {
+            return; // Berhenti jika tidak ada data pegawai atau user
+        }
 
-        // Tambahan Data Permohonan Cuti
-        PermohonanCuti::create([
-            'pegawai_id' => 3,
-            'jenis_cuti_id' => 3,
-            'tanggal_mulai' => '2025-04-15',
-            'tanggal_selesai' => '2025-04-20',
-            'alasan' => 'Cuti sakit',
-            'status' => 'Disetujui'
-        ]);
-
-        PermohonanCuti::create([
-            'pegawai_id' => 4,
-            'jenis_cuti_id' => 4,
-            'tanggal_mulai' => '2025-05-05',
-            'tanggal_selesai' => '2025-05-12',
-            'alasan' => 'Cuti alasan penting',
-            'status' => 'Diajukan'
-        ]);
+        for ($i = 0; $i < 10; $i++) {
+            PermohonanCuti::create([
+                'user_id' => $users[array_rand($users)],
+                'pegawai_nip' => $pegawaiNips[array_rand($pegawaiNips)], // Gunakan NIP yang valid
+                'jenis_cuti_id' => rand(1, 4),
+                'tanggal_mulai' => now()->addDays(rand(1, 30))->toDateString(),
+                'tanggal_selesai' => now()->addDays(rand(31, 60))->toDateString(),
+                'alasan' => 'Cuti ' . ['tahunan', 'sakit', 'melahirkan', 'alasan penting'][rand(0, 3)],
+                'status' => ['Diajukan', 'Disetujui', 'Ditolak'][rand(0, 2)]
+            ]);
+        }
     }
 }

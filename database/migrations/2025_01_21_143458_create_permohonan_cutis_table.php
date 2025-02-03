@@ -11,14 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('usulan_revisi_sk_pangkat', function (Blueprint $table) {
+        // Tabel Permohonan Cuti
+        Schema::create('permohonan_cuti', function (Blueprint $table) {
             $table->id();
             $table->unsignedInteger('pegawai_nip');
-            $table->text('alasan_revisi_sk');
-            $table->text('kesalahan_tertulis_sk');
-            $table->string('upload_sk_salah')->nullable();
-            $table->string('upload_data_dukung')->nullable();
-            $table->string('surat_pengantar')->nullable();
+            $table->unsignedInteger('jenis_cuti_id');
+            $table->date('tanggal_mulai')->nullable();
+            $table->date('tanggal_selesai')->nullable();
+            $table->text('alasan')->nullable();
+            $table->string('status', 50)->default('diajukan');
             $table->timestamps();
 
             $table
@@ -29,6 +30,10 @@ return new class extends Migration
                 ->references('nip')
                 ->on('pegawai')
                 ->onDelete('cascade');
+            $table->foreign('jenis_cuti_id')
+                ->references('jenis_cuti_id')
+                ->on('jenis_cuti')
+                ->onDelete('cascade');
         });
     }
 
@@ -37,6 +42,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('usulan_revisi_sk_pangkat');
+        Schema::dropIfExists('usulan_permohonan_cutis');
     }
 };

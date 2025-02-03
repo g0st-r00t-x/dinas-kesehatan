@@ -14,7 +14,7 @@ class Pegawai extends Model
         'tanggal_lahir', 'jenis_kelamin', 'alamat'
     ];
 
-    public function unitKerja()
+    public function unit_kerja()
     {
         return $this->belongsTo(UnitKerja::class, 'unit_kerja_id', 'unit_kerja_id');
     }

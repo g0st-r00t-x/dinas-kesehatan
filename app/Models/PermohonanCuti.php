@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PermohonanCuti extends Model
 {
@@ -17,6 +18,11 @@ class PermohonanCuti extends Model
     public function pegawai()
     {
         return $this->belongsTo(Pegawai::class, 'pegawai_nip', 'nip');
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function jenisCuti()

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Storage;
 
 class InventarisirPermasalahanKepegawaian extends Model
@@ -13,6 +14,7 @@ class InventarisirPermasalahanKepegawaian extends Model
     protected $table = 'permasalahan_kepegawaian';
 
     protected $fillable = [
+        'user_id',
         'pegawai_nip',
         'permasalahan',
         'data_dukungan_id',
@@ -30,6 +32,11 @@ class InventarisirPermasalahanKepegawaian extends Model
     public function dataDukungan()
     {
         return $this->belongsTo(DataDukungan::class, 'data_dukungan_id', 'data_dukungan_id');
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 
     /**

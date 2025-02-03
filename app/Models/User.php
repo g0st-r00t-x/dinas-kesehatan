@@ -3,6 +3,8 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use App\Filament\Resources\InventarisPermasalahanKepegawaianResource;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -48,6 +50,28 @@ class User extends Authenticatable
     public function usulanPenerbitanAjj()
     {
         return $this->hasMany(InventarisAJJ::class);
+    }
+
+    public function inventarisirPermasalahanKepegawaian(){
+        return $this->hasMany(InventarisPermasalahanKepegawaianResource::class);
+    }
+
+    public function usulanPermohonanCuti(){
+        return $this->hasMany(PermohonanCuti::class);
+    }
+
+    public function usulanPermohonanPensiun()
+    {
+        return $this->hasMany(UsulanPermohonanPensiun::class);
+    }
+
+    public function usulanRevisiSkPangkat(){
+        return $this->hasMany(UsulanRevisiSkPangkat::class);
+    }
+
+    public function usulanPemberhentianSementara()
+    {
+        return $this->hasMany(UsulanSkPemberhentianSementara::class);
     }
 
     protected static function boot()

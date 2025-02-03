@@ -80,6 +80,11 @@ class InventarisPermasalahanKepegawaianResource extends Resource implements HasS
             ]);
     }
 
+
+
+
+    
+
     public static function table(Tables\Table $table): Tables\Table
     {
         return $table
@@ -148,6 +153,8 @@ class InventarisPermasalahanKepegawaianResource extends Resource implements HasS
                         }
                     }),
             ])
+
+
             ->bulkActions([
                 BulkAction::make('send_bulk_wa')
                     ->label('Kirim Notifikasi Massal')

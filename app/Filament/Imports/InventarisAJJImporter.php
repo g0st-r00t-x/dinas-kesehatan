@@ -7,6 +7,7 @@ use Filament\Actions\Imports\ImportColumn;
 use Filament\Actions\Imports\Importer;
 use Filament\Actions\Imports\Models\Import;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -48,6 +49,7 @@ class InventarisAJJImporter extends Importer
 
     public function resolveRecord(): ?InventarisAJJ
     {
+        $user = Auth::user();
         DB::beginTransaction();
         try {
             Log::info('Starting resolveRecord with data:', $this->data);
@@ -89,6 +91,7 @@ class InventarisAJJImporter extends Importer
             // Buat record InventarisAJJ
             $inventarisAJJ = new InventarisAJJ();
             $inventarisAJJ->pegawai_nip = $pegawai->nip;
+            $inventarisAJJ->user_id = $user->id;
             $inventarisAJJ->tmt_pemberian_tunjangan = $tmtDate;
             $inventarisAJJ->sk_jabatan = $this->data['sk_jabatan'];
             $inventarisAJJ->upload_berkas = $this->data['upload_berkas'] ?? null;

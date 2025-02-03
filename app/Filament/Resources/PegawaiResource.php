@@ -44,7 +44,7 @@ class PegawaiResource extends Resource
                     ->required()
                     ->label('NIP'),
                 Select::make('unit_kerja_id')
-                    ->relationship('unitKerja', 'nama')
+                    ->relationship('unit_kerja', 'nama')
                     ->required()
                     ->label('Unit Kerja'),
                 TextInput::make('pangkat_golongan')
@@ -72,8 +72,8 @@ class PegawaiResource extends Resource
                     ->label('Tanggal Lahir'),
                 Radio::make('jenis_kelamin')
                     ->options([
-                        'L' => 'Laki-laki',
-                        'P' => 'Perempuan',
+                        'Laki-laki' => 'Laki-laki',
+                        'Perempuan' => 'Perempuan',
                     ])
                     ->required()
                     ->label('Jenis Kelamin'),
@@ -94,7 +94,7 @@ class PegawaiResource extends Resource
                     ->label('NIP')
                     ->sortable()
                     ->searchable(),
-                TextColumn::make('unitKerja.nama')
+                TextColumn::make('pegawai.unit_kerja.nama')
                     ->label('Unit Kerja')
                     ->sortable()
                     ->searchable(),
@@ -115,7 +115,7 @@ class PegawaiResource extends Resource
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('unit_kerja_id')
-                    ->relationship('unitKerja', 'nama')
+                    ->relationship('unit_kerja', 'nama')
                     ->label('Unit Kerja'),
                 Tables\Filters\SelectFilter::make('status_kepegawaian')
                     ->options([

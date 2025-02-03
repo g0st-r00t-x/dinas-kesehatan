@@ -43,26 +43,6 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        // Tabel Permohonan Cuti
-        Schema::create('permohonan_cuti', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedInteger('pegawai_nip');
-            $table->unsignedInteger('jenis_cuti_id');
-            $table->date('tanggal_mulai')->nullable();
-            $table->date('tanggal_selesai')->nullable();
-            $table->text('alasan')->nullable();
-            $table->string('status', 50)->default('diajukan');
-            $table->timestamps();
-
-            $table->foreign('pegawai_nip')
-                ->references('nip')
-                ->on('pegawai')
-                ->onDelete('cascade');
-            $table->foreign('jenis_cuti_id')
-                ->references('jenis_cuti_id')
-                ->on('jenis_cuti')
-                ->onDelete('cascade');
-        });
 
         // Seed data jenis cuti
         DB::table('jenis_cuti')->insert([

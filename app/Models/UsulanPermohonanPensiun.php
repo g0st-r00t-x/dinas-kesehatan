@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Storage;
 
 class UsulanPermohonanPensiun extends Model
@@ -33,6 +34,11 @@ class UsulanPermohonanPensiun extends Model
     public function pegawai()
     {
         return $this->belongsTo(Pegawai::class, 'pegawai_nip', 'nip');
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 
     /**

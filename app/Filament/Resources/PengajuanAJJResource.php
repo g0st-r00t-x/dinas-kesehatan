@@ -82,7 +82,7 @@ class PengajuanAJJResource extends Resource implements HasShieldPermissions
         return $form
             ->schema([
                 Forms\Components\Hidden::make('user_id')
-                    ->default(5),
+                    ->default(Auth::user()->id),
                 Select::make('pegawai_nip')
                         ->label('Pegawai')
                         ->relationship('pegawai', 'nama')
@@ -146,7 +146,6 @@ class PengajuanAJJResource extends Resource implements HasShieldPermissions
     }
    public static function table(Table $table): Table
 {
-    $user = auth()->user();
     return $table
         ->columns([
             TextColumn::make('pegawai.nama') // Relasi pegawai berdasarkan model
@@ -157,7 +156,7 @@ class PengajuanAJJResource extends Resource implements HasShieldPermissions
                 ->label('NIP Pegawai')
                 ->searchable()
                 ->sortable(),
-            TextColumn::make('unitKerja.nama') // Menggunakan nama unit kerja
+            TextColumn::make('pegawai.unitKerja.nama')
                 ->label('Unit Kerja')
                 ->searchable()
                 ->sortable(),
@@ -167,11 +166,11 @@ class PengajuanAJJResource extends Resource implements HasShieldPermissions
                 ->sortable(),
             TextColumn::make('sk_jabatan')
                 ->label('SK Jabatan'),
-            TextColumn::make('user_id')
-                ->label('Id User'),
             TextColumn::make('upload_berkas')
                 ->label('Upload Berkas')
-                ->url(fn ($record) => $record->upload_berkas 
+                ->icon('heroicon-o-eye')
+                ->formatStateUsing(fn ($state) => $state ? 'Lihat File' : '-')
+                 ->url(fn ($record) => $record->upload_berkas 
                     ? (str_starts_with($record->upload_berkas, 'http') 
                         ? $record->upload_berkas 
                         : Storage::url($record->upload_berkas))
@@ -180,31 +179,42 @@ class PengajuanAJJResource extends Resource implements HasShieldPermissions
                 ->openUrlInNewTab(),
             TextColumn::make('surat_pengantar_unit_kerja')
                 ->label('Surat Pengantar Unit Kerja')
-                ->url(fn ($record) => $record->surat_pengantar_unit_kerja 
-                    ? Storage::url($record->surat_pengantar_unit_kerja) 
+                ->icon('heroicon-o-eye')
+                ->formatStateUsing(fn ($state) => $state ? 'Lihat File' : '-')
+                 ->url(fn ($record) => $record->surat_pengantar_unit_kerja 
+                    ? (str_starts_with($record->surat_pengantar_unit_kerja, 'http') 
+                        ? $record->surat_pengantar_unit_kerja 
+                        : Storage::url($record->surat_pengantar_unit_kerja))
                     : null
                 )
                 ->openUrlInNewTab(),
         ])
         ->filters([
-            Tables\Filters\SelectFilter::make('unit_kerja_id')
-                ->label('Unit Kerja')
-                ->options(fn () => \App\Models\UnitKerja::all()->pluck('nama', 'id')->toArray())
-                ->multiple()
-                ->searchable(),
-        ])
+    Tables\Filters\SelectFilter::make('pegawai.unit_kerja_id')  // Sesuaikan path ke relasi
+        ->label('Unit Kerja')
+        ->options(fn () => \App\Models\UnitKerja::all()->pluck('nama', 'id')->toArray())
+        ->multiple()
+        ->searchable()
+        ->query(function (Builder $query, array $data) {
+            return $query->when(
+                $data['values'],
+                fn (Builder $query, $values) => $query->whereHas(
+                    'pegawai',
+                    fn ($query) => $query->whereIn('unit_kerja_id', $values)
+                )
+            );
+        }),
+])
         ->actions([
             Tables\Actions\EditAction::make(),
             Tables\Actions\DeleteAction::make(),
+            // Di action download
             Action::make('pdf')
                 ->label('PDF')
                 ->color('success')
-                ->icon('heroicon-o-arrow-down-tray')
-                ->action(function (Model $record) {
-                    return response()->streamDownload(function () use ($record) {
-                        echo Pdf::loadView('pdf', ['record' => $record])->stream();
-                    }, $record->pegawai_nip . '.pdf');
-                }),
+                ->url(fn (InventarisAjj $record) => route('pdf', $record))
+                ->icon('heroicon-o-arrow-down-tray'),
+
             Action::make('wa_notif')
                 ->label('Kirim Notifikasi')
                 ->icon('heroicon-o-paper-airplane')

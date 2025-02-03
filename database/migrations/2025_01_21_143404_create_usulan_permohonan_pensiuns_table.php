@@ -31,6 +31,10 @@ return new class extends Migration
             $table->string('nomor_telepon');
             $table->timestamps();
 
+            $table
+                ->foreignId('user_id')
+                ->constrained()
+                ->onDelete('cascade');
             $table->foreign('pegawai_nip')
                 ->references('nip')
                 ->on('pegawai')
