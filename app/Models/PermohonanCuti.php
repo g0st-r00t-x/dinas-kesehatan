@@ -11,7 +11,7 @@ class PermohonanCuti extends Model
     protected $table = 'permohonan_cuti';
     protected $fillable = [
         'pegawai_nip', 'jenis_cuti_id', 'tanggal_mulai', 
-        'tanggal_selesai', 'alasan', 'status'
+        'tanggal_selesai', 'alasan', 'status', "id_pengajuan_surat", "user_id"
     ];
 
 
@@ -23,6 +23,10 @@ class PermohonanCuti extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function pengajuanSurat(){
+        return $this->hasOne(PengajuanSurat::class);
     }
 
     public function jenisCuti()

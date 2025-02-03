@@ -9,6 +9,7 @@ use App\Models\UnitKerja;
 use Filament\Actions\Imports\ImportColumn;
 use Filament\Actions\Imports\Importer;
 use Filament\Actions\Imports\Models\Import;
+use Illuminate\Support\Facades\Auth;
 
 class PermohonanCutiImporter extends Importer
 {
@@ -24,6 +25,8 @@ class PermohonanCutiImporter extends Importer
 
 public function resolveRecord(): ?PermohonanCuti
 {
+    $user = Auth::user();
+
     $this->data['status'] = strtolower($this->data['status'] ?? 'diajukan'); // Normalisasi status
 
     $pegawai = Pegawai::firstOrCreate(
@@ -38,6 +41,7 @@ public function resolveRecord(): ?PermohonanCuti
 
 
     return PermohonanCuti::create([
+        'user_id' => $user->id,
         'pegawai_nip' => $pegawai->nip,
         'jenis_cuti_id' => $this->data['jenis_cuti_id'],
         'alasan' => $this->data['alasan'],

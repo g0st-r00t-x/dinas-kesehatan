@@ -127,9 +127,6 @@ class PegawaiResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\ViewAction::make(),
-                Action::make('Ajukan Cuti')
-                    ->icon('heroicon-o-document-plus')
-                    ->url(fn (Pegawai $record) => static::getUrl('edit', ['record' => $record]) . '?activeTab=permohonan-cuti')
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

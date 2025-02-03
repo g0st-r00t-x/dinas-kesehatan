@@ -17,7 +17,7 @@ return new class extends Migration {
 
             $table
                 ->foreignId('user_id')
-                ->constrained()
+                ->constrained('users')
                 ->onDelete('cascade');
             $table->foreign('pegawai_nip')
                 ->references('nip')

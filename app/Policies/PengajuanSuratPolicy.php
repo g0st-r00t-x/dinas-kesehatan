@@ -3,10 +3,10 @@
 namespace App\Policies;
 
 use App\Models\User;
-use App\Models\InventarisAJJ;
+use App\Models\PengajuanSurat;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class InventarisAJJPolicy
+class PengajuanSuratPolicy
 {
     use HandlesAuthorization;
 
@@ -15,25 +15,15 @@ class InventarisAJJPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_pengajuan::a::j::j');
+        return $user->can('view_any_pengajuan::surat');
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, InventarisAJJ $inventarisAJJ): bool
+    public function view(User $user, PengajuanSurat $pengajuanSurat): bool
     {
-        return $user->can('view_pengajuan::a::j::j');
-    }
-
-    public function viewOwn(User $user, InventarisAJJ $inventarisAJJ): bool
-    {
-        return $user->can('view_own_pengajuan::a::j::j');
-    }
-
-    public function kirimNotif(User $user, InventarisAJJ $inventarisAJJ): bool
-    {
-        return $user->can('kirim_notif_pengajuan::a::j::j');
+        return $user->can('view_pengajuan::surat');
     }
 
     /**
@@ -41,23 +31,23 @@ class InventarisAJJPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_pengajuan::a::j::j');
+        return $user->can('create_pengajuan::surat');
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, InventarisAJJ $inventarisAJJ): bool
+    public function update(User $user, PengajuanSurat $pengajuanSurat): bool
     {
-        return $user->can('update_pengajuan::a::j::j');
+        return $user->can('update_pengajuan::surat');
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, InventarisAJJ $inventarisAJJ): bool
+    public function delete(User $user, PengajuanSurat $pengajuanSurat): bool
     {
-        return $user->can('delete_pengajuan::a::j::j');
+        return $user->can('delete_pengajuan::surat');
     }
 
     /**
@@ -65,13 +55,13 @@ class InventarisAJJPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_pengajuan::a::j::j');
+        return $user->can('delete_any_pengajuan::surat');
     }
 
     /**
      * Determine whether the user can permanently delete.
      */
-    public function forceDelete(User $user, InventarisAJJ $inventarisAJJ): bool
+    public function forceDelete(User $user, PengajuanSurat $pengajuanSurat): bool
     {
         return $user->can('{{ ForceDelete }}');
     }
@@ -87,7 +77,7 @@ class InventarisAJJPolicy
     /**
      * Determine whether the user can restore.
      */
-    public function restore(User $user, InventarisAJJ $inventarisAJJ): bool
+    public function restore(User $user, PengajuanSurat $pengajuanSurat): bool
     {
         return $user->can('{{ Restore }}');
     }
@@ -103,9 +93,9 @@ class InventarisAJJPolicy
     /**
      * Determine whether the user can replicate.
      */
-    public function replicate(User $user, InventarisAJJ $inventarisAJJ): bool
+    public function replicate(User $user, PengajuanSurat $pengajuanSurat): bool
     {
-        return $user->can('{{ Replicate }}');
+        return $user->can('replicate_pengajuan::surat');
     }
 
     /**
@@ -113,6 +103,6 @@ class InventarisAJJPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('{{ Reorder }}');
+        return $user->can('reorder_pengajuan::surat');
     }
 }

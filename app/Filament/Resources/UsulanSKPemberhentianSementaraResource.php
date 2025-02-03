@@ -30,12 +30,8 @@ class UsulanSKPemberhentianSementaraResource extends Resource
     protected static ?string $navigationLabel = 'SK Pemberhentian Sementara';
     
     protected static ?string $modelLabel = 'SK Pemberhentian Sementara';
-
-
     protected static ?string $label = 'SK Pemberhentian Sementara';
-
     protected static ?string $pluralLabel = 'SK Pemberhentian Sementara';
-
     protected static ?string $path = 'usulan-sk-pemberhentian-sementara';
 
     public static function form(Form $form): Form
