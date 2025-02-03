@@ -11,7 +11,7 @@ class PermohonanCuti extends Model
     protected $table = 'permohonan_cuti';
     protected $fillable = [
         'pegawai_nip', 'jenis_cuti_id', 'tanggal_mulai', 
-        'tanggal_selesai', 'alasan', 'status', "id_pengajuan_surat", "user_id"
+        'tanggal_selesai', 'alasan', 'status', "user_id", "data_dukungan", "surat_pengantar"
     ];
 
 

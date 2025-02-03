@@ -26,15 +26,6 @@ class PermohonanCutiPolicy
         return $user->can('view_usulan::permohonan::cuti');
     }
 
-    public function viewOwn(User $user, PermohonanCuti $permohonanCuti): bool
-    {
-        return $user->can('view_own_usulan::permohonan::cuti');
-    }
-    public function kirimNotif(User $user, PermohonanCuti $permohonanCuti): bool
-    {
-        return $user->can('kirim_notif_usulan::permohonan::cuti');
-    }
-
     /**
      * Determine whether the user can create models.
      */

@@ -100,6 +100,8 @@ class PegawaiResource extends Resource
                     ->searchable(),
                 TextColumn::make('jabatan')
                     ->label('Jabatan'),
+                TextColumn::make('pangkat_golongan')
+                    ->label('Pangkat/Golongan'),
                 TextColumn::make('email')
                     ->label('Email')
                     ->searchable(),

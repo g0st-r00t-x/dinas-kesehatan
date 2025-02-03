@@ -31,7 +31,8 @@ class PengajuanSurat extends Model
         return $this->hasOne(ArsipSurat::class);
     }
 
-    public function permohonanCuti(){
-        return $this->belongsTo(PermohonanCuti::class);
+    public function permohonanCuti()
+    {
+        return $this->belongsTo(PermohonanCuti::class, 'id_pemohon', 'id');
     }
 }

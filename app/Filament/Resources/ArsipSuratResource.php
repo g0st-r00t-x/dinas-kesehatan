@@ -4,13 +4,16 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ArsipSuratResource\Pages;
 use App\Filament\Resources\ArsipSuratResource\RelationManagers;
+use App\Http\Controllers\WhatsappNotification;
 use App\Models\ArsipSurat;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ArsipSuratResource extends Resource
@@ -117,6 +120,33 @@ class ArsipSuratResource extends Resource
                     ->icon('heroicon-o-arrow-down-tray')
                     // ->url(fn (ArsipSurat $record) => storage_url($record->file_surat_path))
                     ->openUrlInNewTab(),
+                Tables\Actions\Action::make('wa_notif')
+                    ->label('Kirim Notifikasi')
+                    ->color('success')
+                    ->icon('heroicon-o-paper-airplane')
+                    ->visible(fn () => auth()->user()?->hasPermissionTo('kirim_notif_usulan::permohonan::cuti'))
+                    ->action(function (Model $record) {
+                        $message = "Notifikasi Permohonan Cuti\n" .
+                            "Nama: {$record->pegawai->nama}\n" .
+                            "Jenis Cuti: {$record->jenisCuti->nama}\n" .
+                            "Tanggal: {$record->tanggal_mulai} - {$record->tanggal_selesai}\n" .
+                            "Status: {$record->status}";
+
+                        try {
+                            (new WhatsappNotification())->send($record->pegawai->no_telepon, $message);
+                            Notification::make()
+                                ->success()
+                                ->title('Notifikasi Terkirim')
+                                ->body("Pesan WhatsApp dikirim ke {$record->pegawai->nama}")
+                                ->send();
+                        } catch (\Exception $e) {
+                            Notification::make()
+                                ->danger()
+                                ->title('Gagal Mengirim Notifikasi')
+                                ->body($e->getMessage())
+                                ->send();
+                        }
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

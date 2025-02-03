@@ -129,7 +129,7 @@
       <div class="title">
           <h3>PETIKAN KEPUTUSAN</h3>
           <p>KEPALA DINAS KESEHATAN KABUPATEN SUMENEP</p>
-          <p>NOMOR: 800/{{ $record->pegawai->id }}/2024</p>
+          <p>NOMOR: 800/{{ $record->id }}/2024</p>
           <p>TENTANG</p>
           <p>ALIH JENJANG JABATAN FUNGSIONAL TENAGA KESEHATAN</p>
       </div>
@@ -141,13 +141,13 @@
           <p><strong>MEMUTUSKAN:</strong></p>
           <p><strong>KESATU:</strong> Mengangkat Pegawai Negeri Sipil dalam Alih Jenjang Jabatan Fungsional Tenaga Kesehatan dengan rincian sebagai berikut dalama perkembangan jabatan pada dinas kesehatan sumenep semua hal yang berkaitan dengan jabatan fungsional akan ditakdirkan sebagaia pelaksanaan kerja pada bualan masyarakat:</p>
           <ul>
-              <li>Nama: {{ $record->pegawai->nama }}</li>
-              <li>Tempat/Tanggal Lahir: {{ $record->pegawai->tanggal_lahir }}</li>
-              <li>NIP: {{ $record->pegawai_nip }}</li>
-              <li>Pangkat/Gol.Ruang/TMT: {{ $record->pegawai->pangkat_golongan }} / {{ $record->tmt_pemberian_tunjangan }}</li>
-              <li>Unit Kerja: {{ $record->pegawai?->unit_kerja?->nama ?? 'Data tidak tersedia' }}</li>
+              <li>Nama: {{ $record->nama }}</li>
+              <li>Tempat/Tanggal Lahir: {{ $record->tanggal_lahir }}</li>
+              <li>NIP: {{ $record->nip }}</li>
+              <li>Pangkat/Gol.Ruang/TMT: {{ $record->pangkat_golongan }} / {{ $record->tmt_pemberian_tunjangan }}</li>
+              <li>Unit Kerja: {{ $record?->unit_kerja?->nama ?? 'Data tidak tersedia' }}</li>
               <li>Dari Jabatan Lama: [Jabatan Lama]</li>
-              <li>Ke Jabatan Baru: {{ $record->pegawai->jabatan }}</li>
+              <li>Ke Jabatan Baru: {{ $record->jabatan }}</li>
           </ul>
           <p><strong>KEDUA:</strong> Kepada Pegawai tersebut diberikan Tunjangan Jabatan sesuai ketentuan yang berlaku;</p>
           <p><strong>KETIGA:</strong> Keputusan ini mulai berlaku sejak tanggal ditetapkan;</p>

@@ -23,6 +23,7 @@ use Filament\Support\Enums\ActionSize;
 use Filament\Tables\Actions\ActionGroup;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class UsulanPermohonanCutiResource extends Resource implements HasShieldPermissions
 {
@@ -58,24 +59,33 @@ class UsulanPermohonanCutiResource extends Resource implements HasShieldPermissi
                         ->relationship('pegawai', 'nama')
                         ->searchable()
                         ->required(),
-                    Forms\Components\Select::make('jenis_cuti_id')
-                        ->label('Jenis Cuti')
-                        ->relationship('jenisCuti', 'nama')
-                        ->required(),
                     Forms\Components\DatePicker::make('tanggal_mulai')
                         ->required(),
                     Forms\Components\DatePicker::make('tanggal_selesai')
                         ->required(),
                     Forms\Components\Textarea::make('alasan')
                         ->maxLength(500),
-                    Forms\Components\Select::make('status')
-                        ->options([
-                            'diajukan' => 'Diajukan',
-                            'disetujui' => 'Disetujui',
-                            'ditolak' => 'Ditolak'
-                        ])
-                        ->default('diajukan')
+                    Forms\Components\Select::make('jenis_cuti_id')
+                        ->label('Jenis Cuti')
+                        ->relationship('jenisCuti', 'nama')
                         ->required(),
+                    Forms\Components\FileUpload::make('data_dukungan')
+                        ->preserveFilenames()
+                        ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                            return now()->timestamp . '_' . $file->getClientOriginalName();
+                        })
+                        ->label('Data Dukungan')
+                        ->hint('Data dukungan ini berdasarkan jenis cuti yang anda pilih.')
+                        ->directory('permohonan-pensiun/data_dukungan')
+                        ->preserveFilenames(),
+                    Forms\Components\FileUpload::make('surat_pengantar')
+                        ->preserveFilenames()
+                        ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                            return now()->timestamp . '_' . $file->getClientOriginalName();
+                        })
+                        ->label('Surat Pengantar')
+                        ->directory('permohonan-pensiun/surat-pengantar')
+                        ->preserveFilenames(),
                 ])->columns(2)
         ]);
     }
@@ -107,33 +117,6 @@ class UsulanPermohonanCutiResource extends Resource implements HasShieldPermissi
                 Action::make('Ajukan Cuti')
                     ->icon('heroicon-o-document-plus')
                     ->action(fn (Model $record) => (new AjukanCutiController())->handle($record)),
-                Action::make('wa_notif')
-                    ->label('Kirim Notifikasi')
-                    ->color('success')
-                    ->icon('heroicon-o-paper-airplane')
-                    ->visible(fn () => auth()->user()?->hasPermissionTo('kirim_notif_usulan::permohonan::cuti'))
-                    ->action(function (Model $record) {
-                        $message = "Notifikasi Permohonan Cuti\n" .
-                            "Nama: {$record->pegawai->nama}\n" .
-                            "Jenis Cuti: {$record->jenisCuti->nama}\n" .
-                            "Tanggal: {$record->tanggal_mulai} - {$record->tanggal_selesai}\n" .
-                            "Status: {$record->status}";
-
-                        try {
-                            (new WhatsappNotification())->send($record->pegawai->no_telepon, $message);
-                            Notification::make()
-                                ->success()
-                                ->title('Notifikasi Terkirim')
-                                ->body("Pesan WhatsApp dikirim ke {$record->pegawai->nama}")
-                                ->send();
-                        } catch (\Exception $e) {
-                            Notification::make()
-                                ->danger()
-                                ->title('Gagal Mengirim Notifikasi')
-                                ->body($e->getMessage())
-                                ->send();
-                        }
-                    }),
             ])
             ->bulkActions([
                 ActionGroup::make([
