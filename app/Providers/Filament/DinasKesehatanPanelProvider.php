@@ -27,6 +27,7 @@ class DinasKesehatanPanelProvider extends PanelProvider
             ->default()
             ->id('dinas-kesehatan')
             ->path('dinas-kesehatan')
+            ->databaseNotifications()
             ->login()
             ->registration()
             ->passwordReset()

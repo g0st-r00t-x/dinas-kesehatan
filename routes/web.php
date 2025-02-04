@@ -19,6 +19,10 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+Route::get('/test', function () {
+    return view('test');
+});
+
 Route::get('download/{path}', [FileController::class, 'download'])
     ->name('download.private.file')
     ->middleware('signed'); 

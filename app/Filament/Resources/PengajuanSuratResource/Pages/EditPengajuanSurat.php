@@ -5,8 +5,10 @@ use App\Filament\Resources\PengajuanSuratResource;
 use App\Models\ArsipSurat;
 use App\Models\PengajuanSurat;
 use App\Models\PermohonanCuti;
+use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Actions;
+use Filament\Notifications\Events\DatabaseNotificationsSent;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -22,28 +24,28 @@ class EditPengajuanSurat extends EditRecord
         DB::beginTransaction();
         try {
             // Pastikan id_pemohon ada
-        if (!isset($this->data['id_pemohon'])) {
-            throw new Exception('ID Pemohon tidak ditemukan dalam data.');
-        }
+            if (!isset($this->data['id_pemohon'])) {
+                throw new Exception('ID Pemohon tidak ditemukan dalam data.');
+            }
 
-        // Cek apakah PengajuanSurat ditemukan
-        $pengajuanSurat = PengajuanSurat::where('id_pemohon', $this->data['id_pemohon'])->first();
-        if (!$pengajuanSurat) {
-            throw new Exception('Pengajuan Surat tidak ditemukan.');
-        }
+            // Cek apakah PengajuanSurat ditemukan
+            $pengajuanSurat = PengajuanSurat::where('id_pemohon', $this->data['id_pemohon'])->first();
+            if (!$pengajuanSurat) {
+                throw new Exception('Pengajuan Surat tidak ditemukan.');
+            }
 
-        // Cek apakah PermohonanCuti ditemukan
-        $permohonanCuti = PermohonanCuti::where('id', $pengajuanSurat->id_pemohon)->first();
-        if (!$permohonanCuti) {
-            throw new Exception('Permohonan Cuti tidak ditemukan.');
-        }
+            // Cek apakah PermohonanCuti ditemukan
+            $permohonanCuti = PermohonanCuti::where('id', $pengajuanSurat->id_pemohon)->first();
+            if (!$permohonanCuti) {
+                throw new Exception('Permohonan Cuti tidak ditemukan.');
+            }
 
-        // Cek apakah data pegawai tersedia
-        if (!$permohonanCuti->pegawai) {
-            throw new Exception('Data Pegawai tidak ditemukan.');
-        }
+            // Cek apakah data pegawai tersedia
+            if (!$permohonanCuti->pegawai) {
+                throw new Exception('Data Pegawai tidak ditemukan.');
+            }
 
-        $pegawai = $permohonanCuti->pegawai;
+            $pegawai = $permohonanCuti->pegawai;
 
             // Generate nama file unik
             $filename = "Surat_Cuti_{$pegawai->nama}_" . now()->format('YmdHis') . '.pdf';
@@ -63,6 +65,7 @@ class EditPengajuanSurat extends EditRecord
                 'dpi' => 150,
                 'defaultEncoding' => 'UTF-8',
             ]);
+
             $existingArsip = ArsipSurat::where('id_pengajuan_surat', $this->data['id'])->first();
             if (!$existingArsip) {
                 // Jika belum ada arsip, buat arsip baru
@@ -84,16 +87,37 @@ class EditPengajuanSurat extends EditRecord
                 ]);
             }
 
+            // Kirim notifikasi kepada pegawai yang mengajukan cuti
+            $userPemohon = User::where('id', $permohonanCuti->user_id)->first();
+            if ($userPemohon) {
+                Notification::make()
+                    ->title('Pengajuan Surat Cuti Diproses')
+                    ->body("Surat cuti Anda telah diproses dan diarsipkan.")
+                    ->success()
+                    ->sendToDatabase($userPemohon,  isEventDispatched: true);
+                    event(new DatabaseNotificationsSent($userPemohon));
+            }
+
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
-            Notification::make()->title('Gagal Menyimpan Arsip')->danger()->body($e->getMessage())->send();
+            
+            // Kirim notifikasi error kepada admin/pengguna yang sedang login
+            Notification::make()
+                ->title('Gagal Memproses Surat Cuti')
+                ->body($e->getMessage())
+                ->danger()
+                ->send();
         }
     }
 
     protected function afterSave(): void
     {
-        Notification::make()->title('Usulan Permohonan Cuti Diperbarui')->success()->body('Data usulan permohonan cuti telah diperbarui dan diarsipkan.')->send();
+        Notification::make()
+            ->title('Usulan Permohonan Cuti Diperbarui')
+            ->body('Data usulan permohonan cuti telah diperbarui dan diarsipkan.')
+            ->success()
+            ->send();
     }
 
     protected function getHeaderActions(): array
