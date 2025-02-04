@@ -15,6 +15,8 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
 
 class ArsipSuratResource extends Resource
 {
@@ -40,7 +42,6 @@ class ArsipSuratResource extends Resource
                             ->relationship('pengajuanSurat', 'nomor_sk')
                             ->label('Nomor Surat')
                             ->required()
-                            ->searchable()
                             ->preload(),
 
                         Forms\Components\FileUpload::make('file_surat_path')
@@ -79,7 +80,26 @@ class ArsipSuratResource extends Resource
                     ->label('Tanggal Arsip')
                     ->dateTime()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('file_surat_path')
+    ->label('File Surat')
+    ->formatStateUsing(fn ($state) => $state ? 'Lihat File' : '-')
+    ->url(function ($record) {
+        if (!$record->file_surat_path) {
+            return null;
+        }
 
+        // Jika sudah berupa URL lengkap
+        if (str_starts_with($record->file_surat_path, 'http')) {
+            return $record->file_surat_path;
+        }
+
+        return URL::temporarySignedRoute(
+            'download.private.file',
+            now()->addMinutes(5),
+            ['path' => base64_encode($record->file_surat_path)] // Encode path file
+        );
+    })
+                ->openUrlInNewTab(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Dibuat')
                     ->dateTime()

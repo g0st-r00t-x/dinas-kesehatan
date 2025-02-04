@@ -21,28 +21,37 @@ class EditPengajuanSurat extends EditRecord
     {
         DB::beginTransaction();
         try {
-            $pengajuanSurat = PengajuanSurat::find($this->data['id']);
-       
-            // Periksa relasi
-            $permohonanCuti = PermohonanCuti::where('id', $pengajuanSurat->id)->first();
-            if (!$permohonanCuti) {
-                throw new Exception('Permohonan Cuti tidak ditemukan');
-            }
-           
-            // Periksa relasi pegawai
-            if (!$permohonanCuti->pegawai) {
-                throw new Exception('Data Pegawai tidak ditemukan');
-            }
-           
-            $pegawai = $permohonanCuti->pegawai;
+            // Pastikan id_pemohon ada
+        if (!isset($this->data['id_pemohon'])) {
+            throw new Exception('ID Pemohon tidak ditemukan dalam data.');
+        }
+
+        // Cek apakah PengajuanSurat ditemukan
+        $pengajuanSurat = PengajuanSurat::where('id_pemohon', $this->data['id_pemohon'])->first();
+        if (!$pengajuanSurat) {
+            throw new Exception('Pengajuan Surat tidak ditemukan.');
+        }
+
+        // Cek apakah PermohonanCuti ditemukan
+        $permohonanCuti = PermohonanCuti::where('id', $pengajuanSurat->id_pemohon)->first();
+        if (!$permohonanCuti) {
+            throw new Exception('Permohonan Cuti tidak ditemukan.');
+        }
+
+        // Cek apakah data pegawai tersedia
+        if (!$permohonanCuti->pegawai) {
+            throw new Exception('Data Pegawai tidak ditemukan.');
+        }
+
+        $pegawai = $permohonanCuti->pegawai;
 
             // Generate nama file unik
-            $filename = "Surat_Cuti_{$pegawai->nama}_" . now()->format('YmdHis') . ".pdf";
+            $filename = "Surat_Cuti_{$pegawai->nama}_" . now()->format('YmdHis') . '.pdf';
             $filePath = "arsip_surat/{$filename}";
 
             // Generate PDF
             $pdf = Pdf::loadView('pdf', ['record' => $pegawai]);
-            
+
             $pdf->setPaper('a4', 'portrait');
             $pdf->setOptions([
                 'isHtml5ParserEnabled' => true,
@@ -54,42 +63,41 @@ class EditPengajuanSurat extends EditRecord
                 'dpi' => 150,
                 'defaultEncoding' => 'UTF-8',
             ]);
+            $existingArsip = ArsipSurat::where('id_pengajuan_surat', $this->data['id'])->first();
+            if (!$existingArsip) {
+                // Jika belum ada arsip, buat arsip baru
+                Storage::disk('local')->put($filePath, $pdf->output());
 
-            // Simpan PDF ke storage
-            Storage::disk('local')->put($filePath, $pdf->output());
+                ArsipSurat::create([
+                    'id_pengajuan_surat' => $this->data['id'],
+                    'file_surat_path' => $filePath,
+                    'tgl_arsip' => now(),
+                ]);
+            } else {
+                // Jika arsip sudah ada, update file lama dengan yang baru
+                Storage::disk('local')->delete($existingArsip->file_surat_path); // Hapus file lama
+                Storage::disk('local')->put($filePath, $pdf->output()); // Simpan file baru
 
-            // Buat arsip surat
-            ArsipSurat::create([
-                'id_pengajuan_surat' => $this->data['id'],
-                'file_surat_path' => $filePath,
-                'tgl_arsip' => now(),
-            ]);
+                $existingArsip->update([
+                    'file_surat_path' => $filePath,
+                    'tgl_arsip' => now(),
+                ]);
+            }
 
             DB::commit();
-            
         } catch (Exception $e) {
             DB::rollBack();
-            Notification::make()
-                ->title('Gagal Menyimpan Arsip')
-                ->danger()
-                ->body($e->getMessage())
-                ->send();
+            Notification::make()->title('Gagal Menyimpan Arsip')->danger()->body($e->getMessage())->send();
         }
     }
 
     protected function afterSave(): void
     {
-        Notification::make()
-            ->title('Usulan Permohonan Cuti Diperbarui')
-            ->success()
-            ->body('Data usulan permohonan cuti telah diperbarui dan diarsipkan.')
-            ->send();
+        Notification::make()->title('Usulan Permohonan Cuti Diperbarui')->success()->body('Data usulan permohonan cuti telah diperbarui dan diarsipkan.')->send();
     }
 
     protected function getHeaderActions(): array
     {
-        return [
-            Actions\DeleteAction::make(),
-        ];
+        return [Actions\DeleteAction::make()];
     }
 }

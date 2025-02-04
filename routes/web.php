@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DownloadPdfController;
+use App\Http\Controllers\FileController;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 
@@ -18,4 +19,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+Route::get('download/{path}', [FileController::class, 'download'])
+    ->name('download.private.file')
+    ->middleware('signed'); 
 Route::get('pdf/{ajj}', DownloadPdfController::class)->name('pdf');

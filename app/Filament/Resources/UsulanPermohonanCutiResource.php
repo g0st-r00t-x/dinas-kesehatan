@@ -69,7 +69,7 @@ class UsulanPermohonanCutiResource extends Resource implements HasShieldPermissi
                         ->label('Jenis Cuti')
                         ->relationship('jenisCuti', 'nama')
                         ->required(),
-                    Forms\Components\FileUpload::make('data_dukungan')
+                    Forms\Components\FileUpload::make('data_dukung')
                         ->preserveFilenames()
                         ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
                             return now()->timestamp . '_' . $file->getClientOriginalName();

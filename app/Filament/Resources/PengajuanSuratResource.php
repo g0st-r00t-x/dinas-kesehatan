@@ -6,6 +6,10 @@ use App\Filament\Resources\PengajuanSuratResource\Pages;
 use App\Filament\Resources\PengajuanSuratResource\RelationManagers;
 use App\Models\PengajuanSurat;
 use Filament\Forms;
+use Filament\Forms\Components\Actions\Action;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -29,12 +33,34 @@ class PengajuanSuratResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('nomor_sk')
+                TextInput::make('nomor_sk')
                     ->label('Nomor SK')
                     ->required()
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->suffixAction(
+                        Action::make('generateSk')
+                            ->label('Generate SK')
+                            ->icon('heroicon-o-arrow-path')
+                            ->action(function (Forms\Set $set) {
+                                // Ambil nomor SK terakhir dari database
+                                $lastSk = PengajuanSurat::orderBy('nomor_sk', 'desc')->first();
+                                
+                                // Ekstrak nomor urut dari nomor SK terakhir
+                                if ($lastSk && preg_match('/800\/(\d{2,})\/DINKES\/\d{4}/', $lastSk->nomor_sk, $matches)) {
+                                    $newSkNumber = intval($matches[1]) + 1; // Tingkatkan nomor SK
+                                } else {
+                                    $newSkNumber = 1; // Mulai dari 01 jika tidak ada data
+                                }
+
+                                // Format nomor SK baru (misal: 800/01/DINKES/2024)
+                                $formattedSk = sprintf("800/%02d/DINKES/%s", $newSkNumber, date('Y'));
+
+                                // Set field nomor_sk dengan nomor baru
+                                $set('nomor_sk', $formattedSk);
+                            })
+                        ),
                 
-                Forms\Components\Select::make('jenis_surat')
+                Select::make('jenis_surat')
                     ->label('Jenis Surat')
                     ->options([
                         'Surat Masuk' => 'Surat Masuk',
@@ -42,12 +68,12 @@ class PengajuanSuratResource extends Resource
                     ])
                     ->required(),
                 
-                Forms\Components\TextInput::make('perihal')
+                TextInput::make('perihal')
                     ->label('Perihal')
                     ->required()
                     ->maxLength(255),
                 
-                Forms\Components\Select::make('status_pengajuan')
+                Select::make('status_pengajuan')
                     ->label('Status Pengajuan')
                     ->options([
                         'Diajukan' => 'Diajukan',
@@ -56,11 +82,11 @@ class PengajuanSuratResource extends Resource
                     ])
                     ->required(),
                 
-                Forms\Components\DateTimePicker::make('tgl_pengajuan')
+                DateTimePicker::make('tgl_pengajuan')
                     ->label('Tanggal Pengajuan')
                     ->required(),
                 
-                Forms\Components\DateTimePicker::make('tgl_diterima')
+                DateTimePicker::make('tgl_diterima')
                     ->label('Tanggal Diterima')
                     ->nullable(),
             ]);
