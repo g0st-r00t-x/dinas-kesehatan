@@ -26,6 +26,12 @@ class InventarisAJJPolicy
         return $user->can('view_pengajuan::a::j::j');
     }
 
+
+    public function viewOwn(User $user, InventarisAJJ $inventarisAJJ): bool
+    {
+        return $user->can('view_own_pengajuan::a::j::j');
+    }
+
     /**
      * Determine whether the user can create models.
      */

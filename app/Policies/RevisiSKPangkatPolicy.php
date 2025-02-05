@@ -26,6 +26,11 @@ class RevisiSKPangkatPolicy
         return $user->can('view_revisiskpangkat');
     }
 
+    public function viewOwn(User $user, UsulanRevisiSkPangkat $revisiSKPangkat): bool
+    {
+        return $user->can('view_own_revisiskpangkat');
+    }
+
     /**
      * Determine whether the user can create models.
      */

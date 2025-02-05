@@ -26,6 +26,11 @@ class UsulanRevisiSkPangkatPolicy
         return $user->can('view_usulan::revisi::sk::pangkat');
     }
 
+    public function viewOwn(User $user, UsulanRevisiSkPangkat $usulanRevisiSkPangkat): bool
+    {
+        return $user->can('view_own_usulan::revisi::sk::pangkat');
+    }
+
     /**
      * Determine whether the user can create models.
      */

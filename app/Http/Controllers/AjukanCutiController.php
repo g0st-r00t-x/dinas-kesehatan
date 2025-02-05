@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Pegawai;
 use App\Models\PengajuanSurat;
 use App\Models\PermohonanCuti;
+use Filament\Notifications\Events\DatabaseNotificationsSent;
 use Filament\Notifications\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Exception;
+
 
 class AjukanCutiController extends Controller
 {
@@ -24,21 +27,27 @@ class AjukanCutiController extends Controller
 
             // Buat pengajuan surat
             $pengajuanSurat = PengajuanSurat::create([
-                'id_pemohon' => $record->id, // Gunakan id yang sudah ada
+                'id_pemohon' => $record->id,
                 'jenis_surat' => 'Surat Masuk',
                 'perihal' => 'Permohonan Cuti ' . $pegawai->nama,
                 'status_pengajuan' => 'Diajukan',
                 'tgl_pengajuan' => now(),
             ]);
 
+            // Kirim notifikasi ke operator yang memiliki permission view_any_pengajuan::surat
+            $operators = User::permission('view_any_pengajuan::surat')->get();
+            
+            foreach ($operators as $operator) {
+                Notification::make()
+                    ->title('Pengajuan Cuti Baru')
+                    ->body("Terdapat pengajuan cuti baru dari {$pegawai->nama} yang memerlukan persetujuan")
+                    ->success()
+                    ->sendToDatabase($operator, isEventDispatched: true);
+                event(new DatabaseNotificationsSent($operator));
+            }
+
             DB::commit();
 
-            // Notifikasi sukses
-            Notification::make()
-                ->title('Pengajuan Cuti Berhasil')
-                ->success()
-                ->body("Pengajuan cuti untuk {$pegawai->nama} telah berhasil diajukan.")
-                ->send();
         } catch (Exception $e) {
             DB::rollBack();
 

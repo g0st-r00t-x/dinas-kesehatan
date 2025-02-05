@@ -26,6 +26,11 @@ class UsulanPermohonanCutiPolicy
         return $user->can('view_usulan::permohonan::cuti');
     }
 
+    public function viewOwn(User $user, UsulanPermohonanCuti $usulanPermohonanCuti): bool
+    {
+        return $user->can('view_own_usulan::permohonan::cuti');
+    }
+
     /**
      * Determine whether the user can create models.
      */

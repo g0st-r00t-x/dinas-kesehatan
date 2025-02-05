@@ -26,6 +26,11 @@ class DataSerkomPolicy
         return $user->can('view_data::serkom');
     }
 
+    public function viewOwn(User $user, DataSerkom $dataSerkom): bool
+    {
+        return $user->can('view_own_data::serkom');
+    }
+
     /**
      * Determine whether the user can create models.
      */

@@ -26,6 +26,10 @@ class RekapAbsensiNonASNPolicy
         return $user->can('view_rekap::absensi::non::a::s::n');
     }
 
+    public function viewOwn(User $user, RekapAbsensiNonASN $rekapAbsensiNonASN): bool
+    {
+        return $user->can('view_own_rekap::absensi::non::a::s::n');
+    }
     /**
      * Determine whether the user can create models.
      */
