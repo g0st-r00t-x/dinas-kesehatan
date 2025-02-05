@@ -26,6 +26,21 @@ use Filament\Tables\Columns\TextColumn;
 class PegawaiResource extends Resource
 {
     protected static ?string $model = Pegawai::class;
+
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'view',
+            'view_any',
+            'view_own',
+            'create',
+            'update',
+            'delete',
+            'delete_any',
+            'kirim_notif'
+        ];
+    }
+
     protected static ?string $navigationIcon = 'heroicon-o-user';
     protected static ?string $navigationGroup = 'Kepegawaian';
     protected static ?string $label = 'Pegawai';

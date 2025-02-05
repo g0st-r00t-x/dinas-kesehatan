@@ -21,6 +21,20 @@ class PengajuanSuratResource extends Resource
 {
     protected static ?string $model = PengajuanSurat::class;
 
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'view',
+            'view_own',
+            'view_any',
+            'create',
+            'update',
+            'delete',
+            'delete_any',
+            'kirim_notif'
+        ];
+    }
+
     protected static ?string $navigationIcon = 'heroicon-o-envelope';
     protected static ?string $navigationGroup = 'Manajemen Data';
     protected static ?string $navigationLabel = 'Pengajuan Surat';

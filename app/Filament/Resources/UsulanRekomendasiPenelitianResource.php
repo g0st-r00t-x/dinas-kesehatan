@@ -23,6 +23,22 @@ class UsulanRekomendasiPenelitianResource extends Resource
 {
     protected static ?string $model = UsulanRekomendasiPenelitian::class;
 
+
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'view',
+            'view_own',
+            'view_any',
+            'create',
+            'update',
+            'delete',
+            'delete_any',
+            'kirim_notif'
+        ];
+    }
+
+
     protected static ?string $navigationIcon = 'heroicon-o-document-magnifying-glass';
 
     protected static ?string $navigationGroup = 'Usulan';

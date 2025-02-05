@@ -26,11 +26,6 @@ class UsulanRekomendasiPenelitianPolicy
         return $user->can('view_usulan::rekomendasi::penelitian');
     }
 
-    public function viewOwn(User $user, UsulanRekomendasiPenelitian $usulanRekomendasiPenelitian): bool
-    {
-        return $user->can('view_own_usulan::rekomendasi::penelitian');
-    }
-
     /**
      * Determine whether the user can create models.
      */

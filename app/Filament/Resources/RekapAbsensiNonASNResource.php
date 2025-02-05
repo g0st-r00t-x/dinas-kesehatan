@@ -17,6 +17,20 @@ class RekapAbsensiNonASNResource extends Resource
 {
     protected static ?string $model = RekapAbsensiNonASN::class;
 
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'view',
+            'view_own',
+            'view_any',
+            'create',
+            'update',
+            'delete',
+            'delete_any',
+            'kirim_notif'
+        ];
+    }
+
     protected static ?string $navigationIcon = 'heroicon-o-document-chart-bar';
 
     protected static ?string $navigationGroup = 'Manajemen Data';

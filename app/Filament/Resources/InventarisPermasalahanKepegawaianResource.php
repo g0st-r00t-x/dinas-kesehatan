@@ -25,11 +25,11 @@ class InventarisPermasalahanKepegawaianResource extends Resource implements HasS
         return [
             'view',
             'view_any',
+            'view_own',
             'create',
             'update',
             'delete',
             'delete_any',
-            'kirim_notif'
         ];
     }
     protected static ?string $model = \App\Models\InventarisirPermasalahanKepegawaian::class;

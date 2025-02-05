@@ -29,7 +29,7 @@ class AjukanCutiController extends Controller
             $pengajuanSurat = PengajuanSurat::create([
                 'id_pemohon' => $record->id,
                 'jenis_surat' => 'Surat Masuk',
-                'perihal' => 'Permohonan Cuti ' . $pegawai->nama,
+                'perihal' => 'Permohonan Cuti ',
                 'status_pengajuan' => 'Diajukan',
                 'tgl_pengajuan' => now(),
             ]);

@@ -23,6 +23,21 @@ class UsulanSKBerkalaResource extends Resource
 {
     protected static ?string $model = UsulanSKBerkala::class;
 
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'view',
+            'view_own',
+            'view_any',
+            'create',
+            'update',
+            'delete',
+            'delete_any',
+            'kirim_notif'
+        ];
+    }
+
+
     protected static ?string $navigationIcon = 'heroicon-o-queue-list';
 
     protected static ?string $navigationGroup = 'Usulan';

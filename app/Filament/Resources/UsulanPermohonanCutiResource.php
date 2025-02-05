@@ -16,6 +16,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Tables\Actions\Action;
+use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use Filament\Notifications\Notification;
@@ -28,6 +29,8 @@ use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 class UsulanPermohonanCutiResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = PermohonanCuti::class;
+
+
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
     protected static ?string $navigationGroup = 'Kepegawaian';
     protected static ?string $label = 'Permohonan Cuti';
@@ -38,6 +41,7 @@ class UsulanPermohonanCutiResource extends Resource implements HasShieldPermissi
     {
         return [
             'view',
+            'view_own',
             'view_any',
             'create',
             'update',
@@ -45,6 +49,20 @@ class UsulanPermohonanCutiResource extends Resource implements HasShieldPermissi
             'delete_any',
             'kirim_notif'
         ];
+    }
+
+    //ANCHOR - This is used for filter data when data is showing in the resource
+    public static function getEloquentQuery(): Builder
+    {
+        $user = Auth::user();
+        $query = parent::getEloquentQuery();
+        //!SECTION And this is used to lets the user view only their own data when has permission to Viow Own
+        if ($user?->hasPermissionTo('view_own_usulan::permohonan::cuti')) {
+            return $query
+                ->where('user_id', $user->id);
+        }
+        //! But when user has permission to view_any, it will show all data
+        return parent::getEloquentQuery();
     }
 
     public static function form(Form $form): Form
@@ -99,6 +117,15 @@ class UsulanPermohonanCutiResource extends Resource implements HasShieldPermissi
                     ->searchable(),
                 Tables\Columns\TextColumn::make('jenisCuti.nama')
                     ->label('Jenis Cuti'),
+                Tables\Columns\TextColumn::make('pengajuanSurat.status_pengajuan')
+                    ->badge()
+                    ->color(fn(string $state): string => match ($state) {
+                        'Diajukan' => 'warning',
+                        'Ditolak' => 'danger',
+                        'Diterima' => 'success',
+                        default => 'gray',
+                    })
+                    ->label("Status Pengajuan"),
                 Tables\Columns\TextColumn::make('tanggal_mulai')
                     ->date(),
                 Tables\Columns\TextColumn::make('tanggal_selesai')
@@ -116,7 +143,7 @@ class UsulanPermohonanCutiResource extends Resource implements HasShieldPermissi
             ->actions([
                 Action::make('Ajukan Cuti')
                     ->icon('heroicon-o-document-plus')
-                    ->action(fn (Model $record) => (new AjukanCutiController())->handle($record)),
+                    ->action(fn(Model $record) => (new AjukanCutiController())->handle($record)),
             ])
             ->bulkActions([
                 ActionGroup::make([
@@ -128,7 +155,7 @@ class UsulanPermohonanCutiResource extends Resource implements HasShieldPermissi
                         ->label('Kirim Notifikasi Massal')
                         ->icon('heroicon-o-paper-airplane')
                         ->color('success')
-                        ->visible(fn () => auth()->user()?->hasPermissionTo('kirim_notif_usulan::permohonan::cuti'))
+                        ->visible(fn() => auth()->user()?->hasPermissionTo('kirim_notif_usulan::permohonan::cuti'))
                         ->action(function ($records) {
                             foreach ($records as $record) {
                                 $message = "Notifikasi Permohonan Cuti\n" .

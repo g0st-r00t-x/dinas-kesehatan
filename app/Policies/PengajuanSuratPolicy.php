@@ -26,11 +26,6 @@ class PengajuanSuratPolicy
         return $user->can('view_pengajuan::surat');
     }
 
-    public function viewOwn(User $user, PengajuanSurat $pengajuanSurat): bool
-    {
-        return $user->can('view_own_pengajuan::surat');
-    }
-
     /**
      * Determine whether the user can create models.
      */

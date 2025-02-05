@@ -26,11 +26,6 @@ class PegawaiPolicy
         return $user->can('view_pegawai');
     }
 
-    public function viewOwn(User $user, Pegawai $pegawai): bool
-    {
-        return $user->can('view_own_pegawai');
-    }
-
     /**
      * Determine whether the user can create models.
      */

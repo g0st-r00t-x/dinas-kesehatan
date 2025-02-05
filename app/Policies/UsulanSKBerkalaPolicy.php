@@ -26,11 +26,6 @@ class UsulanSKBerkalaPolicy
         return $user->can('view_usulan::s::k::berkala');
     }
 
-    public function viewOwn(User $user, UsulanSKBerkala $usulanSKBerkala): bool
-    {
-        return $user->can('view_own_usulan::s::k::berkala');
-    }
-
     /**
      * Determine whether the user can create models.
      */

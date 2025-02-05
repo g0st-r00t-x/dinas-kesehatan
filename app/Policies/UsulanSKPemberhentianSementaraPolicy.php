@@ -26,11 +26,6 @@ class UsulanSKPemberhentianSementaraPolicy
         return $user->can('view_usulan::s::k::pemberhentian::sementara');
     }
 
-    public function viewOwn(User $user, UsulanSKPemberhentianSementara $usulanSKPemberhentianSementara): bool
-    {
-        return $user->can('view_own_usulan::s::k::pemberhentian::sementara');
-    }
-
     /**
      * Determine whether the user can create models.
      */

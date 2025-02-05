@@ -26,11 +26,6 @@ class RekapAbsenASNPolicy
         return $user->can('view_rekap::absen::a::s::n');
     }
 
-    public function viewOwn(User $user, RekapAbsenASN $rekapAbsenASN): bool
-    {
-        return $user->can('view_own_rekap::absen::a::s::n');
-    }
-
     /**
      * Determine whether the user can create models.
      */

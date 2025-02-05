@@ -69,7 +69,7 @@ class EditPengajuanSurat extends EditRecord
             $existingArsip = ArsipSurat::where('id_pengajuan_surat', $this->data['id'])->first();
             if (!$existingArsip) {
                 // Jika belum ada arsip, buat arsip baru
-                Storage::disk('local')->put($filePath, $pdf->output());
+                Storage::disk('public')->put($filePath, $pdf->output());
 
                 ArsipSurat::create([
                     'id_pengajuan_surat' => $this->data['id'],
@@ -78,8 +78,8 @@ class EditPengajuanSurat extends EditRecord
                 ]);
             } else {
                 // Jika arsip sudah ada, update file lama dengan yang baru
-                Storage::disk('local')->delete($existingArsip->file_surat_path); // Hapus file lama
-                Storage::disk('local')->put($filePath, $pdf->output()); // Simpan file baru
+                Storage::disk('public')->delete($existingArsip->file_surat_path); // Hapus file lama
+                Storage::disk('public')->put($filePath, $pdf->output()); // Simpan file baru
 
                 $existingArsip->update([
                     'file_surat_path' => $filePath,
@@ -90,12 +90,22 @@ class EditPengajuanSurat extends EditRecord
             // Kirim notifikasi kepada pegawai yang mengajukan cuti
             $userPemohon = User::where('id', $permohonanCuti->user_id)->first();
             if ($userPemohon) {
-                Notification::make()
-                    ->title('Pengajuan Surat Cuti Diproses')
-                    ->body("Surat cuti Anda telah diproses dan diarsipkan.")
+                if($this->data['status_pengajuan'] == "Ditolak"){
+                    Notification::make()
+                        ->title('Pengajuan Surat Cuti Ditolak')
+                        ->body("Surat cuti Anda ditolak, mohon untuk periksa kembali pengajuan anda.")
+                        ->danger()
+                        ->sendToDatabase($userPemohon,  isEventDispatched: true);
+                        event(new DatabaseNotificationsSent($userPemohon));
+                }
+                elseif($this->data['status_pengajuan'] == "Diterima"){
+                    Notification::make()
+                    ->title('Pengajuan Surat Cuti Diterima')
+                    ->body("Surat cuti Anda telah diproses, sekarang anda dapat mendownloadnya.")
                     ->success()
                     ->sendToDatabase($userPemohon,  isEventDispatched: true);
                     event(new DatabaseNotificationsSent($userPemohon));
+                }
             }
 
             DB::commit();

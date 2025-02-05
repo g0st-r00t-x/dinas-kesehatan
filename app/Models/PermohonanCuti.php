@@ -26,7 +26,7 @@ class PermohonanCuti extends Model
     }
 
     public function pengajuanSurat(){
-        return $this->hasOne(PengajuanSurat::class);
+        return $this->hasOne(PengajuanSurat::class,'id_pemohon', 'id');
     }
 
     public function jenisCuti()

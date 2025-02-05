@@ -23,6 +23,21 @@ class UsulanRevisiSkPangkatResource extends Resource
 {
     protected static ?string $model = UsulanRevisiSkPangkat::class;
 
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'view',
+            'view_own',
+            'view_any',
+            'create',
+            'update',
+            'delete',
+            'delete_any',
+            'kirim_notif'
+        ];
+    }
+
+
     protected static ?string $navigationIcon = 'heroicon-o-pencil';
 
     protected static ?string $navigationLabel = 'Revisi SK Pangkat';

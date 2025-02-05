@@ -17,6 +17,21 @@ class DataSerkomResource extends Resource
 {
     protected static ?string $model = DataSerkom::class;
 
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'view',
+            'view_any',
+            'view_own',
+            'download_file',
+            'create',
+            'update',
+            'delete',
+            'delete_any',
+            'kirim_notif'
+        ];
+    }
+
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     protected static ?string $navigationGroup = 'Manajemen Data';

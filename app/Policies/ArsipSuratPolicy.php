@@ -26,11 +26,6 @@ class ArsipSuratPolicy
         return $user->can('view_arsip::surat');
     }
 
-    public function viewOwn(User $user, ArsipSurat $arsipSurat): bool
-    {
-        return $user->can('view_own_arsip::surat');
-    }
-
     /**
      * Determine whether the user can create models.
      */
