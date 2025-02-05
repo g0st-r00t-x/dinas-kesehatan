@@ -1,66 +1,98 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Laravel Project Documentation
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## 📌 Project Description
+Project ini adalah aplikasi berbasis Laravel yang mendukung notifikasi WhatsApp, pengelolaan izin pengguna dengan Filament, serta fitur real-time messaging menggunakan Broadcasting dan Reverb.
 
-## About Laravel
+## 🛠️ Tools & Dependencies
+Berikut adalah alat dan pustaka yang digunakan dalam proyek ini:
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **[Laravel](https://laravel.com/)** - Framework utama.
+- **[Filament](https://filamentphp.com/)** - Panel admin untuk Laravel.
+- **[Filament Shield](https://github.com/bezhanSalleh/filament-shield)** - Manajemen izin berbasis Filament.
+- **[Dompdf](https://github.com/dompdf/dompdf)** - Untuk menghasilkan file PDF.
+- **[Fonte](https://github.com/fonte/fonte)** - Untuk mengirim notifikasi WhatsApp.
+- **[Laravel Broadcasting](https://laravel.com/docs/broadcasting)** - Untuk komunikasi real-time.
+- **[Laravel Reverb](https://laravel.com/docs/10.x/broadcasting#driver-reverb)** - WebSocket berbasis Laravel.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## ⚙️ Installation Guide
+Ikuti langkah-langkah berikut untuk menginstal dan menjalankan proyek ini.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 1️⃣ Clone Repository
+```sh
+git clone https://github.com/username/repository.git
+cd repository
+```
 
-## Learning Laravel
+### 2️⃣ Install Dependencies
+```sh
+composer install
+npm install
+```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### 3️⃣ Setup Environment
+Salin file `.env.example` menjadi `.env` dan konfigurasi database serta alat yang digunakan.
+```sh
+cp .env.example .env
+```
+Lalu, buat kunci aplikasi:
+```sh
+php artisan key:generate
+```
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### 4️⃣ Konfigurasi Database
+Pastikan `.env` telah diatur dengan informasi database yang benar, lalu jalankan:
+```sh
+php artisan migrate --seed
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 5️⃣ Instalasi & Konfigurasi Filament
+```sh
+php artisan filament:install
+php artisan shield:generate
+```
 
-## Laravel Sponsors
+### 6️⃣ Instalasi Fonte (WhatsApp Notification)
+```sh
+composer require fonte/fonte
+```
+Tambahkan konfigurasi API WhatsApp di `.env`:
+```
+FONTE_API_KEY=your_api_key_here
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### 7️⃣ Instalasi dan Konfigurasi Broadcasting & Reverb
+```sh
+composer require laravel/reverb
+```
+Aktifkan broadcasting di `.env`:
+```
+BROADCAST_DRIVER=reverb
+```
+Jalankan WebSocket server:
+```sh
+php artisan reverb:start
+```
 
-### Premium Partners
+### 8️⃣ Jalankan Aplikasi
+```sh
+php artisan serve
+npm run dev
+```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+## 🚀 Usage Guide
+- **Admin Panel**: Akses melalui `/admin` dengan login yang dibuat saat seeding.
+- **Notifikasi WA**: Digunakan untuk mengirim notifikasi ke pengguna.
+- **Real-time Messaging**: Digunakan untuk pengiriman pesan secara langsung.
+- **PDF Generation**: Dompdf digunakan untuk men-generate laporan atau dokumen.
 
-## Contributing
+## 🤝 Contribution Guide
+Jika ingin berkontribusi:
+1. Fork repository ini.
+2. Buat branch baru (`git checkout -b feature-branch`).
+3. Commit perubahan (`git commit -m 'Menambahkan fitur baru'`).
+4. Push ke repository (`git push origin feature-branch`).
+5. Buat Pull Request (PR).
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## 📝 License
+Project ini menggunakan lisensi MIT. Silakan digunakan dan dikembangkan lebih lanjut!
 
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
