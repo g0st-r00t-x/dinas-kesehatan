@@ -61,48 +61,4 @@ class PegawaiPolicy
     /**
      * Determine whether the user can permanently delete.
      */
-    public function forceDelete(User $user, Pegawai $pegawai): bool
-    {
-        return $user->can('{{ ForceDelete }}');
-    }
-
-    /**
-     * Determine whether the user can permanently bulk delete.
-     */
-    public function forceDeleteAny(User $user): bool
-    {
-        return $user->can('{{ ForceDeleteAny }}');
-    }
-
-    /**
-     * Determine whether the user can restore.
-     */
-    public function restore(User $user, Pegawai $pegawai): bool
-    {
-        return $user->can('{{ Restore }}');
-    }
-
-    /**
-     * Determine whether the user can bulk restore.
-     */
-    public function restoreAny(User $user): bool
-    {
-        return $user->can('{{ RestoreAny }}');
-    }
-
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, Pegawai $pegawai): bool
-    {
-        return $user->can('replicate_pegawai');
-    }
-
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_pegawai');
-    }
 }

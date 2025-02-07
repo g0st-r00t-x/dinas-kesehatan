@@ -31,7 +31,6 @@ class PengajuanSuratResource extends Resource
             'update',
             'delete',
             'delete_any',
-            'kirim_notif'
         ];
     }
 

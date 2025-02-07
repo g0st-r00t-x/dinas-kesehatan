@@ -25,6 +25,10 @@ class UsulanSKPemberhentianSementaraPolicy
     {
         return $user->can('view_usulan::s::k::pemberhentian::sementara');
     }
+    public function viewOwn(User $user, UsulanSKPemberhentianSementara $usulanSKPemberhentianSementara): bool
+    {
+        return $user->can('view_own_usulan::s::k::pemberhentian::sementara');
+    }
 
     /**
      * Determine whether the user can create models.
@@ -40,6 +44,13 @@ class UsulanSKPemberhentianSementaraPolicy
     public function update(User $user, UsulanSKPemberhentianSementara $usulanSKPemberhentianSementara): bool
     {
         return $user->can('update_usulan::s::k::pemberhentian::sementara');
+    }
+    /**
+     * Determine whether the user can update the model.
+     */
+    public function downloadFile(User $user, UsulanSKPemberhentianSementara $usulanSKPemberhentianSementara): bool
+    {
+        return $user->can('download_file_usulan::s::k::pemberhentian::sementara');
     }
 
     /**
@@ -61,48 +72,4 @@ class UsulanSKPemberhentianSementaraPolicy
     /**
      * Determine whether the user can permanently delete.
      */
-    public function forceDelete(User $user, UsulanSKPemberhentianSementara $usulanSKPemberhentianSementara): bool
-    {
-        return $user->can('{{ ForceDelete }}');
-    }
-
-    /**
-     * Determine whether the user can permanently bulk delete.
-     */
-    public function forceDeleteAny(User $user): bool
-    {
-        return $user->can('{{ ForceDeleteAny }}');
-    }
-
-    /**
-     * Determine whether the user can restore.
-     */
-    public function restore(User $user, UsulanSKPemberhentianSementara $usulanSKPemberhentianSementara): bool
-    {
-        return $user->can('{{ Restore }}');
-    }
-
-    /**
-     * Determine whether the user can bulk restore.
-     */
-    public function restoreAny(User $user): bool
-    {
-        return $user->can('{{ RestoreAny }}');
-    }
-
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, UsulanSKPemberhentianSementara $usulanSKPemberhentianSementara): bool
-    {
-        return $user->can('replicate_usulan::s::k::pemberhentian::sementara');
-    }
-
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_usulan::s::k::pemberhentian::sementara');
-    }
 }

@@ -9,6 +9,7 @@ return new class extends Migration {
     {
         Schema::create('pengajuan_surat', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('id_pengajuan')->nullable();
             $table->string('nomor_sk')->nullable();
             $table->enum('jenis_surat', ['Surat Masuk', 'Surat Keluar'])->default('Surat Masuk');
             $table->string('perihal')->nullable();
@@ -17,9 +18,14 @@ return new class extends Migration {
             $table->timestamp('tgl_diterima')->nullable();
             $table->timestamps();
 
+            $table->foreign('id_pengajuan')->references('id')->on('permohonan_cuti')->onDelete('cascade');
             $table
                 ->foreignId('id_pemohon')
-                ->constrained('permohonan_cuti')
+                ->constrained('users')
+                ->onDelete('cascade');
+            $table
+                ->foreignId('id_diajukan')
+                ->constrained('pegawai')
                 ->onDelete('cascade');
         });
     }

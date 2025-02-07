@@ -22,15 +22,7 @@ class InventarisPermasalahanKepegawaianResource extends Resource implements HasS
 
     public static function getPermissionPrefixes(): array
     {
-        return [
-            'view',
-            'view_any',
-            'view_own',
-            'create',
-            'update',
-            'delete',
-            'delete_any',
-        ];
+        return ['view', 'view_any', 'view_own', 'download_file', 'create', 'update', 'delete', 'delete_any', 'kirim_notif'];
     }
     protected static ?string $model = \App\Models\InventarisirPermasalahanKepegawaian::class;
 
@@ -80,17 +72,15 @@ class InventarisPermasalahanKepegawaianResource extends Resource implements HasS
             ]);
     }
 
-
-
-
-    
-
     public static function table(Tables\Table $table): Tables\Table
     {
         return $table
             ->headerActions([
                 Tables\Actions\ImportAction::make()
-                    ->importer(PermasalahanKepegawaianImporter::class),
+                    ->importer(PermasalahanKepegawaianImporter::class)
+                    ->options([
+                        'updateExisting' => false, // default value
+                    ]),
                 Tables\Actions\ExportAction::make()
                     ->exporter(PermasalahanKepegawaianExporter::class),
             ])

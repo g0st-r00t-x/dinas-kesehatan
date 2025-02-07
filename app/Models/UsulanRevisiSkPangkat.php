@@ -33,9 +33,14 @@ class UsulanRevisiSkPangkat extends Model
     {
         return $this->belongsTo(Pegawai::class, 'pegawai_nip', 'nip');
     }
+
+    public function pengajuanSurat()
+    {
+        return $this->hasOne(PengajuanSurat::class, 'id_pengajuan');
+    }
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
     protected static function boot()
     {

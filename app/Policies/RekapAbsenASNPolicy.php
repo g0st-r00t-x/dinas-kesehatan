@@ -95,7 +95,7 @@ class RekapAbsenASNPolicy
      */
     public function replicate(User $user, RekapAbsenASN $rekapAbsenASN): bool
     {
-        return $user->can('replicate_rekap::absen::a::s::n');
+        return $user->can('{{ Replicate }}');
     }
 
     /**
@@ -103,6 +103,6 @@ class RekapAbsenASNPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_rekap::absen::a::s::n');
+        return $user->can('{{ Reorder }}');
     }
 }

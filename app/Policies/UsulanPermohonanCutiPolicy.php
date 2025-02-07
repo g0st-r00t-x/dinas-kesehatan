@@ -66,48 +66,4 @@ class UsulanPermohonanCutiPolicy
     /**
      * Determine whether the user can permanently delete.
      */
-    public function forceDelete(User $user, UsulanPermohonanCuti $usulanPermohonanCuti): bool
-    {
-        return $user->can('force_delete_usulan::permohonan::cuti');
-    }
-
-    /**
-     * Determine whether the user can permanently bulk delete.
-     */
-    public function forceDeleteAny(User $user): bool
-    {
-        return $user->can('force_delete_any_usulan::permohonan::cuti');
-    }
-
-    /**
-     * Determine whether the user can restore.
-     */
-    public function restore(User $user, UsulanPermohonanCuti $usulanPermohonanCuti): bool
-    {
-        return $user->can('restore_usulan::permohonan::cuti');
-    }
-
-    /**
-     * Determine whether the user can bulk restore.
-     */
-    public function restoreAny(User $user): bool
-    {
-        return $user->can('restore_any_usulan::permohonan::cuti');
-    }
-
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, UsulanPermohonanCuti $usulanPermohonanCuti): bool
-    {
-        return $user->can('replicate_usulan::permohonan::cuti');
-    }
-
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_usulan::permohonan::cuti');
-    }
 }

@@ -28,7 +28,7 @@ class ArsipSuratResource extends Resource
 
     public static function getPermissionPrefixes(): array
     {
-        return ['view', 'view_any', 'view_own', 'download_file', 'create', 'update', 'delete', 'delete_any', 'kirim_notif'];
+        return ['view', 'view_any', 'download_file', 'create', 'update', 'delete', 'delete_any', 'kirim_notif'];
     }
 
     protected static ?string $navigationIcon = 'heroicon-o-inbox-stack';

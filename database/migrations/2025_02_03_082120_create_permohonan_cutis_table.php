@@ -19,8 +19,7 @@ return new class extends Migration
             $table->date('tanggal_mulai')->nullable();
             $table->date('tanggal_selesai')->nullable();
             $table->text('alasan')->nullable();
-            $table->string('status', 50)->default('diajukan');
-            $table->string(("data_dukung"))->nullable();
+            $table->string(("data_dukungan"))->nullable();
             $table->string('surat_pengantar')->nullable();
             $table->timestamps();
 

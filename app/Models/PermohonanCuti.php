@@ -22,11 +22,11 @@ class PermohonanCuti extends Model
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
     public function pengajuanSurat(){
-        return $this->hasOne(PengajuanSurat::class,'id_pemohon', 'id');
+        return $this->hasOne(PengajuanSurat::class,'id_pengajuan');
     }
 
     public function jenisCuti()

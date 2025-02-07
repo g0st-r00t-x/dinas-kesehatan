@@ -11,6 +11,15 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
+// a.	Nama
+// b.	NIP
+// c.	UNIT Kerja
+// d.	SK Jabatan
+// e.	TMT Pemberian Tunjangan
+// f.	UPLOAD BERKAS ( Jika Tidak memiliki SK Jabatan Fungsional Maka Upload SK Pemberian Tunjangan )
+// g.	Surat Pengantar Unit Kerja
+
+
 class InventarisAJJImporter extends Importer
 {
     protected static ?string $model = InventarisAJJ::class;

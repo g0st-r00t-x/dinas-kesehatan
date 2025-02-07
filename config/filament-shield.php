@@ -34,13 +34,9 @@ return [
     'permission_prefixes' => [
         'resource' => [
             'view',
-            'view_own',
-            'download_file',
             'view_any',
             'create',
             'update',
-            // 'replicate',
-            // 'reorder',
             'delete',
             'delete_any',
         ],

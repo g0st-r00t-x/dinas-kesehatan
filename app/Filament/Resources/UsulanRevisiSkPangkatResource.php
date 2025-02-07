@@ -3,7 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\UsulanRevisiSkPangkatResource\Pages;
-use App\Filament\Resources\UsulanRevisiSkPangkatResource\RelationManagers;
+use App\Http\Controllers\PengajuanSuratController;
 use App\Models\UsulanRevisiSkPangkat;
 use Filament\Forms;
 use Filament\Forms\Components\Section;
@@ -11,11 +11,14 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\ActionGroup;
+use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
@@ -25,16 +28,7 @@ class UsulanRevisiSkPangkatResource extends Resource
 
     public static function getPermissionPrefixes(): array
     {
-        return [
-            'view',
-            'view_own',
-            'view_any',
-            'create',
-            'update',
-            'delete',
-            'delete_any',
-            'kirim_notif'
-        ];
+        return ['view', 'view_any', 'view_own', 'download_file', 'create', 'update', 'delete', 'delete_any', 'kirim_notif'];
     }
 
 
@@ -57,6 +51,8 @@ class UsulanRevisiSkPangkatResource extends Resource
     {
         return $form
             ->schema([
+            Forms\Components\Hidden::make('user_id')
+                ->default(Auth::user()->id),
                 Section::make('Informasi Pegawai')
                     ->schema([
                         Select::make('pegawai_nip')
@@ -169,9 +165,38 @@ class UsulanRevisiSkPangkatResource extends Resource
                     ]),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                ActionGroup::make([
+                    EditAction::make(),
+                    DeleteAction::make(),
+                    Action::make('Ajukan Cuti')
+                        ->icon('heroicon-o-document-plus')
+                        ->action(fn(UsulanRevisiSkPangkat $record) => (new PengajuanSuratController())->handle($record, 'SK Pemberhentian Sementara')),
+                    Action::make('download')
+                        ->label('Download')
+                        ->icon('heroicon-o-arrow-down-tray')
+                        ->action(function (UsulanRevisiSkPangkat $record) {
+                            // Mengambil arsip surat melalui relasi
+                            $arsipSurat = $record->pengajuanSurat->arsipSurat;
+
+                            if (!$arsipSurat || !$arsipSurat->file_surat_path) {
+                                return;
+                            }
+
+                            if (str_starts_with($arsipSurat->file_surat_path, 'http')) {
+                                // Untuk file dengan URL eksternal
+                                return redirect($arsipSurat->file_surat_path);
+                            } else {
+                                // Untuk file yang disimpan lokal
+                                return response()->download(storage_path('app/public/' . $arsipSurat->file_surat_path));
+                            }
+                        })
+                        ->visible(function (UsulanRevisiSkPangkat $record) {
+                            return $record->pengajuanSurat &&
+                                $record->pengajuanSurat->status_pengajuan === 'Diterima' &&
+                                $record->pengajuanSurat->arsipSurat &&
+                                $record->pengajuanSurat->arsipSurat->file_surat_path !== null;
+                        }),
+                ])
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

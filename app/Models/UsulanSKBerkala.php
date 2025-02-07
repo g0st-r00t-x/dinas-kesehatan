@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class UsulanSkBerkala extends Model
 {
@@ -13,6 +14,7 @@ class UsulanSkBerkala extends Model
 
     protected $fillable = [
         'pegawai_nip',
+        'user_id',
         'tmt_sk_pangkat_terakhir',
         'tanggal_penerbitan_pangkat_terakhir',
         'tmt_sk_berkala_terakhir',
@@ -25,5 +27,14 @@ class UsulanSkBerkala extends Model
     public function pegawai()
     {
         return $this->belongsTo(Pegawai::class, 'pegawai_nip', 'nip');
+    }
+    public function pengajuanSurat()
+    {
+        return $this->hasOne(PengajuanSurat::class, 'id_pengajuan');
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 }

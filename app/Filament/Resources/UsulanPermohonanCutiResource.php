@@ -4,9 +4,8 @@ namespace App\Filament\Resources;
 
 use App\Filament\Imports\PermohonanCutiImporter;
 use App\Filament\Resources\UsulanPermohonanCutiResource\Pages;
-use App\Http\Controllers\AjukanCutiController;
+use App\Http\Controllers\PengajuanSuratController;
 use App\Http\Controllers\WhatsappNotification;
-use App\Models\PengajuanSurat;
 use Filament\Tables\Actions\ImportAction;
 use App\Models\PermohonanCuti;
 use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
@@ -17,10 +16,8 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Tables\Actions\Action;
 use Illuminate\Database\Eloquent\Builder;
-use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use Filament\Notifications\Notification;
-use Filament\Support\Enums\ActionSize;
 use Filament\Tables\Actions\ActionGroup;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
@@ -39,16 +36,7 @@ class UsulanPermohonanCutiResource extends Resource implements HasShieldPermissi
 
     public static function getPermissionPrefixes(): array
     {
-        return [
-            'view',
-            'view_own',
-            'view_any',
-            'create',
-            'update',
-            'delete',
-            'delete_any',
-            'kirim_notif'
-        ];
+        return ['view', 'view_any', 'view_own', 'download_file', 'create', 'update', 'delete', 'delete_any', 'kirim_notif'];
     }
 
     //ANCHOR - This is used for filter data when data is showing in the resource
@@ -125,7 +113,8 @@ class UsulanPermohonanCutiResource extends Resource implements HasShieldPermissi
                         'Diterima' => 'success',
                         default => 'gray',
                     })
-                    ->label("Status Pengajuan"),
+                    ->label("Status Pengajuan")
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('tanggal_mulai')
                     ->date(),
                 Tables\Columns\TextColumn::make('tanggal_selesai')
@@ -143,7 +132,32 @@ class UsulanPermohonanCutiResource extends Resource implements HasShieldPermissi
             ->actions([
                 Action::make('Ajukan Cuti')
                     ->icon('heroicon-o-document-plus')
-                    ->action(fn(Model $record) => (new AjukanCutiController())->handle($record)),
+                    ->action(fn(Model $record) => (new PengajuanSuratController())->handle($record, 'Permohonan Cuti')),
+                Action::make('download')
+                    ->label('Download')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->action(function ($record) {
+                        // Mengambil arsip surat melalui relasi
+                        $arsipSurat = $record->pengajuanSurat->arsipSurat;
+
+                        if (!$arsipSurat || !$arsipSurat->file_surat_path) {
+                            return;
+                        }
+
+                        if (str_starts_with($arsipSurat->file_surat_path, 'http')) {
+                            // Untuk file dengan URL eksternal
+                            return redirect($arsipSurat->file_surat_path);
+                        } else {
+                            // Untuk file yang disimpan lokal
+                            return response()->download(storage_path('app/public/' . $arsipSurat->file_surat_path));
+                        }
+                    })
+                    ->visible(function ($record) {
+                        return $record->pengajuanSurat &&
+                            $record->pengajuanSurat->status_pengajuan === 'Diterima' &&
+                            $record->pengajuanSurat->arsipSurat &&
+                            $record->pengajuanSurat->arsipSurat->file_surat_path !== null;
+                    }),
             ])
             ->bulkActions([
                 ActionGroup::make([

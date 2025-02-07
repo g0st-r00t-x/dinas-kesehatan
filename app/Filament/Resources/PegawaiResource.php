@@ -32,12 +32,10 @@ class PegawaiResource extends Resource
         return [
             'view',
             'view_any',
-            'view_own',
             'create',
             'update',
             'delete',
             'delete_any',
-            'kirim_notif'
         ];
     }
 

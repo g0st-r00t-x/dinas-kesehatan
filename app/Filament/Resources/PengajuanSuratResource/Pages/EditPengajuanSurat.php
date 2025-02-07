@@ -24,18 +24,18 @@ class EditPengajuanSurat extends EditRecord
         DB::beginTransaction();
         try {
             // Pastikan id_pemohon ada
-            if (!isset($this->data['id_pemohon'])) {
-                throw new Exception('ID Pemohon tidak ditemukan dalam data.');
+            if (!isset($this->data['id_pengajuan'])) {
+                throw new Exception('ID Pengajuan tidak ditemukan dalam data.');
             }
 
             // Cek apakah PengajuanSurat ditemukan
-            $pengajuanSurat = PengajuanSurat::where('id_pemohon', $this->data['id_pemohon'])->first();
+            $pengajuanSurat = PengajuanSurat::where('id_pengajuan', $this->data['id_pengajuan'])->first();
             if (!$pengajuanSurat) {
                 throw new Exception('Pengajuan Surat tidak ditemukan.');
             }
 
             // Cek apakah PermohonanCuti ditemukan
-            $permohonanCuti = PermohonanCuti::where('id', $pengajuanSurat->id_pemohon)->first();
+            $permohonanCuti = PermohonanCuti::where('id', $pengajuanSurat->id_pengajuan)->first();
             if (!$permohonanCuti) {
                 throw new Exception('Permohonan Cuti tidak ditemukan.');
             }

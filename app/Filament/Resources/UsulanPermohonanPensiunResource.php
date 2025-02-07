@@ -5,18 +5,19 @@ namespace App\Filament\Resources;
 use App\Filament\Exports\PermohonanPensiunExporter;
 use App\Filament\Imports\PermohonanPensiunImporter;
 use App\Filament\Resources\UsulanPermohonanPensiunResource\Pages;
-use App\Filament\Resources\UsulanPermohonanPensiunResource\RelationManagers;
+use App\Http\Controllers\PengajuanSuratController;
 use App\Models\UsulanPermohonanPensiun;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Actions\ExportAction;
 use Filament\Tables\Actions\ImportAction;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
@@ -27,21 +28,12 @@ class UsulanPermohonanPensiunResource extends Resource
 
     public static function getPermissionPrefixes(): array
     {
-        return [
-            'view',
-            'view_own',
-            'view_any',
-            'create',
-            'update',
-            'delete',
-            'delete_any',
-            'kirim_notif'
-        ];
+        return ['view', 'view_any', 'view_own', 'download_file', 'create', 'update', 'delete', 'delete_any', 'kirim_notif'];
     }
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
 
-    protected static ?string $navigationGroup = 'Usulan';
+    protected static ?string $navigationGroup = 'Kepegawaian';
     protected static ?string $navigationLabel = 'Permohonan Pensiun';
     protected static ?string $modelLabel = 'Permohonan Pensiun';
     protected static ?string $pluralModelLabel = 'Permohonan Pensiun';
@@ -53,32 +45,34 @@ class UsulanPermohonanPensiunResource extends Resource
     {
         return $form
             ->schema([
+            Forms\Components\Hidden::make('user_id')
+                ->default(Auth::user()->id),
                 Forms\Components\Section::make('Data Pribadi')
                     ->schema([
                         Select::make('pegawai_nip')
-                        ->label('Pegawai')
-                        ->relationship('pegawai', 'nama')
-                        ->searchable()
-                        ->required()
-                        ->createOptionForm([
-                            Forms\Components\TextInput::make('nip')
-                                ->required()
-                                ->unique(),
-                            Forms\Components\TextInput::make('nama')
-                                ->required(),
-                            Forms\Components\TextInput::make('no_telepon')
-                                ->required(),
-                            Forms\Components\Select::make('unit_kerja_id')
-                                ->relationship('unitKerja', 'nama')
-                                ->required(),
-                            Forms\Components\TextInput::make('jabatan'),
-                            Forms\Components\Select::make('status_kepegawaian')
-                                ->options([
-                                    'PNS' => 'PNS',
-                                    'PPPK' => 'PPPK',
-                                    'Honorer' => 'Honorer'
-                                ])
-                        ]),
+                            ->label('Pegawai')
+                            ->relationship('pegawai', 'nama')
+                            ->searchable()
+                            ->required()
+                            ->createOptionForm([
+                                Forms\Components\TextInput::make('nip')
+                                    ->required()
+                                    ->unique(),
+                                Forms\Components\TextInput::make('nama')
+                                    ->required(),
+                                Forms\Components\TextInput::make('no_telepon')
+                                    ->required(),
+                                Forms\Components\Select::make('unit_kerja_id')
+                                    ->relationship('unitKerja', 'nama')
+                                    ->required(),
+                                Forms\Components\TextInput::make('jabatan'),
+                                Forms\Components\Select::make('status_kepegawaian')
+                                    ->options([
+                                        'PNS' => 'PNS',
+                                        'PPPK' => 'PPPK',
+                                        'Honorer' => 'Honorer'
+                                    ])
+                            ]),
                     ])->columns(2),
 
                 Forms\Components\Section::make('Dokumen Wajib')
@@ -137,18 +131,18 @@ class UsulanPermohonanPensiunResource extends Resource
                             ->required()
                             ->directory('pensiun_files/akte-nikah'),
                         Forms\Components\FileUpload::make('ktp_pasangan')
-                        ->preserveFilenames()
+                            ->preserveFilenames()
                             ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
                                 return now()->timestamp . '_' . $file->getClientOriginalName();
-                            })    
-                        ->required()
+                            })
+                            ->required()
                             ->directory('pensiun_files/ktp'),
                         Forms\Components\FileUpload::make('karis_karsu')
-                        ->preserveFilenames()
+                            ->preserveFilenames()
                             ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
                                 return now()->timestamp . '_' . $file->getClientOriginalName();
-                            })    
-                        ->required()
+                            })
+                            ->required()
                             ->directory('pensiun_files/karis-karsu'),
                         Forms\Components\FileUpload::make('akte_anak')
                             ->directory('pensiun_files/akte-anak'),
@@ -160,20 +154,20 @@ class UsulanPermohonanPensiunResource extends Resource
 
                 Forms\Components\Section::make('Data Bank')
                     ->schema([
-                        Forms\Components\TextInput::make('nama_bank')   
-                        ->required()
+                        Forms\Components\TextInput::make('nama_bank')
+                            ->required()
                             ->maxLength(255),
-                        Forms\Components\TextInput::make('nomor_rekening')   
-                        ->required()
+                        Forms\Components\TextInput::make('nomor_rekening')
+                            ->required()
                             ->maxLength(255),
-                        Forms\Components\TextInput::make('npwp')   
-                        ->required()
+                        Forms\Components\TextInput::make('npwp')
+                            ->required()
                             ->maxLength(255),
                         Forms\Components\FileUpload::make('foto')
                             ->preserveFilenames()
-                                ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
-                                    return now()->timestamp . '_' . $file->getClientOriginalName();
-                                })    
+                            ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                                return now()->timestamp . '_' . $file->getClientOriginalName();
+                            })
                             ->required()
                             ->previewable()
                             ->directory('pensiun_files/foto'),
@@ -188,13 +182,13 @@ class UsulanPermohonanPensiunResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-        ->headerActions([
-            ImportAction::make()
-                ->importer(PermohonanPensiunImporter::class),
-            ExportAction::make()
-            
-                ->exporter(PermohonanPensiunExporter::class)
-        ])
+            ->headerActions([
+                ImportAction::make()
+                    ->importer(PermohonanPensiunImporter::class),
+                ExportAction::make()
+
+                    ->exporter(PermohonanPensiunExporter::class)
+            ])
             ->columns([
                 Tables\Columns\TextColumn::make('nama')
                     ->searchable()
@@ -209,7 +203,7 @@ class UsulanPermohonanPensiunResource extends Resource
                 Tables\Columns\TextColumn::make('nomor_telepon')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('surat_pengantar_unit')
-                     ->url(fn ($record) => Storage::url($record->surat_pengantar_unit))
+                    ->url(fn($record) => Storage::url($record->surat_pengantar_unit))
                     ->openUrlInNewTab(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -220,9 +214,40 @@ class UsulanPermohonanPensiunResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                ActionGroup::make([
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\DeleteAction::make(),
+                    Action::make('Ajukan Cuti')
+                        ->icon('heroicon-o-document-plus')
+                        ->action(fn(UsulanPermohonanPensiun $record) => (new PengajuanSuratController())->handle($record, 'Permohonan Pensiun')),
+                    Action::make('download')
+                        ->label('Download')
+                        ->icon('heroicon-o-arrow-down-tray')
+                        ->action(function ($record) {
+                            // Mengambil arsip surat melalui relasi
+                            $arsipSurat = $record->pengajuanSurat->arsipSurat;
+
+                            if (!$arsipSurat || !$arsipSurat->file_surat_path) {
+                                return;
+                            }
+
+                            if (str_starts_with($arsipSurat->file_surat_path, 'http')) {
+                                // Untuk file dengan URL eksternal
+                                return redirect($arsipSurat->file_surat_path);
+                            } else {
+                                // Untuk file yang disimpan lokal
+                                return response()->download(storage_path('app/public/' . $arsipSurat->file_surat_path));
+                            }
+                        })
+                        ->visible(function ($record) {
+                            return $record->pengajuanSurat &&
+                                $record->pengajuanSurat->status_pengajuan === 'Diterima' &&
+                                $record->pengajuanSurat->arsipSurat &&
+                                $record->pengajuanSurat->arsipSurat->file_surat_path !== null;
+                        }),
+                ])
             ])
+
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),

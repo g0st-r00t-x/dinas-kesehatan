@@ -16,6 +16,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
@@ -26,16 +27,7 @@ class UsulanRekomendasiPenelitianResource extends Resource
 
     public static function getPermissionPrefixes(): array
     {
-        return [
-            'view',
-            'view_own',
-            'view_any',
-            'create',
-            'update',
-            'delete',
-            'delete_any',
-            'kirim_notif'
-        ];
+        return ['view', 'view_any', 'view_own', 'download_file', 'create', 'update', 'delete', 'delete_any', 'kirim_notif'];
     }
 
 
@@ -52,6 +44,8 @@ class UsulanRekomendasiPenelitianResource extends Resource
     {
         return $form
             ->schema([
+            Forms\Components\Hidden::make('user_id')
+                ->default(Auth::user()->id),
                 TextInput::make('nama')
                     ->required()
                     ->maxLength(255)

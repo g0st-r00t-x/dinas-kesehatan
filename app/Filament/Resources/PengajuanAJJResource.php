@@ -37,16 +37,7 @@ class PengajuanAJJResource extends Resource implements HasShieldPermissions
 {
     public static function getPermissionPrefixes(): array
     {
-        return [
-            'view',
-            'view_own',
-            'view_any',
-            'create',
-            'update',
-            'delete',
-            'delete_any',
-            'kirim_notif'
-        ];
+        return ['view', 'view_any', 'view_own', 'download_file', 'create', 'update', 'delete', 'delete_any', 'kirim_notif'];
     }
 
     //ANCHOR - This is used for filter data when data is showing in the resource

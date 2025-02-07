@@ -12,6 +12,8 @@ class PengajuanSurat extends Model
     protected $table = 'pengajuan_surat';
 
     protected $fillable = [
+        'id_diajukan',
+        'id_pengajuan',
         'id_pemohon',
         'nomor_sk',
         'jenis_surat',
@@ -28,11 +30,22 @@ class PengajuanSurat extends Model
 
     public function arsipSurat()
     {
-        return $this->hasOne(ArsipSurat::class);
+        // Perbaiki nama kolom di relasi
+        return $this->hasOne(ArsipSurat::class, 'id_pengajuan_surat', 'id');
+    }
+
+    public function pemohon()
+    {
+        return $this->belongsTo(User::class, 'id_pemohon');
+    }
+
+    public function diajukan()
+    {
+        return $this->belongsTo(Pegawai::class, 'id_diajukan');
     }
 
     public function permohonanCuti()
     {
-        return $this->belongsTo(PermohonanCuti::class, 'id_pemohon', 'id');
+        return $this->belongsTo(PermohonanCuti::class, 'id_pengajuan', 'id');
     }
 }

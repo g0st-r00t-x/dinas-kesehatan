@@ -66,48 +66,4 @@ class RevisiSKPangkatPolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, UsulanRevisiSkPangkat $revisiSKPangkat): bool
-    {
-        return $user->can('force_delete_revisiskpangkat');
-    }
-
-    /**
-     * Determine whether the user can permanently bulk delete models.
-     */
-    public function forceDeleteAny(User $user): bool
-    {
-        return $user->can('force_delete_any_revisiskpangkat');
-    }
-
-    /**
-     * Determine whether the user can restore the model.
-     */
-    public function restore(User $user, UsulanRevisiSkPangkat $revisiSKPangkat): bool
-    {
-        return $user->can('restore_revisiskpangkat');
-    }
-
-    /**
-     * Determine whether the user can bulk restore models.
-     */
-    public function restoreAny(User $user): bool
-    {
-        return $user->can('restore_any_revisiskpangkat');
-    }
-
-    /**
-     * Determine whether the user can replicate the model.
-     */
-    public function replicate(User $user, UsulanRevisiSkPangkat $revisiSKPangkat): bool
-    {
-        return $user->can('replicate_revisiskpangkat');
-    }
-
-    /**
-     * Determine whether the user can reorder models.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_revisiskpangkat');
-    }
 }
