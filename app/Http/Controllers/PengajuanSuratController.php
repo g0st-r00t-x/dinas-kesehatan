@@ -5,75 +5,138 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Pegawai;
 use App\Models\PengajuanSurat;
-use App\Models\PermohonanCuti;
+use App\Models\SuratKeluar;
 use Filament\Notifications\Events\DatabaseNotificationsSent;
 use Filament\Notifications\Notification;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Exception;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class PengajuanSuratController extends Controller
 {
-    public function handle($record, $perihal)
+    /**
+     * Handle the letter submission process
+     * 
+     * @param SuratKeluar $record
+     * @return void
+     * @throws Exception
+     */
+    public function handle(SuratKeluar $record): void
     {
         DB::beginTransaction();
 
         try {
-            // Get current user
             $user = auth()->user();
 
-            // Find employee
-            $pegawai = Pegawai::where('nip', $record->pegawai_nip)->first();
-            if (!$pegawai) {
-                throw new Exception('Pegawai tidak ditemukan.');
+            if (!$user) {
+                throw new Exception('User not authenticated.');
             }
 
-            // Get letter type from record if available, otherwise default to 'Surat Masuk'
-
-            // Create letter submission
-            $pengajuanSurat = PengajuanSurat::create([
-                'id_pemohon' => $user->id,
-                'id_diajukan' => $pegawai->id,
-                'id_pengajuan' => $record->id,
-                'jenis_surat' => 'Surat Masuk',
-                'perihal' => $perihal,
-                'status_pengajuan' => 'Diajukan',
-                'tgl_pengajuan' => now(),
-            ]);
-
-            // Kirim notifikasi hanya pada user dengan permission
-            $operators = User::permission('view_any_pengajuan::surat')->get();
-
-            
-
-            foreach ($operators as $operator) {
-                Notification::make()
-                    ->title("Pengajuan {$perihal} Baru")
-                    ->body("Terdapat pengajuan {$perihal} baru dari {$pegawai->nama} yang memerlukan persetujuan")
-                    ->success()
-                    ->sendToDatabase($operator, isEventDispatched: true);
-
-                event(new DatabaseNotificationsSent($operator));
-            }
+            $pegawai = $this->findPegawai($record->id_pegawai);
+            $pengajuanSurat = $this->createPengajuanSurat($user, $pegawai, $record);
+            $this->sendNotifications($pegawai, $record);
 
             DB::commit();
 
-            // Success notification
-            Notification::make()
-                ->title("Berhasil Mengajukan {$perihal}")
-                ->success()
-                ->body("Pengajuan {$perihal} telah berhasil disubmit")
-                ->send();
+            $this->sendSuccessNotification($record->perihal);
         } catch (Exception $e) {
             DB::rollBack();
+            Log::error('Letter submission failed: ' . $e->getMessage(), [
+                'user_id' => auth()->id(),
+                'record_id' => $record->id,
+                'error' => $e->getMessage()
+            ]);
 
-            Notification::make()
-                ->title("Gagal Mengajukan Surat")
-                ->danger()
-                ->body($e->getMessage())
-                ->send();
+            $this->sendErrorNotification($e->getMessage());
         }
     }
-    
+
+    /**
+     * Find employee by NIP
+     * 
+     * @param string $nip
+     * @return Pegawai
+     * @throws Exception
+     */
+    private function findPegawai(string $id): Pegawai
+    {
+        $pegawai = Pegawai::where('id', $id)->first();
+
+        if (!$pegawai) {
+            throw new Exception('Pegawai tidak ditemukan.');
+        }
+
+        return $pegawai;
+    }
+
+    /**
+     * Create new letter submission
+     * 
+     * @param User $user
+     * @param Pegawai $pegawai
+     * @param SuratKeluar $record
+     * @return PengajuanSurat
+     */
+    private function createPengajuanSurat(User $user, Pegawai $pegawai, SuratKeluar $record): PengajuanSurat
+    {
+        return PengajuanSurat::create([
+            'id_pemohon' => $user->id,
+            'id_diajukan' => $pegawai->id,
+            'id_pengajuan' => $record->id,
+            'status_pengajuan' => 'Diajukan',
+            'tgl_pengajuan' => now(),
+        ]);
+    }
+
+    /**
+     * Send notifications to operators
+     * 
+     * @param Pegawai $pegawai
+     * @param SuratKeluar $record
+     * @return void
+     */
+    private function sendNotifications(Pegawai $pegawai, SuratKeluar $record): void
+    {
+        $operators = User::permission('view_any_pengajuan::surat')->get();
+
+        foreach ($operators as $operator) {
+            $notification = Notification::make()
+                ->title("Pengajuan {$record->perihal} Baru")
+                ->body("Terdapat pengajuan {$record->perihal} baru dari {$pegawai->nama} yang memerlukan persetujuan")
+                ->success();
+
+            $notification->sendToDatabase($operator, isEventDispatched: true);
+            event(new DatabaseNotificationsSent($operator));
+        }
+    }
+
+    /**
+     * Send success notification
+     * 
+     * @param string $perihal
+     * @return void
+     */
+    private function sendSuccessNotification(string $perihal): void
+    {
+        Notification::make()
+            ->title("Berhasil Mengajukan {$perihal}")
+            ->success()
+            ->body("Pengajuan {$perihal} telah berhasil disubmit")
+            ->send();
+    }
+
+    /**
+     * Send error notification
+     * 
+     * @param string $message
+     * @return void
+     */
+    private function sendErrorNotification(string $message): void
+    {
+        Notification::make()
+            ->title("Gagal Mengajukan Surat")
+            ->danger()
+            ->body($message)
+            ->send();
+    }
 }

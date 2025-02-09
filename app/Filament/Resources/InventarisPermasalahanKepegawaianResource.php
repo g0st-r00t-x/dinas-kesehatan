@@ -14,6 +14,9 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\BulkAction;
+use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\ViewAction;
 use Illuminate\Database\Eloquent\Model;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
@@ -104,6 +107,9 @@ class InventarisPermasalahanKepegawaianResource extends Resource implements HasS
                     ->sortable(),
             ])
             ->actions([
+                DeleteAction::make(),
+                EditAction::make(),
+                ViewAction::make(),
                 Action::make('send_wa')
                     ->label('Kirim Notifikasi')
                     ->icon('heroicon-o-paper-airplane')

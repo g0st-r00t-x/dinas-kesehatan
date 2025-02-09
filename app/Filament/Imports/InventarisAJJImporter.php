@@ -50,11 +50,6 @@ class InventarisAJJImporter extends Importer
         ];
     }
 
-    public function resolve(array $data): array
-    {
-        Log::info('Resolving data:', $data);
-        return $data;
-    }
 
     public function resolveRecord(): ?InventarisAJJ
     {

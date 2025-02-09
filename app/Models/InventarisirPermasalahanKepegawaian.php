@@ -31,7 +31,7 @@ class InventarisirPermasalahanKepegawaian extends Model
     // Relasi ke tabel data dukungan
     public function dataDukungan()
     {
-        return $this->belongsTo(DataDukungan::class, 'data_dukungan_id', 'data_dukungan_id');
+        return $this->belongsTo(DataDukungan::class, 'data_dukungan_id', 'id');
     }
 
     public function user(): BelongsTo

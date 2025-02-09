@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\DownloadPdfController;
 use App\Http\Controllers\FileController;
 use Illuminate\Support\Facades\Http;
@@ -27,3 +28,6 @@ Route::get('download/{path}', [FileController::class, 'download'])
     ->name('download.private.file')
     ->middleware('signed'); 
 Route::get('pdf/{ajj}', DownloadPdfController::class)->name('pdf');
+
+Route::get('/upload', [DocumentController::class, 'showForm'])->name('uploadForm');
+Route::post('/process-document', [DocumentController::class, 'processDocument'])->name('processDocument');

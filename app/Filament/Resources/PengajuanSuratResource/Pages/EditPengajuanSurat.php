@@ -69,7 +69,7 @@ class EditPengajuanSurat extends EditRecord
             $existingArsip = ArsipSurat::where('id_pengajuan_surat', $this->data['id'])->first();
             if (!$existingArsip) {
                 // Jika belum ada arsip, buat arsip baru
-                Storage::disk('public')->put($filePath, $pdf->output());
+                $pdf->stream();
 
                 ArsipSurat::create([
                     'id_pengajuan_surat' => $this->data['id'],
@@ -79,12 +79,7 @@ class EditPengajuanSurat extends EditRecord
             } else {
                 // Jika arsip sudah ada, update file lama dengan yang baru
                 Storage::disk('public')->delete($existingArsip->file_surat_path); // Hapus file lama
-                Storage::disk('public')->put($filePath, $pdf->output()); // Simpan file baru
-
-                $existingArsip->update([
-                    'file_surat_path' => $filePath,
-                    'tgl_arsip' => now(),
-                ]);
+                $pdf->stream(); // Simpan file baru
             }
 
             // Kirim notifikasi kepada pegawai yang mengajukan cuti

@@ -15,9 +15,6 @@ class PengajuanSurat extends Model
         'id_diajukan',
         'id_pengajuan',
         'id_pemohon',
-        'nomor_sk',
-        'jenis_surat',
-        'perihal',
         'status_pengajuan',
         'tgl_pengajuan',
         'tgl_diterima'
@@ -44,8 +41,8 @@ class PengajuanSurat extends Model
         return $this->belongsTo(Pegawai::class, 'id_diajukan');
     }
 
-    public function permohonanCuti()
+    public function pengajuan()
     {
-        return $this->belongsTo(PermohonanCuti::class, 'id_pengajuan', 'id');
+        return $this->belongsTo(SuratKeluar::class, 'id_pengajuan', 'id');
     }
 }

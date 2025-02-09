@@ -25,13 +25,16 @@ class PermasalahanKepegawaianImporter extends Importer
                 ->example('198501012')
                 ->exampleHeader('NIP')
                 ->requiredMapping(),
+            ImportColumn::make('dataDukungan')
+                ->relationship(resolveUsing: function (string $state): ?DataDukungan {
+                    return DataDukungan::query()
+                        ->where('id', $state)
+                        ->orWhere('jenis', $state)
+                        ->first();
+                }),
             ImportColumn::make('permasalahan')
                 ->example('Pengajuan kenaikan pangkat tertunda')
                 ->exampleHeader('PERMASALAHAN')
-                ->requiredMapping(),
-            ImportColumn::make('data_dukungan_id')
-                ->example('1')
-                ->exampleHeader('DATA DUKUNGAN')
                 ->requiredMapping(),
             ImportColumn::make('file_upload')
                 ->example('dokumen_pendukung.pdf')
@@ -82,14 +85,12 @@ class PermasalahanKepegawaianImporter extends Importer
             $record->user_id = Auth::id();
             $record->pegawai_nip = $pegawai->nip;
             $record->permasalahan = $this->data['permasalahan'];
-            $record->data_dukungan_id = $this->data['data_dukungan_id'];
             $record->file_upload = $this->data['file_upload'] ?? null;
             $record->surat_pengantar_unit_kerja = $this->data['surat_pengantar_unit_kerja'] ?? null;
 
             DB::commit();
 
             return $record;
-
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error in resolveRecord: ' . $e->getMessage(), [

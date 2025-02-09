@@ -26,10 +26,6 @@ class ArsipSuratPolicy
         return $user->can('view_arsip::surat');
     }
 
-    public function kirimNotif(User $user, ArsipSurat $arsipSurat): bool
-    {
-        return $user->can('kirim_notif_arsip::surat');
-    }
     /**
      * Determine whether the user can create models.
      */
@@ -65,4 +61,48 @@ class ArsipSuratPolicy
     /**
      * Determine whether the user can permanently delete.
      */
+    public function forceDelete(User $user, ArsipSurat $arsipSurat): bool
+    {
+        return $user->can('{{ ForceDelete }}');
+    }
+
+    /**
+     * Determine whether the user can permanently bulk delete.
+     */
+    public function forceDeleteAny(User $user): bool
+    {
+        return $user->can('{{ ForceDeleteAny }}');
+    }
+
+    /**
+     * Determine whether the user can restore.
+     */
+    public function restore(User $user, ArsipSurat $arsipSurat): bool
+    {
+        return $user->can('{{ Restore }}');
+    }
+
+    /**
+     * Determine whether the user can bulk restore.
+     */
+    public function restoreAny(User $user): bool
+    {
+        return $user->can('{{ RestoreAny }}');
+    }
+
+    /**
+     * Determine whether the user can replicate.
+     */
+    public function replicate(User $user, ArsipSurat $arsipSurat): bool
+    {
+        return $user->can('{{ Replicate }}');
+    }
+
+    /**
+     * Determine whether the user can reorder.
+     */
+    public function reorder(User $user): bool
+    {
+        return $user->can('{{ Reorder }}');
+    }
 }

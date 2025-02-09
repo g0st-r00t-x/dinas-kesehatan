@@ -140,6 +140,7 @@ class PegawaiResource extends Resource
                     ->label('Status Kepegawaian'),
             ])
             ->actions([
+                Tables\Actions\DeleteAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\ViewAction::make(),
             ])

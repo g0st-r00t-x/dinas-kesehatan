@@ -132,7 +132,7 @@ class UsulanPermohonanCutiResource extends Resource implements HasShieldPermissi
             ->actions([
                 Action::make('Ajukan Cuti')
                     ->icon('heroicon-o-document-plus')
-                    ->action(fn(Model $record) => (new PengajuanSuratController())->handle($record, 'Permohonan Cuti')),
+                    ->action(fn(Model $record) => (new PengajuanSuratController())->handle($record)),
                 Action::make('download')
                     ->label('Download')
                     ->icon('heroicon-o-arrow-down-tray')

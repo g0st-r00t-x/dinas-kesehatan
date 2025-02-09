@@ -25,10 +25,6 @@ class UsulanSKBerkalaPolicy
     {
         return $user->can('view_usulan::s::k::berkala');
     }
-    public function viewOwn(User $user, UsulanSKBerkala $usulanSKBerkala): bool
-    {
-        return $user->can('view_own_usulan::s::k::berkala');
-    }
 
     /**
      * Determine whether the user can create models.
@@ -60,5 +56,53 @@ class UsulanSKBerkalaPolicy
     public function deleteAny(User $user): bool
     {
         return $user->can('delete_any_usulan::s::k::berkala');
+    }
+
+    /**
+     * Determine whether the user can permanently delete.
+     */
+    public function forceDelete(User $user, UsulanSKBerkala $usulanSKBerkala): bool
+    {
+        return $user->can('{{ ForceDelete }}');
+    }
+
+    /**
+     * Determine whether the user can permanently bulk delete.
+     */
+    public function forceDeleteAny(User $user): bool
+    {
+        return $user->can('{{ ForceDeleteAny }}');
+    }
+
+    /**
+     * Determine whether the user can restore.
+     */
+    public function restore(User $user, UsulanSKBerkala $usulanSKBerkala): bool
+    {
+        return $user->can('{{ Restore }}');
+    }
+
+    /**
+     * Determine whether the user can bulk restore.
+     */
+    public function restoreAny(User $user): bool
+    {
+        return $user->can('{{ RestoreAny }}');
+    }
+
+    /**
+     * Determine whether the user can replicate.
+     */
+    public function replicate(User $user, UsulanSKBerkala $usulanSKBerkala): bool
+    {
+        return $user->can('{{ Replicate }}');
+    }
+
+    /**
+     * Determine whether the user can reorder.
+     */
+    public function reorder(User $user): bool
+    {
+        return $user->can('{{ Reorder }}');
     }
 }
