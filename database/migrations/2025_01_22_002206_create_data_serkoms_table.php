@@ -21,7 +21,6 @@ return new class extends Migration {
             $table->string('lembaga_penerbit', 255); // Lembaga penerbit sertifikasi
             $table->date('tanggal_terbit'); // Tanggal penerbitan
             $table->date('tanggal_kadaluarsa')->nullable(); // Tanggal kadaluarsa (opsional)
-            $table->enum('status_validasi', ['Valid', 'Expired', 'Pending'])->default('Pending'); // Status sertifikasi
             $table->string('file_sertifikat', 255)->nullable(); // Path file sertifikat
             $table->timestamps(); // created_at & updated_at
 

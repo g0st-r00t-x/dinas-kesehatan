@@ -151,7 +151,7 @@ class SuratKeluarResource extends Resource
                 TableAction::make('ajukan_surat')
                     ->label('Ajukan Surat')
                     ->icon('heroicon-o-paper-airplane')
-                    ->visible(fn($record) => $record->pengajuanSurat->status_pengajuan === 'Ditolak')
+                    ->visible(fn($record) => $record->pengajuanSurat?->status_pengajuan === 'Ditolak')
                     ->action(fn(SuratKeluar $record) => self::handleSuratSubmission($record)),
             ])
             ->bulkActions([

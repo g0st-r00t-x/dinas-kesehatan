@@ -9,7 +9,7 @@ class RekapAbsen extends Model
 {
     use HasFactory;
 
-    protected $table = 'rekap_absen_asn';
+    protected $table = 'rekap_absen';
 
     protected $fillable = [
         'bulan',
