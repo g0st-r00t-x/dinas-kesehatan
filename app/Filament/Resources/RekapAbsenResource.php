@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\RekapAbsensiNonASNResource\Pages;
-use App\Filament\Resources\RekapAbsensiNonASNResource\RelationManagers;
-use App\Models\RekapAbsensiNonASN;
+use App\Filament\Resources\RekapAbsenResource\Pages;
+use App\Filament\Resources\RekapAbsenResource\RelationManagers;
+use App\Models\RekapAbsen;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,30 +13,18 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class RekapAbsensiNonASNResource extends Resource
+class RekapAbsenResource extends Resource
 {
-    protected static ?string $model = RekapAbsensiNonASN::class;
+    protected static ?string $model = RekapAbsen::class;
 
-    public static function getPermissionPrefixes(): array
-    {
-        return [
-            'view',
-            'view_own',
-            'view_any',
-            'create',
-            'update',
-            'delete',
-            'delete_any',
-            'kirim_notif'
-        ];
-    }
-
-    protected static ?string $navigationIcon = 'heroicon-o-document-chart-bar';
+    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     protected static ?string $navigationGroup = 'Manajemen Data';
-    protected static ?string $label = 'Rekap Absen Non-ASN';
-    protected static ?string $pluralLabel = 'Rekap Absen Non-ASN';
-    protected static ?string $path = 'rekap-absensi-non-ASN';
+    protected static ?string $navigationLabel = 'Rekap Absen';
+    protected static ?string $modelLabel = 'Rekap Absen';
+    protected static ?string $label = 'Rekap Absen';
+    protected static ?string $pluralLabel = 'Rekap Absen';
+    protected static ?string $path = 'rekap-absen';
 
     public static function form(Form $form): Form
     {
@@ -75,9 +63,9 @@ class RekapAbsensiNonASNResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListRekapAbsensiNonASNS::route('/'),
-            'create' => Pages\CreateRekapAbsensiNonASN::route('/create'),
-            'edit' => Pages\EditRekapAbsensiNonASN::route('/{record}/edit'),
+            'index' => Pages\ListRekapAbsens::route('/'),
+            'create' => Pages\CreateRekapAbsen::route('/create'),
+            'edit' => Pages\EditRekapAbsen::route('/{record}/edit'),
         ];
     }
 }

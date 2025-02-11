@@ -33,9 +33,7 @@ class ArsipSuratResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-inbox-stack';
     protected static ?string $navigationGroup = 'Manajemen Data';
-
     protected static ?string $navigationLabel = 'Arsip Surat';
-
     protected static ?string $modelLabel = 'Arsip Surat';
     protected static ?string $label = 'Arsip Surat';
     protected static ?string $pluralLabel = 'Arsip Surat';

@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class SuratKeluar extends Model
 {
@@ -31,5 +33,10 @@ class SuratKeluar extends Model
     public function jenisSurat(): BelongsTo
     {
         return $this->belongsTo(JenisSurat::class, 'id_jenis_surat');
+    }
+
+    public function pengajuanSurat(): HasOne
+    {
+        return $this->hasOne(PengajuanSurat::class, 'id_pengajuan', 'id');
     }
 }

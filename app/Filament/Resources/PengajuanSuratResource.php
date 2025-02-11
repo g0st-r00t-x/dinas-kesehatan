@@ -13,6 +13,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -62,11 +63,11 @@ class PengajuanSuratResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('nomor_sk')
+                Tables\Columns\TextColumn::make('suratKeluar.nomor_surat')
                     ->label('Nomor SK')
                     ->searchable(),
                 
-                Tables\Columns\TextColumn::make('jenis_surat')
+                Tables\Columns\TextColumn::make('suratKeluar.jenisSurat.nama')
                     ->label('Jenis Surat')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
@@ -75,7 +76,7 @@ class PengajuanSuratResource extends Resource
                         default => 'gray',
                     }),
                 
-                Tables\Columns\TextColumn::make('perihal')
+                Tables\Columns\TextColumn::make('suratKeluar.perihal')
                     ->label('Perihal')
                     ->searchable(),
                 
@@ -86,7 +87,7 @@ class PengajuanSuratResource extends Resource
                         'Diajukan' => 'warning',
                         'Diterima' => 'success',
                         'Ditolak' => 'danger',
-                        default => 'info',
+                'Belum Diajukan' => 'info',
                     }),
                 
                 Tables\Columns\TextColumn::make('tgl_pengajuan')
@@ -117,9 +118,30 @@ class PengajuanSuratResource extends Resource
                     ]),
             ])
             ->actions([
+                
+                    Tables\Actions\Action::make('izinkan')
+                        ->label('Izinkan')
+                        ->icon('heroicon-o-check-circle')
+                        ->color('success')
+                        ->visible(fn($record) => $record->status_pengajuan === 'Diajukan')
+                        ->action(fn($record) => $record->update(['status_pengajuan' => 'Diterima', 'tgl_diterima' => now()])),
+
+                    Tables\Actions\Action::make('tolak')
+                        ->label('Tolak')
+                        ->icon('heroicon-o-x-circle')
+                        ->color('danger')
+                        ->visible(fn($record) => $record->status_pengajuan === 'Diajukan')
+                        ->action(fn($record) => $record->update(['status_pengajuan' => 'Ditolak'])),
+
+            ActionGroup::make([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\ViewAction::make(),
+                Tables\Actions\DeleteAction::make(),
+            ])->label('Persetujuan'),
+
+                
             ])
+
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),

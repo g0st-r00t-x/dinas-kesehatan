@@ -22,6 +22,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\TextColumn;
+use Illuminate\Database\Eloquent\Builder;
 
 class PegawaiResource extends Resource
 {
@@ -57,7 +58,7 @@ class PegawaiResource extends Resource
                     ->required()
                     ->label('NIP'),
                 Select::make('unit_kerja_id')
-                    ->relationship('unit_kerja', 'nama')
+                    ->relationship('unitKerja', 'nama')
                     ->required()
                     ->label('Unit Kerja'),
                 TextInput::make('pangkat_golongan')
@@ -75,8 +76,8 @@ class PegawaiResource extends Resource
                     ->label('No. Telepon'),
                 Select::make('status_kepegawaian')
                     ->options([
-                        'aktif' => 'Aktif',
-                        'non-aktif' => 'Non-Aktif',
+                        'Aktif' => 'Aktif',
+                        'Non-Aktif' => 'Non-Aktif',
                     ])
                     ->required()
                     ->label('Status Kepegawaian'),
@@ -107,22 +108,30 @@ class PegawaiResource extends Resource
                     ->label('NIP')
                     ->sortable()
                     ->searchable(),
-                TextColumn::make('pegawai.unit_kerja.nama')
-                    ->label('Unit Kerja')
-                    ->sortable()
-                    ->searchable(),
+                TextColumn::make('unitKerja.nama')
+                ->label('Unit Kerja')
+                ->sortable()
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        return $query->whereHas('unitKerja', function ($query) use ($search) {
+                            $query->where('nama', 'like', "%{$search}%");
+                        });
+                    }),
                 TextColumn::make('jabatan')
                     ->label('Jabatan'),
                 TextColumn::make('pangkat_golongan')
                     ->label('Pangkat/Golongan'),
                 TextColumn::make('email')
+            ->toggleable(isToggledHiddenByDefault: true)
                     ->label('Email')
                     ->searchable(),
                 TextColumn::make('no_telepon')
+            ->toggleable(isToggledHiddenByDefault: true)
                     ->label('No. Telepon'),
                 TextColumn::make('status_kepegawaian')
+            ->toggleable(isToggledHiddenByDefault: true)
                     ->label('Status Kepegawaian'),
                 TextColumn::make('tanggal_lahir')
+            ->toggleable(isToggledHiddenByDefault: true)
                     ->label('Tanggal Lahir')
                     ->date(),
                 TextColumn::make('jenis_kelamin')
@@ -130,7 +139,7 @@ class PegawaiResource extends Resource
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('unit_kerja_id')
-                    ->relationship('unit_kerja', 'nama')
+                    ->relationship('unitKerja', 'nama')
                     ->label('Unit Kerja'),
                 Tables\Filters\SelectFilter::make('status_kepegawaian')
                     ->options([
@@ -158,5 +167,10 @@ class PegawaiResource extends Resource
             'create' => Pages\CreatePegawai::route('/create'),
             'edit' => Pages\EditPegawai::route('/{record}/edit'),
         ];
+    }
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['nama', 'nip'];
     }
 }

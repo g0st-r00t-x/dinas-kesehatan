@@ -13,10 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('rekap_absen_asn', function (Blueprint $table) {
+        Schema::create('rekap_absen', function (Blueprint $table) {
             $table->id();
             $table->string('bulan');
             $table->string('upload_excel');
+            $table->enum('jenis_pegawai', ['asn', 'non-asn']);
             $table->timestamps();
         });
     }

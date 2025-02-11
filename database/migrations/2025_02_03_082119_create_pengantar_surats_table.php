@@ -10,7 +10,7 @@ return new class extends Migration {
         Schema::create('pengajuan_surat', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('id_pengajuan')->nullable();
-            $table->enum('status_pengajuan', ['Diajukan', 'Diterima', 'Ditolak'])->default('Diajukan');
+            $table->enum('status_pengajuan', ['Belum Diajukan', 'Diajukan', 'Diterima', 'Ditolak'])->default('Belum Diajukan');
             $table->timestamp('tgl_pengajuan')->nullable();
             $table->timestamp('tgl_diterima')->nullable();
             $table->timestamps();

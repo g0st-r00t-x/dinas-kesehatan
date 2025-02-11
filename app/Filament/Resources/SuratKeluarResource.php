@@ -4,11 +4,13 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\SuratKeluarResource\Pages;
 use App\Http\Controllers\PengajuanSuratController;
+use App\Models\JenisSurat;
 use App\Models\Pegawai;
 use App\Models\SuratKeluar;
 use Filament\Forms;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\Action as TableAction;
@@ -32,44 +34,67 @@ class SuratKeluarResource extends Resource
                 Forms\Components\Grid::make()
                     ->schema([
                         Forms\Components\Section::make('Data Surat')
-                            ->columnSpan(['lg' => 1])
-                            ->schema([
-                                Forms\Components\Select::make('id_pegawai')
-                                    ->relationship('pegawai', 'nama')
-                                    ->required()
-                                    ->afterStateUpdated(fn($state, Forms\Set $set) => self::updatePegawaiData($state, $set)),
+                        ->columnSpan(['lg' => 1])
+                        ->schema([
+                            Forms\Components\Select::make('id_pegawai')
+                            ->relationship('pegawai', 'nama')
+                                ->required()
+                                ->afterStateUpdated(fn($state, Forms\Set $set) => self::updatePegawaiData($state, $set)),
 
-                                Forms\Components\Select::make('id_jenis_surat')
-                                    ->relationship('jenisSurat', 'nama')
-                                    ->required(),
+                            Forms\Components\Select::make('id_jenis_surat')
+                            ->relationship('jenisSurat', 'nama')
+                                ->required()
+                                ->live(),
 
-                                Forms\Components\TextInput::make('nomor_sk')
-                                    ->label('Nomor SK')
-                                    ->required()
-                                    ->maxLength(255)
-                                    ->suffixAction(
-                                        Action::make('generateSk')
-                                            ->label('Generate SK')
-                                            ->icon('heroicon-o-arrow-path')
-                                            ->action(fn(Forms\Set $set) => self::generateSkNumber($set))
-                                    ),
+                            Forms\Components\TextInput::make('nomor_surat')
+                            ->label('Nomor Surat')
+                            ->required()
+                                ->maxLength(255)
+                                ->suffixAction(
+                                    Action::make('generateSk')
+                                    ->label('Generate SK')
+                                    ->icon('heroicon-o-arrow-path')
+                                    ->action(function (Forms\Get $get, Forms\Set $set) {
+                                        $jenisSuratId = $get('id_jenis_surat');
 
-                                Forms\Components\Textarea::make('perihal')
-                                    ->maxLength(65535),
+                                        if (!$jenisSuratId) {
+                                            Notification::make()
+                                                ->warning()
+                                                ->title('Pilih Jenis Surat terlebih dahulu')
+                                                ->send();
+                                            return;
+                                        }
 
-                                Forms\Components\TextInput::make('tujuan_surat')
-                                    ->maxLength(200),
+                                        $jenisSurat = JenisSurat::find($jenisSuratId);
+                                        if (!$jenisSurat) {
+                                            return;
+                                        }
 
-                                Forms\Components\DatePicker::make('tanggal_surat')
-                                    ->required(),
+                                        self::generateSkNumber($set, $jenisSurat->kode);
+                                    })
+                                ),
 
-                                Forms\Components\FileUpload::make('file_surat')
-                                    ->directory('surat-keluar')
-                                    ->preserveFilenames()
-                                    ->required()
-                                    ->label("Template Surat")
-                                    ->maxSize(5120),
-                            ]),
+                            Forms\Components\Textarea::make('perihal')
+                            ->maxLength(65535),
+
+                            Forms\Components\TextInput::make('tujuan_surat')
+                            ->maxLength(200),
+
+                            Forms\Components\DatePicker::make('tanggal_surat')
+                            ->required(),
+
+                            Forms\Components\FileUpload::make('file_surat')
+                            ->directory('surat-keluar')
+                            ->preserveFilenames()
+                                ->required()
+                                ->label("Template Surat")
+                                ->visible(function (Forms\Get $get) {
+                                    $jenisSuratId = $get('id_jenis_surat');
+                                    $jenisSurat = JenisSurat::find($jenisSuratId);
+                                    return $jenisSurat?->nama === 'Lainnya';
+                                })
+                                ->maxSize(5120),
+                        ]),
                     ])
             ]);
     }
@@ -92,6 +117,15 @@ class SuratKeluarResource extends Resource
                 Tables\Columns\TextColumn::make('perihal')
                     ->searchable()
                     ->limit(50),
+                Tables\Columns\TextColumn::make('pengajuanSurat.status_pengajuan')
+                    ->label('Status Pengajuan')
+            ->badge()
+                ->color(fn(string $state): string => match ($state) {
+                    'Diajukan' => 'warning',
+                    'Diterima' => 'success',
+                    'Ditolak' => 'danger',
+                'Belum Diajukan' => 'info',
+                }),
 
                 Tables\Columns\TextColumn::make('file_surat')
                     ->label('Upload Berkas')
@@ -117,6 +151,7 @@ class SuratKeluarResource extends Resource
                 TableAction::make('ajukan_surat')
                     ->label('Ajukan Surat')
                     ->icon('heroicon-o-paper-airplane')
+                    ->visible(fn($record) => $record->pengajuanSurat->status_pengajuan === 'Ditolak')
                     ->action(fn(SuratKeluar $record) => self::handleSuratSubmission($record)),
             ])
             ->bulkActions([
@@ -152,16 +187,16 @@ class SuratKeluarResource extends Resource
         }
     }
 
-    private static function generateSkNumber(Forms\Set $set): void
+    private static function generateSkNumber(Forms\Set $set, $kode): void
     {
         $lastSk = SuratKeluar::orderBy('nomor_surat', 'desc')->first();
 
         $newSkNumber = 1;
-        if ($lastSk && preg_match('/800\/(\d{2,})\/DINKES\/\d{4}/', $lastSk->nomor_sk, $matches)) {
+        if ($lastSk && preg_match('/800\/(\d{2,})\/'.$kode.'\/\d{4}/', $lastSk->nomor_surat, $matches)) {
             $newSkNumber = intval($matches[1]) + 1;
         }
 
-        $formattedSk = sprintf("800/%02d/DINKES/%s", $newSkNumber, date('Y'));
+        $formattedSk = sprintf("800/%02d/%s/%s", $newSkNumber, $kode, date('Y'));
         $set('nomor_sk', $formattedSk);
     }
 

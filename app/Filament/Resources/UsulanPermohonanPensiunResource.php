@@ -31,7 +31,7 @@ class UsulanPermohonanPensiunResource extends Resource
         return ['view', 'view_any', 'view_own', 'download_file', 'create', 'update', 'delete', 'delete_any', 'kirim_notif'];
     }
 
-    protected static ?string $navigationIcon = 'heroicon-o-document-text';
+    protected static ?string $navigationIcon = 'heroicon-o-document';
 
     protected static ?string $navigationGroup = 'Kepegawaian';
     protected static ?string $navigationLabel = 'Permohonan Pensiun';

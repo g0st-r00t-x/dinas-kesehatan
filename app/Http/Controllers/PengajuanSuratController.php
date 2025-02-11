@@ -33,11 +33,39 @@ class PengajuanSuratController extends Controller
             }
 
             $pegawai = $this->findPegawai($record->id_pegawai);
-            $pengajuanSurat = $this->createPengajuanSurat($user, $pegawai, $record);
+
+            // Check for existing submission
+            $existingSubmission = PengajuanSurat::where('id_pengajuan', $record->id)
+                ->where('id_pemohon', $user->id)
+                ->first();
+
+            if ($existingSubmission) {
+                // If submission exists and is active, throw exception
+                if ($existingSubmission->status_pengajuan === 'Diajukan') {
+                    throw new Exception('Surat ini sudah diajukan dan masih dalam proses.');
+                }else if ($existingSubmission->status_pengajuan === 'Diterima') {
+                    throw new Exception('Surat ini sudah diterima.');
+                }
+
+                // If submission was rejected, update it
+                if ($existingSubmission->status_pengajuan === 'Ditolak') {
+                    $existingSubmission->update([
+                        'status_pengajuan' => 'Diajukan',
+                        'tgl_pengajuan' => now(),
+                    ]);
+
+                    $this->sendNotifications($pegawai, $record);
+                    DB::commit();
+                    $this->sendSuccessNotification($record->perihal);
+                    return;
+                }
+            }
+
+            // Create new submission if no existing record found
+            $this->createPengajuanSurat($user, $pegawai, $record);
             $this->sendNotifications($pegawai, $record);
 
             DB::commit();
-
             $this->sendSuccessNotification($record->perihal);
         } catch (Exception $e) {
             DB::rollBack();
@@ -52,15 +80,15 @@ class PengajuanSuratController extends Controller
     }
 
     /**
-     * Find employee by NIP
+     * Find employee by ID
      * 
-     * @param string $nip
+     * @param string $id
      * @return Pegawai
      * @throws Exception
      */
     private function findPegawai(string $id): Pegawai
     {
-        $pegawai = Pegawai::where('id', $id)->first();
+        $pegawai = Pegawai::find($id);
 
         if (!$pegawai) {
             throw new Exception('Pegawai tidak ditemukan.');

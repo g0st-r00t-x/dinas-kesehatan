@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class RekapAbsenAsn extends Model
+class RekapAbsen extends Model
 {
     use HasFactory;
 
@@ -13,6 +13,7 @@ class RekapAbsenAsn extends Model
 
     protected $fillable = [
         'bulan',
+        'jenis_pegawai',
         'upload_excel',
     ];
 }
