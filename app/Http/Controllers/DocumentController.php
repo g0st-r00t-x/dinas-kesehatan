@@ -44,7 +44,8 @@ class DocumentController extends Controller
 
             // Cleanup
             if ($isClean) {
-                $this->cleanupFiles($editedFilePath, $pdfPath, $replacements);
+                $this->cleanupFiles([$editedFilePath, $pdfPath]);
+                $this->cleanupReplacementFiles($replacements);
             }
 
             Notification::make()
@@ -57,6 +58,72 @@ class DocumentController extends Controller
             $this->handleError($e);
             throw new Exception('Gagal memproses dokumen: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Clean up list of files from direct array of paths
+     * 
+     * @param array $files Array of file paths to be deleted
+     * @return array{success: bool, message: string}
+     */
+    public function cleanupFiles(array $files): array
+    {
+        $errors = [];
+        $deleted = 0;
+
+        foreach ($files as $file) {
+            if (file_exists($file)) {
+                if (unlink($file)) {
+                    $deleted++;
+                } else {
+                    $errors[] = "Failed to delete file: $file";
+                }
+            } else {
+                $errors[] = "File not found: $file";
+            }
+        }
+
+        return [
+            'success' => empty($errors),
+            'message' => empty($errors)
+                ? "$deleted file(s) successfully deleted"
+                : implode("\n", $errors)
+        ];
+    }
+
+    /**
+     * Clean up files from replacements array
+     * 
+     * @param array $replacements Array of replacement items with type and replace keys
+     * @return array{success: bool, message: string}
+     */
+    public function cleanupReplacementFiles(array $replacements): array
+    {
+        $errors = [];
+        $deleted = 0;
+
+        foreach ($replacements as $item) {
+            if (($item['type'] ?? 'text') === 'image' && isset($item['replace'])) {
+                $file = $item['replace'];
+
+                if (file_exists($file)) {
+                    if (unlink($file)) {
+                        $deleted++;
+                    } else {
+                        $errors[] = "Failed to delete file: $file";
+                    }
+                } else {
+                    $errors[] = "File not found: $file";
+                }
+            }
+        }
+
+        return [
+            'success' => empty($errors),
+            'message' => empty($errors)
+                ? "$deleted file(s) successfully deleted"
+                : implode("\n", $errors)
+        ];
     }
 
     private function processTemplateWithReplacements(string $templatePath, array $replacements): string
@@ -168,25 +235,25 @@ class DocumentController extends Controller
         }
     }
 
-    private function cleanupFiles(string $editedFilePath, string $pdfPath, array $replacements): void
-    {
-        // Cleanup temporary DOCX
-        if (file_exists($editedFilePath)) {
-            unlink($editedFilePath);
-        }
+    // private function cleanupFiles(string $editedFilePath, string $pdfPath, array $replacements): void
+    // {
+    //     // Cleanup temporary DOCX
+    //     if (file_exists($editedFilePath)) {
+    //         unlink($editedFilePath);
+    //     }
 
-        // Cleanup original PDF
-        if (file_exists($pdfPath)) {
-            unlink($pdfPath);
-        }
+    //     // Cleanup original PDF
+    //     if (file_exists($pdfPath)) {
+    //         unlink($pdfPath);
+    //     }
 
-        // Cleanup image files
-        foreach ($replacements as $item) {
-            if (($item['type'] ?? 'text') === 'image' && file_exists($item['replace'])) {
-                unlink($item['replace']);
-            }
-        }
-    }
+    //     // Cleanup image files
+    //     foreach ($replacements as $item) {
+    //         if (($item['type'] ?? 'text') === 'image' && file_exists($item['replace'])) {
+    //             unlink($item['replace']);
+    //         }
+    //     }
+    // }
 
     private function movePdfToStorage(string $pdfPath): string
     {
