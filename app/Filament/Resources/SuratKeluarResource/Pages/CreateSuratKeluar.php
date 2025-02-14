@@ -5,6 +5,7 @@ namespace App\Filament\Resources\SuratKeluarResource\Pages;
 use App\Filament\Resources\SuratKeluarResource;
 use App\Http\Controllers\DocumentController;
 use Filament\Resources\Pages\CreateRecord;
+use App\Models\JenisSurat;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -15,25 +16,16 @@ class CreateSuratKeluar extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        if (empty($data['file_surat'])) {
-            Notification::make()
-                ->title('Gagal memproses dokumen')
-                ->body('File surat tidak boleh kosong')
-                ->danger()
-                ->send();
-
-            return $data;
-        }
+        $templateSurat = JenisSurat::find($data['id_jenis_surat']);
 
         try {
             // Get the uploaded file path
-            $filePath = $data['file_surat'];
+            $filePath = $templateSurat->template_surat;
             Log::info('Processing surat keluar', ['original_path' => $filePath]);
 
-            // Convert storage path to actual path
-            $storagePath = Storage::disk('public')->path($filePath);
+           
 
-            if (!file_exists($storagePath)) {
+            if (empty($filePath)) {
                 throw new \Exception("File template tidak ditemukan: {$filePath}");
             }
 
@@ -46,7 +38,7 @@ class CreateSuratKeluar extends CreateRecord
             // Process the document
             $documentController = new DocumentController();
             $pdfPath = $documentController->processDocument(
-                "public/{$filePath}", // Relative path from storage/app
+                $filePath,
                 $replacements
             );
 
@@ -62,8 +54,6 @@ class CreateSuratKeluar extends CreateRecord
                 'pdf_path' => $pdfRelativePath
             ]);
 
-            // Delete original DOCX file
-            Storage::disk('public')->delete($filePath);
 
             // Update file path in data array
             $data['file_surat'] = $pdfRelativePath;

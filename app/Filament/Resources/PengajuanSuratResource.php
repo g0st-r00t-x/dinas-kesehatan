@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\PengajuanSuratResource\Pages;
 use App\Filament\Resources\PengajuanSuratResource\RelationManagers;
+use App\Http\Controllers\PenerimaanPengajuan;
 use App\Models\PengajuanSurat;
 use Filament\Forms;
 use Filament\Forms\Components\Actions\Action;
@@ -11,12 +12,14 @@ use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Http;
 
 class PengajuanSuratResource extends Resource
 {
@@ -124,8 +127,17 @@ class PengajuanSuratResource extends Resource
                         ->icon('heroicon-o-check-circle')
                         ->color('success')
                         ->visible(fn($record) => $record->status_pengajuan === 'Diajukan')
-                        ->action(fn($record) => $record->update(['status_pengajuan' => 'Diterima', 'tgl_diterima' => now()])),
-
+                        ->action(function (PengajuanSurat $record) {
+                            try {
+                                app(PenerimaanPengajuan::class)($record);
+                            } catch (\Exception $e) {
+                                Notification::make()
+                                    ->danger()
+                                    ->title('Gagal')
+                                    ->body('Gagal menyetujui pengajuan surat.')
+                                    ->send();
+                            }
+                        }),
                     Tables\Actions\Action::make('tolak')
                         ->label('Tolak')
                         ->icon('heroicon-o-x-circle')

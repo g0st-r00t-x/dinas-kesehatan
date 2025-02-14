@@ -172,8 +172,8 @@ return [
         App\Providers\Filament\DinasKesehatanPanelProvider::class,
         App\Providers\Filament\AdminPanelProvider::class,
         App\Providers\RouteServiceProvider::class,
+        LaravelQRCode\Providers\QRCodeServiceProvider::class,
     ])->toArray(),
-
     /*
     |--------------------------------------------------------------------------
     | Class Aliases
@@ -187,6 +187,7 @@ return [
 
     'aliases' => Facade::defaultAliases()->merge([
         // 'Example' => App\Facades\Example::class,
+        'QRCode' => LaravelQRCode\Facades\QRCode::class,
     ])->toArray(),
 
 ];

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Widgets;
 
+use App\Models\ActivityLog;
 use App\Models\SuratKeluar;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -14,27 +15,33 @@ class LatestActivities extends BaseWidget
     public function table(Table $table): Table
     {
         return $table
-            ->query(SuratKeluar::latest()->limit(10)) // Menampilkan 10 data terbaru dari surat_keluar
+            ->query(ActivityLog::query()->latest()->limit(10))  // Wrap with query()
             ->columns([
-                Tables\Columns\TextColumn::make('nomor_surat')
-                ->label('Nomor Surat')
-                ->sortable()
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Waktu')
+                    ->dateTime()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('description')
+                    ->label('Deskripsi')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('perihal')
-                ->label('Perihal')
-                ->sortable(),
-                Tables\Columns\TextColumn::make('tujuan_surat')
-                ->label('Tujuan Surat')
-                ->sortable(),
-                Tables\Columns\TextColumn::make('tanggal_surat')
-                ->label('Tanggal Surat')
-                ->date(),
-                Tables\Columns\TextColumn::make('file_surat')
-                ->label('File Surat')
-                ->url(fn($record) => asset('storage/' . $record->file_surat))
-                    ->openUrlInNewTab(),
+                Tables\Columns\TextColumn::make('event')
+                    ->label('Aksi')
+                    ->badge()
+                    ->color(fn(string $state): string => match ($state) {
+                        'created' => 'success',
+                        'updated' => 'warning',
+                        'deleted' => 'danger',
+                        default => 'secondary',
+                    }),
+                Tables\Columns\TextColumn::make('causer.name')
+                    ->label('User')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('properties')
+                    ->label('Detail')
+                    ->wrap()
+                    ->limit(50),
             ])
-            ->defaultSort('tanggal_surat', 'desc'); // Urutan dari yang terbaru
+            ->defaultSort('created_at', 'desc'); // Urutan dari yang terbaru
     }
     public static function getSort(): int
     {

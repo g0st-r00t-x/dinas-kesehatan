@@ -39,8 +39,6 @@ class UsulanSKBerkalaResource extends Resource
     protected static ?string $navigationLabel = 'SK Berkala';
     
     protected static ?string $modelLabel = 'SK Berkala';
-
-
     protected static ?string $label = 'SK Berkala';
 
     protected static ?string $pluralLabel = 'SK Berkala';
