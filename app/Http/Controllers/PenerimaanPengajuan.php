@@ -12,6 +12,13 @@ use LaravelQRCode\Facades\QRCode;
 
 class PenerimaanPengajuan extends Controller
 {
+    protected DocumentController $documentController;
+
+    public function __construct()
+    {
+        $this->documentController = new DocumentController();
+    }
+
     public function __invoke(PengajuanSurat $pengajuan): JsonResponse
     {
         try {
@@ -36,11 +43,6 @@ class PenerimaanPengajuan extends Controller
             if (empty($templateFile)) {
                 throw new Exception("File template belum diatur pada jenis surat");
             }
-            //     Log::error('Template file not found', [
-            //         'template_path' => $templatePath,
-            //         'template_file' => $templateFile
-            //     ]);
-            // }
 
             // Generate dan simpan QR Code
             $qrPath = $this->generateQRCode($pengajuan);
@@ -66,7 +68,7 @@ class PenerimaanPengajuan extends Controller
             ]);
 
             // Cleanup temporary QR Code
-            Storage::delete($qrPath);
+            Storage::disk('public')->delete($qrPath);
 
             DB::commit();
 
@@ -105,14 +107,13 @@ class PenerimaanPengajuan extends Controller
             ]);
 
             $filename = "qr-codes/surat-{$pengajuan->id}-" . time() . ".png";
-            $directory = Storage::path('public/qr-codes');
+            $directory = Storage::disk('public')->path('qr-codes');
 
-            // Ensure directory exists
             if (!is_dir($directory)) {
                 mkdir($directory, 0755, true);
             }
 
-            $fullPath = Storage::path("public/$filename");
+            $fullPath = Storage::disk('public')->path($filename);
 
             QRCode::text($qrContent)
                 ->setOutfile($fullPath)
@@ -135,33 +136,22 @@ class PenerimaanPengajuan extends Controller
 
     private function processDocument(PengajuanSurat $pengajuan, string $templatePath, string $qrPath): string
     {
-        // $replacements = [
-        //     '{nomor_surat}' => $pengajuan->suratKeluar->nomor_surat ?? '',
-        //     '{perihal}' => $pengajuan->suratKeluar->perihal ?? '',
-        //     '{qr-code}' => Storage::url($qrPath),
-        //     '{tanggal}' => now()->format('d/m/Y'),
-        //     '{pemohon}' => $pengajuan->pemohon->name ?? '',
-        //     '{jabatan_pemohon}' => $pengajuan->pemohon->jabatan ?? '',
-        //     '{penerima}' => $pengajuan->diajukan->nama ?? '',
-        //     '{jabatan_penerima}' => $pengajuan->diajukan->jabatan ?? ''
-        // ];
-
-        log::info('QRCode', [
-            public_path('storage/' . $qrPath)]);
+        Log::info('Processing document with QR Code', [
+            'qr_path' => Storage::disk('public')->path($qrPath)
+        ]);
 
         $replacements = [
             ['search' => '{nomor_surat}', 'replace' => $pengajuan->suratKeluar->nomor_surat ?? ''],
             ['search' => '{perihal}', 'replace' => $pengajuan->suratKeluar->perihal ?? ''],
-            ['search' => '{qr_code}', 'replace' => public_path('storage/' . $qrPath), 'type' => 'image'],
+            ['search' => '{qr_code}', 'replace' => Storage::disk('public')->path($qrPath), 'type' => 'image'],
         ];
 
         Log::info('Processing document with replacements', [
             'template_path' => $templatePath,
-            'replacements' => array_keys($replacements)
+            'replacements' => $replacements
         ]);
 
-        $documentController = new DocumentController();
-        return $documentController->processDocument($templatePath, $replacements, $isClean=true);
+        return $this->documentController->processDocument($templatePath, $replacements, true);
     }
 
     private function updateStatus(PengajuanSurat $pengajuan, string $pdfPath): void
@@ -170,6 +160,10 @@ class PenerimaanPengajuan extends Controller
             'status_pengajuan' => 'Diterima',
             'tgl_diterima' => now(),
         ]);
+
+        if ($pengajuan->suratKeluar->file_surat) {
+            $this->documentController->cleanupFiles($pengajuan->suratKeluar->file_surat);
+        }
 
         $pengajuan->suratKeluar->update([
             'file_surat' => $pdfPath

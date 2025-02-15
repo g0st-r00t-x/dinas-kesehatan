@@ -121,11 +121,14 @@ class EditSuratKeluar extends EditRecord
             ];
 
             foreach ($tempPatterns as $pattern) {
+                storage_path('storage/' . $pattern);
                 $files = Storage::disk('public')->files(dirname($pattern));
 
                 foreach ($files as $file) {
                     if (strpos(basename($file), basename($pattern, '*')) === 0) {
                         Storage::disk('public')->delete($file);
+                        unlink( $pattern);
+
                     }
                 }
             }

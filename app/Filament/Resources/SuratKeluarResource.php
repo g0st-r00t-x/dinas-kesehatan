@@ -15,6 +15,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\Action as TableAction;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class SuratKeluarResource extends Resource
@@ -65,6 +66,7 @@ class SuratKeluarResource extends Resource
                                                 }
 
                                                 $jenisSurat = JenisSurat::find($jenisSuratId);
+                                                Log::info('Jenis Surat: ', ['jenis_surat' => $jenisSurat]);
                                                 if (!$jenisSurat) {
                                                     return;
                                                 }
@@ -187,17 +189,20 @@ class SuratKeluarResource extends Resource
     }
 
     private static function generateSkNumber(Forms\Set $set, $kode): void
-    {
-        $lastSk = SuratKeluar::orderBy('nomor_surat', 'desc')->first();
+{
+    $lastSk = SuratKeluar::orderBy('nomor_surat', 'desc')
+        ->whereYear('created_at', now()->year)
+        ->where('nomor_surat', 'LIKE', "800/%/$kode/%")
+        ->first();
 
-        $newSkNumber = 1;
-        if ($lastSk && preg_match('/800\/(\d{2,})\/' . $kode . '\/\d{4}/', $lastSk->nomor_surat, $matches)) {
-            $newSkNumber = intval($matches[1]) + 1;
-        }
-
-        $formattedSk = sprintf("800/%02d/%s/%s", $newSkNumber, $kode, date('Y'));
-        $set('nomor_sk', $formattedSk);
+    $newSkNumber = 1;
+    if ($lastSk && preg_match('/800\/(\d{2,})\/' . preg_quote($kode, '/') . '\/\d{4}/', $lastSk->nomor_surat, $matches)) {
+        $newSkNumber = intval($matches[1]) + 1;
     }
+
+    $formattedSk = sprintf("800/%02d/%s/%s", $newSkNumber, $kode, date('Y'));
+    $set('nomor_surat', $formattedSk);
+}
 
     private static function getFileUrl($record): ?string
     {
