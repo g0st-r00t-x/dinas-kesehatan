@@ -13,6 +13,7 @@ Berikut adalah alat dan pustaka yang digunakan dalam proyek ini:
 - **[Fonte](https://github.com/fonte/fonte)** - Untuk mengirim notifikasi WhatsApp.
 - **[Laravel Broadcasting](https://laravel.com/docs/broadcasting)** - Untuk komunikasi real-time.
 - **[Laravel Reverb](https://laravel.com/docs/10.x/broadcasting#driver-reverb)** - WebSocket berbasis Laravel.
+- **[PHPWord](https://phpoffice.github.io/PHPWord/)** - Untuk costumisasi word template, untuk surat menurat.
 
 ## ⚙️ Installation Guide
 Ikuti langkah-langkah berikut untuk menginstal dan menjalankan proyek ini.
