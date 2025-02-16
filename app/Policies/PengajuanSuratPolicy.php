@@ -17,6 +17,10 @@ class PengajuanSuratPolicy
     {
         return $user->can('view_any_pengajuan::surat');
     }
+    public function viewOwn(User $user): bool
+    {
+        return $user->can('view_own_pengajuan::surat');
+    }
 
     /**
      * Determine whether the user can view the model.

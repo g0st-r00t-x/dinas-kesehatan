@@ -190,11 +190,13 @@ class DocumentController extends Controller
     /**
      * Clean up temporary files
      */
-    public function cleanup(array $files): array
+    public function cleanup(array |string $files): array
     {
         Log::info('DocumentController cleanup called with files:', $files);
 
         $results = ['success' => true, 'errors' => []];
+
+        $files = is_array($files) ? $files : [$files];
 
         foreach ($files as $file) {
             try {

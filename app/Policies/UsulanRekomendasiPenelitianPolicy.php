@@ -17,6 +17,10 @@ class UsulanRekomendasiPenelitianPolicy
     {
         return $user->can('view_any_usulan::rekomendasi::penelitian');
     }
+    public function viewOwn(User $user): bool
+    {
+        return $user->can('view_own_usulan::rekomendasi::penelitian');
+    }
 
     /**
      * Determine whether the user can view the model.

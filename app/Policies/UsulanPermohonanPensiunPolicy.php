@@ -17,6 +17,10 @@ class UsulanPermohonanPensiunPolicy
     {
         return $user->can('view_any_usulan::permohonan::pensiun');
     }
+    public function viewOwn(User $user): bool
+    {
+        return $user->can('view_own_usulan::permohonan::pensiun');
+    }
 
     /**
      * Determine whether the user can view the model.

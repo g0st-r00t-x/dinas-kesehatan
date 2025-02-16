@@ -34,6 +34,9 @@ return [
     'permission_prefixes' => [
         'resource' => [
             'view',
+            'view_own',
+            'download_file',
+            'kirim_notif',
             'view_any',
             'create',
             'update',

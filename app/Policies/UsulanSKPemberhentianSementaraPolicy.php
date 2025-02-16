@@ -17,6 +17,10 @@ class UsulanSKPemberhentianSementaraPolicy
     {
         return $user->can('view_any_usulan::s::k::pemberhentian::sementara');
     }
+    public function viewOwn(User $user): bool
+    {
+        return $user->can('view_own_usulan::s::k::pemberhentian::sementara');
+    }
 
     /**
      * Determine whether the user can view the model.

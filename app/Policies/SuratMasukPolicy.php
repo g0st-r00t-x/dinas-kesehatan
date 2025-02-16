@@ -17,6 +17,10 @@ class SuratMasukPolicy
     {
         return $user->can('view_any_surat::masuk');
     }
+    public function viewOwn(User $user): bool
+    {
+        return $user->can('view_any_surat::masuk');
+    }
 
     /**
      * Determine whether the user can view the model.

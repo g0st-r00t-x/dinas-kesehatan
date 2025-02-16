@@ -17,6 +17,10 @@ class DataSerkomPolicy
     {
         return $user->can('view_any_data::serkom');
     }
+    public function viewOwn(User $user): bool
+    {
+        return $user->can('view_own_data::serkom');
+    }
 
     /**
      * Determine whether the user can view the model.

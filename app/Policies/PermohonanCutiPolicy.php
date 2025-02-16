@@ -17,6 +17,10 @@ class PermohonanCutiPolicy
     {
         return $user->can('view_any_usulan::permohonan::cuti');
     }
+    public function viewOwn(User $user): bool
+    {
+        return $user->can('view_own_usulan::permohonan::cuti');
+    }
 
     /**
      * Determine whether the user can view the model.

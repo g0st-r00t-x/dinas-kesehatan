@@ -13,9 +13,9 @@ class UsulanRevisiSkPangkatPolicy
     /**
      * Determine whether the user can view any models.
      */
-    public function viewAny(User $user): bool
+    public function viewOwn(User $user): bool
     {
-        return $user->can('view_any_usulan::revisi::sk::pangkat');
+        return $user->can('view_own_usulan::revisi::sk::pangkat');
     }
 
     /**

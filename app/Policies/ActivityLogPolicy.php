@@ -3,10 +3,10 @@
 namespace App\Policies;
 
 use App\Models\User;
-use App\Models\RekapAbsenASN;
+use App\Models\ActivityLog;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class RekapAbsenASNPolicy
+class ActivityLogPolicy
 {
     use HandlesAuthorization;
 
@@ -15,15 +15,15 @@ class RekapAbsenASNPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_rekap::absen::a::s::n');
+        return $user->can('view_any_activity::log');
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, RekapAbsenASN $rekapAbsenASN): bool
+    public function view(User $user, ActivityLog $activityLog): bool
     {
-        return $user->can('view_rekap::absen::a::s::n');
+        return $user->can('view_activity::log');
     }
 
     /**
@@ -31,23 +31,23 @@ class RekapAbsenASNPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_rekap::absen::a::s::n');
+        return $user->can('create_activity::log');
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, RekapAbsenASN $rekapAbsenASN): bool
+    public function update(User $user, ActivityLog $activityLog): bool
     {
-        return $user->can('update_rekap::absen::a::s::n');
+        return $user->can('update_activity::log');
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, RekapAbsenASN $rekapAbsenASN): bool
+    public function delete(User $user, ActivityLog $activityLog): bool
     {
-        return $user->can('delete_rekap::absen::a::s::n');
+        return $user->can('delete_activity::log');
     }
 
     /**
@@ -55,13 +55,13 @@ class RekapAbsenASNPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_rekap::absen::a::s::n');
+        return $user->can('delete_any_activity::log');
     }
 
     /**
      * Determine whether the user can permanently delete.
      */
-    public function forceDelete(User $user, RekapAbsenASN $rekapAbsenASN): bool
+    public function forceDelete(User $user, ActivityLog $activityLog): bool
     {
         return $user->can('{{ ForceDelete }}');
     }
@@ -77,7 +77,7 @@ class RekapAbsenASNPolicy
     /**
      * Determine whether the user can restore.
      */
-    public function restore(User $user, RekapAbsenASN $rekapAbsenASN): bool
+    public function restore(User $user, ActivityLog $activityLog): bool
     {
         return $user->can('{{ Restore }}');
     }
@@ -93,7 +93,7 @@ class RekapAbsenASNPolicy
     /**
      * Determine whether the user can replicate.
      */
-    public function replicate(User $user, RekapAbsenASN $rekapAbsenASN): bool
+    public function replicate(User $user, ActivityLog $activityLog): bool
     {
         return $user->can('{{ Replicate }}');
     }

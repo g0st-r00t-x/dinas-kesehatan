@@ -17,6 +17,10 @@ class RevisiSKPangkatPolicy
     {
         return $user->can('view_any_revisiskpangkat');
     }
+    public function viewOwn(User $user): bool
+    {
+        return $user->can('view_own_revisiskpangkat');
+    }
 
     /**
      * Determine whether the user can view the model.
@@ -24,11 +28,6 @@ class RevisiSKPangkatPolicy
     public function view(User $user, UsulanRevisiSkPangkat $revisiSKPangkat): bool
     {
         return $user->can('view_revisiskpangkat');
-    }
-
-    public function viewOwn(User $user, UsulanRevisiSkPangkat $revisiSKPangkat): bool
-    {
-        return $user->can('view_own_revisiskpangkat');
     }
 
     /**

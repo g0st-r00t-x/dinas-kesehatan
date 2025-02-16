@@ -17,6 +17,10 @@ class InventarisirPermasalahanKepegawaianPolicy
     {
         return $user->can('view_any_inventaris::permasalahan::kepegawaian');
     }
+    public function viewOwn(User $user): bool
+    {
+        return $user->can('view_own_inventaris::permasalahan::kepegawaian');
+    }
 
     /**
      * Determine whether the user can view the model.
