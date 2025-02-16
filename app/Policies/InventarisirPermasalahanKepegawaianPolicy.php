@@ -17,6 +17,10 @@ class InventarisirPermasalahanKepegawaianPolicy
     {
         return $user->can('view_any_inventaris::permasalahan::kepegawaian');
     }
+    public function viewOwn(User $user): bool
+    {
+        return $user->can('view_own_inventaris::permasalahan::kepegawaian');
+    }
 
     /**
      * Determine whether the user can view the model.
@@ -63,7 +67,7 @@ class InventarisirPermasalahanKepegawaianPolicy
      */
     public function forceDelete(User $user, InventarisirPermasalahanKepegawaian $inventarisirPermasalahanKepegawaian): bool
     {
-        return $user->can('force_delete_inventaris::permasalahan::kepegawaian');
+        return $user->can('{{ ForceDelete }}');
     }
 
     /**
@@ -71,7 +75,7 @@ class InventarisirPermasalahanKepegawaianPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_inventaris::permasalahan::kepegawaian');
+        return $user->can('{{ ForceDeleteAny }}');
     }
 
     /**
@@ -79,7 +83,7 @@ class InventarisirPermasalahanKepegawaianPolicy
      */
     public function restore(User $user, InventarisirPermasalahanKepegawaian $inventarisirPermasalahanKepegawaian): bool
     {
-        return $user->can('restore_inventaris::permasalahan::kepegawaian');
+        return $user->can('{{ Restore }}');
     }
 
     /**
@@ -87,7 +91,7 @@ class InventarisirPermasalahanKepegawaianPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_inventaris::permasalahan::kepegawaian');
+        return $user->can('{{ RestoreAny }}');
     }
 
     /**
@@ -95,7 +99,7 @@ class InventarisirPermasalahanKepegawaianPolicy
      */
     public function replicate(User $user, InventarisirPermasalahanKepegawaian $inventarisirPermasalahanKepegawaian): bool
     {
-        return $user->can('replicate_inventaris::permasalahan::kepegawaian');
+        return $user->can('{{ Replicate }}');
     }
 
     /**
@@ -103,6 +107,6 @@ class InventarisirPermasalahanKepegawaianPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_inventaris::permasalahan::kepegawaian');
+        return $user->can('{{ Reorder }}');
     }
 }

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Storage;
 
 class InventarisirPermasalahanKepegawaian extends Model
@@ -13,16 +14,30 @@ class InventarisirPermasalahanKepegawaian extends Model
     protected $table = 'permasalahan_kepegawaian';
 
     protected $fillable = [
-        'nama',
-        'nip',
-        'pangkat_golongan',
-        'jabatan',
-        'unit_kerja',
+        'user_id',
+        'pegawai_nip',
         'permasalahan',
         'data_dukungan_id',
         'file_upload',
         'surat_pengantar_unit_kerja',
     ];
+
+    // Relasi ke tabel pegawai
+    public function pegawai()
+    {
+        return $this->belongsTo(Pegawai::class, 'pegawai_nip', 'nip');
+    }
+
+    // Relasi ke tabel data dukungan
+    public function dataDukungan()
+    {
+        return $this->belongsTo(DataDukungan::class, 'data_dukungan_id', 'id');
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
 
     /**
      * Boot method to handle model events
@@ -176,8 +191,4 @@ class InventarisirPermasalahanKepegawaian extends Model
     /**
      * Relation to DataDukungan
      */
-    public function dataDukungan()
-    {
-        return $this->belongsTo(DataDukungan::class, 'data_dukungan_id');
-    }
 }

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Storage;
 
 class UsulanPermohonanPensiun extends Model
@@ -10,10 +11,7 @@ class UsulanPermohonanPensiun extends Model
     protected $table = 'usulan_pensiun';
 
     protected $fillable = [
-        'nama',
-        'nip',
-        'pangkat_golongan',
-        'jabatan',
+        'pegawai_nip',
         'surat_pengantar_unit',
         'sk_pangkat_terakhir',
         'sk_cpcns',
@@ -32,6 +30,21 @@ class UsulanPermohonanPensiun extends Model
         'foto',
         'nomor_telepon',
     ];
+
+    public function pegawai()
+    {
+        return $this->belongsTo(Pegawai::class, 'pegawai_nip', 'nip');
+    }
+
+    public function pengajuanSurat()
+    {
+        return $this->hasOne(PengajuanSurat::class, 'id_pengajuan');
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
 
     /**
      * Boot method to handle model events

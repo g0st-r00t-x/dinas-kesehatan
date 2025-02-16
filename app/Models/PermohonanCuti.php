@@ -4,33 +4,34 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PermohonanCuti extends Model
 {
     protected $table = 'permohonan_cuti';
     protected $fillable = [
-        'pegawai_id', 'jenis_cuti_id', 'tanggal_mulai', 
-        'tanggal_selesai', 'alasan', 'status'
+        'pegawai_nip', 'jenis_cuti_id', 'tanggal_mulai',
+        'tanggal_selesai', 'alasan', 'status', "user_id", "surat_pengantar"
     ];
 
 
     public function pegawai()
-{
-    return $this->belongsTo(Pegawai::class);
-}
+    {
+        return $this->belongsTo(Pegawai::class, 'pegawai_nip', 'nip');
+    }
 
-public function unitKerja()
-{
-    return $this->belongsTo(UnitKerja::class);
-}
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
+
+    public function pengajuanSurat(){
+        return $this->hasOne(PengajuanSurat::class,'id_pengajuan');
+    }
 
     public function jenisCuti()
     {
-        return $this->belongsTo(JenisCuti::class);
-    }
-
-    public function dokumenCuti()
-    {
-        return $this->hasMany(DokumenCuti::class);
+        return $this->belongsTo(JenisCuti::class, 'jenis_cuti_id', 'jenis_cuti_id');
     }
 }

@@ -17,6 +17,10 @@ class DataSerkomPolicy
     {
         return $user->can('view_any_data::serkom');
     }
+    public function viewOwn(User $user): bool
+    {
+        return $user->can('view_own_data::serkom');
+    }
 
     /**
      * Determine whether the user can view the model.
@@ -63,7 +67,7 @@ class DataSerkomPolicy
      */
     public function forceDelete(User $user, DataSerkom $dataSerkom): bool
     {
-        return $user->can('force_delete_data::serkom');
+        return $user->can('{{ ForceDelete }}');
     }
 
     /**
@@ -71,7 +75,7 @@ class DataSerkomPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_data::serkom');
+        return $user->can('{{ ForceDeleteAny }}');
     }
 
     /**
@@ -79,7 +83,7 @@ class DataSerkomPolicy
      */
     public function restore(User $user, DataSerkom $dataSerkom): bool
     {
-        return $user->can('restore_data::serkom');
+        return $user->can('{{ Restore }}');
     }
 
     /**
@@ -87,7 +91,7 @@ class DataSerkomPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_data::serkom');
+        return $user->can('{{ RestoreAny }}');
     }
 
     /**
@@ -95,7 +99,7 @@ class DataSerkomPolicy
      */
     public function replicate(User $user, DataSerkom $dataSerkom): bool
     {
-        return $user->can('replicate_data::serkom');
+        return $user->can('{{ Replicate }}');
     }
 
     /**
@@ -103,6 +107,6 @@ class DataSerkomPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_data::serkom');
+        return $user->can('{{ Reorder }}');
     }
 }

@@ -17,6 +17,10 @@ class UsulanRekomendasiPenelitianPolicy
     {
         return $user->can('view_any_usulan::rekomendasi::penelitian');
     }
+    public function viewOwn(User $user): bool
+    {
+        return $user->can('view_own_usulan::rekomendasi::penelitian');
+    }
 
     /**
      * Determine whether the user can view the model.
@@ -63,7 +67,7 @@ class UsulanRekomendasiPenelitianPolicy
      */
     public function forceDelete(User $user, UsulanRekomendasiPenelitian $usulanRekomendasiPenelitian): bool
     {
-        return $user->can('force_delete_usulan::rekomendasi::penelitian');
+        return $user->can('{{ ForceDelete }}');
     }
 
     /**
@@ -71,7 +75,7 @@ class UsulanRekomendasiPenelitianPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_usulan::rekomendasi::penelitian');
+        return $user->can('{{ ForceDeleteAny }}');
     }
 
     /**
@@ -79,7 +83,7 @@ class UsulanRekomendasiPenelitianPolicy
      */
     public function restore(User $user, UsulanRekomendasiPenelitian $usulanRekomendasiPenelitian): bool
     {
-        return $user->can('restore_usulan::rekomendasi::penelitian');
+        return $user->can('{{ Restore }}');
     }
 
     /**
@@ -87,7 +91,7 @@ class UsulanRekomendasiPenelitianPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_usulan::rekomendasi::penelitian');
+        return $user->can('{{ RestoreAny }}');
     }
 
     /**
@@ -95,7 +99,7 @@ class UsulanRekomendasiPenelitianPolicy
      */
     public function replicate(User $user, UsulanRekomendasiPenelitian $usulanRekomendasiPenelitian): bool
     {
-        return $user->can('replicate_usulan::rekomendasi::penelitian');
+        return $user->can('{{ Replicate }}');
     }
 
     /**
@@ -103,6 +107,6 @@ class UsulanRekomendasiPenelitianPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_usulan::rekomendasi::penelitian');
+        return $user->can('{{ Reorder }}');
     }
 }

@@ -17,6 +17,10 @@ class UsulanPermohonanPensiunPolicy
     {
         return $user->can('view_any_usulan::permohonan::pensiun');
     }
+    public function viewOwn(User $user): bool
+    {
+        return $user->can('view_own_usulan::permohonan::pensiun');
+    }
 
     /**
      * Determine whether the user can view the model.
@@ -63,7 +67,7 @@ class UsulanPermohonanPensiunPolicy
      */
     public function forceDelete(User $user, UsulanPermohonanPensiun $usulanPermohonanPensiun): bool
     {
-        return $user->can('force_delete_usulan::permohonan::pensiun');
+        return $user->can('{{ ForceDelete }}');
     }
 
     /**
@@ -71,7 +75,7 @@ class UsulanPermohonanPensiunPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_usulan::permohonan::pensiun');
+        return $user->can('{{ ForceDeleteAny }}');
     }
 
     /**
@@ -79,7 +83,7 @@ class UsulanPermohonanPensiunPolicy
      */
     public function restore(User $user, UsulanPermohonanPensiun $usulanPermohonanPensiun): bool
     {
-        return $user->can('restore_usulan::permohonan::pensiun');
+        return $user->can('{{ Restore }}');
     }
 
     /**
@@ -87,7 +91,7 @@ class UsulanPermohonanPensiunPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_usulan::permohonan::pensiun');
+        return $user->can('{{ RestoreAny }}');
     }
 
     /**
@@ -95,7 +99,7 @@ class UsulanPermohonanPensiunPolicy
      */
     public function replicate(User $user, UsulanPermohonanPensiun $usulanPermohonanPensiun): bool
     {
-        return $user->can('replicate_usulan::permohonan::pensiun');
+        return $user->can('{{ Replicate }}');
     }
 
     /**
@@ -103,6 +107,6 @@ class UsulanPermohonanPensiunPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_usulan::permohonan::pensiun');
+        return $user->can('{{ Reorder }}');
     }
 }

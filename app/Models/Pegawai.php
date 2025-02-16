@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -14,13 +15,9 @@ class Pegawai extends Model
         'tanggal_lahir', 'jenis_kelamin', 'alamat'
     ];
 
+    // Model Pegawai
     public function unitKerja()
     {
         return $this->belongsTo(UnitKerja::class, 'unit_kerja_id');
-    }
-
-    public function permohonanCuti()
-    {
-        return $this->hasMany(PermohonanCuti::class);
     }
 }
