@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class JenisCuti extends Model
 {
     protected $table = 'jenis_cuti';
-    protected $fillable = ['nama', 'deskripsi'];
+    protected $fillable = ['jenis_cuti_id', 'nama', 'deskripsi'];
 
     public function permohonanCuti()
     {

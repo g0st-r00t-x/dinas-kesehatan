@@ -22,12 +22,30 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\TextColumn;
+use Illuminate\Database\Eloquent\Builder;
 
 class PegawaiResource extends Resource
 {
     protected static ?string $model = Pegawai::class;
+
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'view',
+            'view_any',
+            'create',
+            'update',
+            'delete',
+            'delete_any',
+        ];
+    }
+
     protected static ?string $navigationIcon = 'heroicon-o-user';
     protected static ?string $navigationGroup = 'Kepegawaian';
+    protected static ?string $label = 'Pegawai';
+    protected static ?string $pluralLabel = 'Pegawai';
+    
+    protected static ?string $path = 'pegawai';
 
     public static function form(Form $form): Form
     {
@@ -58,8 +76,8 @@ class PegawaiResource extends Resource
                     ->label('No. Telepon'),
                 Select::make('status_kepegawaian')
                     ->options([
-                        'aktif' => 'Aktif',
-                        'non-aktif' => 'Non-Aktif',
+                        'Aktif' => 'Aktif',
+                        'Non-Aktif' => 'Non-Aktif',
                     ])
                     ->required()
                     ->label('Status Kepegawaian'),
@@ -68,8 +86,8 @@ class PegawaiResource extends Resource
                     ->label('Tanggal Lahir'),
                 Radio::make('jenis_kelamin')
                     ->options([
-                        'L' => 'Laki-laki',
-                        'P' => 'Perempuan',
+                        'Laki-laki' => 'Laki-laki',
+                        'Perempuan' => 'Perempuan',
                     ])
                     ->required()
                     ->label('Jenis Kelamin'),
@@ -91,19 +109,29 @@ class PegawaiResource extends Resource
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('unitKerja.nama')
-                    ->label('Unit Kerja')
-                    ->sortable()
-                    ->searchable(),
+                ->label('Unit Kerja')
+                ->sortable()
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        return $query->whereHas('unitKerja', function ($query) use ($search) {
+                            $query->where('nama', 'like', "%{$search}%");
+                        });
+                    }),
                 TextColumn::make('jabatan')
                     ->label('Jabatan'),
+                TextColumn::make('pangkat_golongan')
+                    ->label('Pangkat/Golongan'),
                 TextColumn::make('email')
+            ->toggleable(isToggledHiddenByDefault: true)
                     ->label('Email')
                     ->searchable(),
                 TextColumn::make('no_telepon')
+            ->toggleable(isToggledHiddenByDefault: true)
                     ->label('No. Telepon'),
                 TextColumn::make('status_kepegawaian')
+            ->toggleable(isToggledHiddenByDefault: true)
                     ->label('Status Kepegawaian'),
                 TextColumn::make('tanggal_lahir')
+            ->toggleable(isToggledHiddenByDefault: true)
                     ->label('Tanggal Lahir')
                     ->date(),
                 TextColumn::make('jenis_kelamin')
@@ -120,28 +148,10 @@ class PegawaiResource extends Resource
                     ])
                     ->label('Status Kepegawaian'),
             ])
-            ->filters([
-                Tables\Filters\SelectFilter::make('unit_kerja_id')
-                    ->relationship('unitKerja', 'nama')
-                    ->label('Unit Kerja'),
-                Tables\Filters\SelectFilter::make('status_kepegawaian')
-                    ->options([
-                        'aktif' => 'Aktif',
-                        'non-aktif' => 'Non-Aktif',
-                    ])
-                    ->label('Status Kepegawaian'),
-            ])
-            ->filters([
-                Tables\Filters\SelectFilter::make('unit_kerja_id')
-                    ->relationship('unitKerja', 'nama')
-                    ->label('Unit Kerja'),
-            ])
             ->actions([
+                Tables\Actions\DeleteAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\ViewAction::make(),
-                Action::make('Ajukan Cuti')
-                    ->icon('heroicon-o-document-plus')
-                    ->url(fn (Pegawai $record) => static::getUrl('edit', ['record' => $record]) . '?activeTab=permohonan-cuti')
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -157,5 +167,10 @@ class PegawaiResource extends Resource
             'create' => Pages\CreatePegawai::route('/create'),
             'edit' => Pages\EditPegawai::route('/{record}/edit'),
         ];
+    }
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['nama', 'nip'];
     }
 }

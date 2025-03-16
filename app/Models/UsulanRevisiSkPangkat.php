@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Storage;
 
 class UsulanRevisiSkPangkat extends Model
@@ -12,19 +13,14 @@ class UsulanRevisiSkPangkat extends Model
 
     protected $table = 'usulan_revisi_sk_pangkat';
     
-    protected $primaryKey = 'id_usulan';
 
     protected $fillable = [
-        'id_user',
-        'nama',
-        'nip',
-        'pangkat_golongan',
+        'pegawai_nip',
         'alasan_revisi_sk',
         'kesalahan_tertulis_sk',
         'upload_sk_salah',
         'upload_data_dukung',
         'surat_pengantar',
-        'no_wa',
     ];
 
     protected $casts = [
@@ -33,6 +29,19 @@ class UsulanRevisiSkPangkat extends Model
         'processed_at' => 'datetime'
     ];
 
+    public function pegawai()
+    {
+        return $this->belongsTo(Pegawai::class, 'pegawai_nip', 'nip');
+    }
+
+    public function pengajuanSurat()
+    {
+        return $this->hasOne(PengajuanSurat::class, 'id_pengajuan');
+    }
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
     protected static function boot()
     {
         parent::boot();

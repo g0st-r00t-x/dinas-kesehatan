@@ -21,11 +21,18 @@ class UserResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-users';
     protected static ?string $navigationGroup = 'Manajemen Users';
 
+    protected static ?string $label = 'User';
+
+    protected static ?string $pluralLabel = 'User';
+
+
+    protected static ?string $path = 'user';
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                 Forms\Components\TextInput::make('name')
+                Forms\Components\TextInput::make('name')
                     ->label('Name')
                     ->required()
                     ->maxLength(255),

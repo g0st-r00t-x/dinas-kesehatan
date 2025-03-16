@@ -3,6 +3,9 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use App\Filament\Resources\InventarisPermasalahanKepegawaianResource;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -13,6 +16,7 @@ use Spatie\Permission\Traits\HasRoles;
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, HasRoles, Notifiable;
+
 
     /**
      * The attributes that are mass assignable.
@@ -45,16 +49,44 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    protected static function boot()
-{
-    parent::boot();
+    public function usulanPenerbitanAjj()
+    {
+        return $this->hasMany(InventarisAJJ::class);
+    }
 
-    static::created(function ($user) {
-        $role = Role::where('name', 'staff')->first();
-        if ($role) {
-            $user->assignRole($role);
-        }
-    });
-}
+    public function inventarisirPermasalahanKepegawaian(){
+        return $this->hasMany(InventarisPermasalahanKepegawaianResource::class);
+    }
+
+    public function usulanPermohonanCuti(){
+        return $this->hasMany(PermohonanCuti::class);
+    }
+
+    public function usulanPermohonanPensiun()
+    {
+        return $this->hasMany(UsulanPermohonanPensiun::class);
+    }
+
+    public function usulanRevisiSkPangkat(){
+        return $this->hasMany(UsulanRevisiSkPangkat::class);
+    }
+
+    public function usulanPemberhentianSementara()
+    {
+        return $this->hasMany(UsulanSkPemberhentianSementara::class);
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::created(function ($user) {
+            $role = Role::where('name', 'user')->first();
+            if ($role) {
+                $user->assignRole($role);
+            }
+        });
+    }
+
 
 }
