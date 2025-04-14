@@ -1,0 +1,54 @@
+{
+    # Global options
+    admin off
+    auto_https off
+
+    frankenphp {
+        worker /app/public/frankenphp-worker.php 4
+    }
+}
+
+:8082 {
+    # Set document root to Laravel public directory
+    root * /app/public
+
+    # Enable logs
+    log {
+        output file /var/log/caddy/access.log
+        output file ./caddy-access.log
+            format json
+    }
+
+
+    # Serve PHP with FrankenPHP
+    php_server
+
+    # Enable file browsing (optional, bisa dihapus kalau tidak perlu)
+    file_server
+
+    # Enable compression
+    encode gzip zstd
+
+    # Set security headers
+    header {
+        # Enable HSTS
+        Strict-Transport-Security "max-age=31536000;"
+        # Disable FLoC tracking
+        Permissions-Policy "interest-cohort=()"
+        # Enable XSS filtering
+        X-XSS-Protection "1; mode=block"
+        # Prevent MIME sniffing
+        X-Content-Type-Options "nosniff"
+        # Disable iframe embedding from other domains
+        X-Frame-Options "SAMEORIGIN"
+        # Remove the Server header
+        -Server
+    }
+}
+
+
+
+# Websockets for Reverb on a separate port
+:8081 {
+    reverse_proxy localhost:{$REVERB_PORT}
+}

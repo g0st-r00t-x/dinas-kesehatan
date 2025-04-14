@@ -1,6 +1,8 @@
 <?php
 
-namespace Filament\Pages;
+namespace App\Filament\Pages;
+
+use Filament\Pages\Page;
 
 use Filament\Facades\Filament;
 use Filament\Support\Facades\FilamentIcon;
@@ -8,7 +10,7 @@ use Filament\Widgets\Widget;
 use Filament\Widgets\WidgetConfiguration;
 use Illuminate\Contracts\Support\Htmlable;
 
-class Dashboard extends Page
+class CustomDashboard extends Page
 {
     protected static string $routePath = '/';
 

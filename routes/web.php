@@ -35,3 +35,7 @@ Route::post('/pengajuan/{pengajuan}/izinkan', [PenerimaanPengajuan::class, 'izin
 
 Route::get('/upload', [DocumentController::class, 'showForm'])->name('uploadForm');
 Route::post('/process-document', [DocumentController::class, 'processDocument'])->name('processDocument');
+
+Route::get('/info', function () {
+    phpinfo();
+});

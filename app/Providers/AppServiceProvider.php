@@ -8,6 +8,8 @@ use Illuminate\Support\ServiceProvider;
 use App\Models\InventarisAJJ;
 use App\Services\FileManagerServices;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\URL;
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,6 +27,9 @@ class AppServiceProvider extends ServiceProvider
      * Bootstrap any application services.
      */
     public function boot()
-{
-}
+    {
+        if (env('APP_ENV') !== 'local') {
+            URL::forceScheme('https');
+        }        
+    }
 }

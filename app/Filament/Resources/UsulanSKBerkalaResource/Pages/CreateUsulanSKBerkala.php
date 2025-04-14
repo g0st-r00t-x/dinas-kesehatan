@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Filament\Resources\UsulanSKBerkalaResource\Pages;
+namespace App\Filament\Resources\UsulanSkBerkalaResource\Pages;
 
-use App\Filament\Resources\UsulanSKBerkalaResource;
+use App\Filament\Resources\UsulanSkBerkalaResource;
 use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
 
-class CreateUsulanSKBerkala extends CreateRecord
+class CreateUsulanSkBerkala extends CreateRecord
 {
-    protected static string $resource = UsulanSKBerkalaResource::class;
+    protected static string $resource = UsulanSkBerkalaResource::class;
 }

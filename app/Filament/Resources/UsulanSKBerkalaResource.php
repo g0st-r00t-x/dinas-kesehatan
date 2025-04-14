@@ -2,10 +2,10 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\UsulanSKBerkalaResource\Pages;
-use App\Filament\Resources\UsulanSKBerkalaResource\RelationManagers;
+use App\Filament\Resources\UsulanSkBerkalaResource\Pages;
+use App\Filament\Resources\UsulanSkBerkalaResource\RelationManagers;
 use App\Http\Controllers\PengajuanSuratController;
-use App\Models\UsulanSKBerkala;
+use App\Models\UsulanSkBerkala;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
@@ -23,9 +23,9 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
 
-class UsulanSKBerkalaResource extends Resource
+class UsulanSkBerkalaResource extends Resource
 {
-    protected static ?string $model = UsulanSKBerkala::class;
+    protected static ?string $model = UsulanSkBerkala::class;
 
     public static function getPermissionPrefixes(): array
     {
@@ -194,9 +194,9 @@ class UsulanSKBerkalaResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListUsulanSKBerkalas::route('/'),
-            'create' => Pages\CreateUsulanSKBerkala::route('/create'),
-            'edit' => Pages\EditUsulanSKBerkala::route('/{record}/edit'),
+            'index' => Pages\ListUsulanSkBerkalas::route('/'),
+            'create' => Pages\CreateUsulanSkBerkala::route('/create'),
+            'edit' => Pages\EditUsulanSkBerkala::route('/{record}/edit'),
         ];
     }
 }

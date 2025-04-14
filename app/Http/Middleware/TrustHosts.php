@@ -12,9 +12,12 @@ class TrustHosts extends Middleware
      * @return array<int, string|null>
      */
     public function hosts(): array
-    {
-        return [
-            $this->allSubdomainsOfApplicationUrl(),
-        ];
-    }
+{
+    return [
+        '192.168.222.17',
+        '192.168.222.17:7080',
+        $this->allSubdomainsOfApplicationUrl(),
+    ];
+}
+
 }

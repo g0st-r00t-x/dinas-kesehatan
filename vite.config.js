@@ -8,4 +8,9 @@ export default defineConfig({
             refresh: [...refreshPaths, "app/Livewire/**"],
         }),
     ],
+    server: {
+        watch: {
+          ignored: ['**/vendor/**'], // ⛔ jangan watch folder vendor
+        },
+      },
 });

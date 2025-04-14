@@ -3,10 +3,10 @@
 namespace App\Policies;
 
 use App\Models\User;
-use App\Models\UsulanSKBerkala;
+use App\Models\UsulanSkBerkala;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class UsulanSKBerkalaPolicy
+class UsulanSkBerkalaPolicy
 {
     use HandlesAuthorization;
 
@@ -21,7 +21,7 @@ class UsulanSKBerkalaPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, UsulanSKBerkala $usulanSKBerkala): bool
+    public function view(User $user, UsulanSkBerkala $UsulanSkBerkala): bool
     {
         return $user->can('view_usulan::s::k::berkala');
     }
@@ -37,7 +37,7 @@ class UsulanSKBerkalaPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, UsulanSKBerkala $usulanSKBerkala): bool
+    public function update(User $user, UsulanSkBerkala $UsulanSkBerkala): bool
     {
         return $user->can('update_usulan::s::k::berkala');
     }
@@ -45,7 +45,7 @@ class UsulanSKBerkalaPolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, UsulanSKBerkala $usulanSKBerkala): bool
+    public function delete(User $user, UsulanSkBerkala $UsulanSkBerkala): bool
     {
         return $user->can('delete_usulan::s::k::berkala');
     }
@@ -61,7 +61,7 @@ class UsulanSKBerkalaPolicy
     /**
      * Determine whether the user can permanently delete.
      */
-    public function forceDelete(User $user, UsulanSKBerkala $usulanSKBerkala): bool
+    public function forceDelete(User $user, UsulanSkBerkala $UsulanSkBerkala): bool
     {
         return $user->can('{{ ForceDelete }}');
     }
@@ -77,7 +77,7 @@ class UsulanSKBerkalaPolicy
     /**
      * Determine whether the user can restore.
      */
-    public function restore(User $user, UsulanSKBerkala $usulanSKBerkala): bool
+    public function restore(User $user, UsulanSkBerkala $UsulanSkBerkala): bool
     {
         return $user->can('{{ Restore }}');
     }
@@ -93,7 +93,7 @@ class UsulanSKBerkalaPolicy
     /**
      * Determine whether the user can replicate.
      */
-    public function replicate(User $user, UsulanSKBerkala $usulanSKBerkala): bool
+    public function replicate(User $user, UsulanSkBerkala $UsulanSkBerkala): bool
     {
         return $user->can('{{ Replicate }}');
     }
