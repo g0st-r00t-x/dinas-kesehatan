@@ -19,11 +19,11 @@ use LaravelQRCode\Facades\QRCode;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+Route::get('/home', function () {
+    return view('app');
 });
 Route::get('/test', function () {
-    return view('test');
+    return view('home');
 });
 
 Route::get('download/{path}', [FileController::class, 'download'])
