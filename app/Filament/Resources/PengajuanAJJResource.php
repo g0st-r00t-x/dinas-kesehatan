@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Exports\InventarisAJJExporter;
 use App\Filament\Imports\InventarisAJJImporter;
 use App\Filament\Resources\PengajuanAJJResource\Pages;
+use App\Http\Controllers\PengajuanSuratController;
 use App\Models\InventarisAJJ;
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -199,6 +200,9 @@ class PengajuanAJJResource extends Resource implements HasShieldPermissions
         ->actions([
             Tables\Actions\EditAction::make(),
             Tables\Actions\DeleteAction::make(),
+            Tables\Actions\Action::make('Ajukan')
+                ->icon('heroicon-o-document-plus')
+                ->action(fn(Model $record) => (new PengajuanSuratController())->handle($record, 'PengajuanAJJ')),
             // Di action download
             Action::make('pdf')
                 ->label('PDF')

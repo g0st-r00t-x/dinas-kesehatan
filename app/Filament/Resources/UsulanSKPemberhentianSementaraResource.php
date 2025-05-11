@@ -190,13 +190,13 @@ class UsulanSKPemberhentianSementaraResource extends Resource
                 ActionGroup::make([
                     EditAction::make(),
                     DeleteAction::make(),
-                    Action::make('Ajukan Cuti')
+                    Action::make('Ajukan')
                         ->icon('heroicon-o-document-plus')
                         ->action(fn(UsulanSKPemberhentianSementara $record) => (new PengajuanSuratController())->handle($record, 'SK Pemberhentian Sementara')),
                     Action::make('download')
                         ->label('Download')
                         ->icon('heroicon-o-arrow-down-tray')
-                        ->action(function (UsulanSKPemberhentianSementara $record) {
+                        ->action(function (UsulanSkPemberhentianSementara $record) {
                             // Mengambil arsip surat melalui relasi
                             $arsipSurat = $record->pengajuanSurat->arsipSurat;
 

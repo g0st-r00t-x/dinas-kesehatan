@@ -13,9 +13,11 @@ return new class extends Migration
     {
         Schema::create('jenis_surat', function (Blueprint $table) {
             $table->id();
-            $table->string('nama', 100);
-            $table->string('kode', 50);
-            $table->string('template_surat')->nullable();
+            $table->string('kode_jenis', 20)->unigue()->index();
+            $table->string('nama_jenis', 100);
+            $table->text('deskripsi')->nullable();
+            $table->longText('template_content')->nullable();
+            $table->boolean('active')->default(true);
             $table->timestamps();
         });
     }
@@ -25,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('jenis_surats');
+        Schema::dropIfExists('jenis_surat');
     }
 };

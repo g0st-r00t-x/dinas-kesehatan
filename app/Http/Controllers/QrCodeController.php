@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use BaconQrCode\Encoder\QrCode;
 use Illuminate\Http\Request;
-use LaravelQRCode\Facades\QRCode;
+use SimpleSoftwareIO\QrCode\Facades\QrCode as FacadesQrCode;
 
 class QrCodeController extends Controller
 {
@@ -11,8 +12,8 @@ class QrCodeController extends Controller
     {
         $text = $request->input('text', 'Default QR Code Content');
 
-        $qrCode = QRCode::format('png')
-            ->size(300)
+        $qrCode = FacadesQrCode::format('png')
+            ->size(60)
             ->generate($text);
 
         return $qrCode;

@@ -168,9 +168,9 @@ class UsulanRevisiSkPangkatResource extends Resource
                 ActionGroup::make([
                     EditAction::make(),
                     DeleteAction::make(),
-                    Action::make('Ajukan Cuti')
+                    Action::make('Ajukan')
                         ->icon('heroicon-o-document-plus')
-                        ->action(fn(UsulanRevisiSkPangkat $record) => (new PengajuanSuratController())->handle($record, 'SK Pemberhentian Sementara')),
+                        ->action(fn(UsulanRevisiSkPangkat $record) => (new PengajuanSuratController())->handle($record, 'UsulanSkPemberhentianSementara')),
                     Action::make('download')
                         ->label('Download')
                         ->icon('heroicon-o-arrow-down-tray')

@@ -19,7 +19,7 @@ use LaravelQRCode\Facades\QRCode;
 |
 */
 
-Route::get('/home', function () {
+Route::get('/', function () {
     return view('app');
 });
 Route::get('/test', function () {

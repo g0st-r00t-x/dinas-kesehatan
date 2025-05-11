@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\UsulanRekomendasiPenelitianResource\Pages;
 use App\Filament\Resources\UsulanRekomendasiPenelitianResource\RelationManagers;
+use App\Http\Controllers\PengajuanSuratController;
 use App\Models\UsulanRekomendasiPenelitian;
 use Filament\Forms;
 use Filament\Forms\Components\FileUpload;
@@ -15,6 +16,7 @@ use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -151,6 +153,9 @@ class UsulanRekomendasiPenelitianResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('Ajukan')
+                    ->icon('heroicon-o-document-plus')
+                    ->action(fn(Model $record) => (new PengajuanSuratController())->handle($record, 'UsulanRekomendasiPenelitian')),
                 Tables\Actions\Action::make('download_surat')
                     ->label('Unduh Surat')
                     ->icon('heroicon-o-arrow-down-tray')

@@ -29,13 +29,19 @@ class JenisSuratResource extends Resource
             ->schema([
                 Forms\Components\Section::make('Informasi Jenis Surat')
                     ->schema([
-                        Forms\Components\TextInput::make('nama')
+                        Forms\Components\TextInput::make('nama_jenis')
                             ->label('Nama Jenis Surat')
                             ->required()
                             ->maxLength(255)
                             ->placeholder('Masukkan nama jenis surat'),
 
-                        Forms\Components\TextInput::make('kode')
+                        Forms\Components\TextInput::make('deskripsi')
+                            ->label('Deskripsi')
+                            ->required()
+                            ->maxLength(255)
+                            ->placeholder('Masukkan deskripsi jenis surat'),
+
+                        Forms\Components\TextInput::make('kode_jenis')
                             ->label('Kode Surat')
                             ->required()
                             ->maxLength(50)
@@ -43,7 +49,7 @@ class JenisSuratResource extends Resource
                             ->placeholder('Contoh: PC, PP, dll')
                             ->unique(ignoreRecord: true),
 
-                        Forms\Components\FileUpload::make('template_surat')
+                        Forms\Components\FileUpload::make('template_content')
                             ->label('Template Surat')
                             ->directory('templates-surat')
                             ->preserveFilenames()
@@ -61,22 +67,27 @@ class JenisSuratResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('nama')
+                Tables\Columns\TextColumn::make('nama_jenis')
                     ->label('Nama Jenis Surat')
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('kode')
+                Tables\Columns\TextColumn::make('kode_jenis')
                     ->label('Kode Surat')
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('template_surat')
+                Tables\Columns\TextColumn::make('deskripsi')
+                ->label('Deskripsi')
+                ->searchable()
+                ->sortable(),
+
+                Tables\Columns\TextColumn::make('template_content')
                     ->label('Template')
                     ->icon('heroicon-o-document')
                     ->formatStateUsing(fn($state) => $state ? 'Lihat Template' : '-')
-                    ->url(fn($record) => $record->template_surat
-                        ? Storage::url($record->template_surat)
+                    ->url(fn($record) => $record->template_content
+                        ? Storage::url($record->template_content)
                         : null)
                     ->openUrlInNewTab()
                     ->searchable(),
@@ -103,8 +114,8 @@ class JenisSuratResource extends Resource
                     Tables\Actions\DeleteAction::make()
                         ->before(function (JenisSurat $record) {
                             // Delete the template file if exists
-                            if ($record->template_surat && Storage::exists($record->template_surat)) {
-                                Storage::delete($record->template_surat);
+                            if ($record->template_content && Storage::exists($record->template_content)) {
+                                Storage::delete($record->template_content);
                             }
                         }),
                 ]),
@@ -115,8 +126,8 @@ class JenisSuratResource extends Resource
                         ->before(function ($records) {
                             // Delete template files for all selected records
                             foreach ($records as $record) {
-                                if ($record->template_surat && Storage::exists($record->template_surat)) {
-                                    Storage::delete($record->template_surat);
+                                if ($record->template_content && Storage::exists($record->template_content)) {
+                                    Storage::delete($record->template_content);
                                 }
                             }
                         }),

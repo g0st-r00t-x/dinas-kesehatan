@@ -21,6 +21,7 @@ class UsulanRevisiSkPangkat extends Model
         'upload_sk_salah',
         'upload_data_dukung',
         'surat_pengantar',
+        'user_id',
     ];
 
     protected $casts = [

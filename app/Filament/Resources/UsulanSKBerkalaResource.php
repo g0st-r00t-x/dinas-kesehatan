@@ -21,6 +21,7 @@ use Filament\Tables\Actions\ForceDeleteAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 
 class UsulanSkBerkalaResource extends Resource
@@ -144,6 +145,9 @@ class UsulanSkBerkalaResource extends Resource
                     ->date(),
             ])
             ->actions([
+                Tables\Actions\Action::make('Ajukan')
+                    ->icon('heroicon-o-document-plus')
+                    ->action(fn(Model $record) => (new PengajuanSuratController())->handle($record, 'UsulanSkBerkala')),
                 ActionGroup::make([
                     EditAction::make(),
                     ForceDeleteAction::make(),

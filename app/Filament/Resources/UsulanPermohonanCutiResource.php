@@ -113,8 +113,7 @@ class UsulanPermohonanCutiResource extends Resource implements HasShieldPermissi
                         'Diterima' => 'success',
                         default => 'gray',
                     })
-                    ->label("Status Pengajuan")
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->label("Status Pengajuan"),
                 Tables\Columns\TextColumn::make('tanggal_mulai')
                     ->date(),
                 Tables\Columns\TextColumn::make('tanggal_selesai')
@@ -130,33 +129,34 @@ class UsulanPermohonanCutiResource extends Resource implements HasShieldPermissi
                     ->importer(PermohonanCutiImporter::class),
             ])
             ->actions([
-                Action::make('Ajukan Cuti')
+                Action::make('Ajukan')
                     ->icon('heroicon-o-document-plus')
-                    ->action(fn(Model $record) => (new PengajuanSuratController())->handle($record)),
-                Action::make('download')
-                    ->label('Download')
-                    ->icon('heroicon-o-arrow-down-tray')
+                    ->action(fn(Model $record) => (new PengajuanSuratController())->handle($record, 'PermohonanCuti')),
+                
+                Action::make('download_surat_keluar')
+                    ->label('Download Surat Keluar')
+                    ->icon('heroicon-o-document-arrow-down')
                     ->action(function ($record) {
-                        // Mengambil arsip surat melalui relasi
-                        $arsipSurat = $record->pengajuanSurat->arsipSurat;
+                        // Mengambil surat keluar melalui relasi
+                        $suratKeluarPath = $record->pengajuanSurat->suratKeluar->path_file;
 
-                        if (!$arsipSurat || !$arsipSurat->file_surat_path) {
+                        if (!$suratKeluarPath) {
                             return;
                         }
 
-                        if (str_starts_with($arsipSurat->file_surat_path, 'http')) {
+                        if (str_starts_with($suratKeluarPath, 'http')) {
                             // Untuk file dengan URL eksternal
-                            return redirect($arsipSurat->file_surat_path);
+                            return redirect($suratKeluarPath);
                         } else {
                             // Untuk file yang disimpan lokal
-                            return response()->download(storage_path('app/public/' . $arsipSurat->file_surat_path));
+                            return response()->download(storage_path('app/public/' . $suratKeluarPath));
                         }
                     })
                     ->visible(function ($record) {
                         return $record->pengajuanSurat &&
                             $record->pengajuanSurat->status_pengajuan === 'Diterima' &&
-                            $record->pengajuanSurat->arsipSurat &&
-                            $record->pengajuanSurat->arsipSurat->file_surat_path !== null;
+                            $record->pengajuanSurat->suratKeluar &&
+                            $record->pengajuanSurat->suratKeluar->path_file !== null;
                     }),
             ])
             ->bulkActions([

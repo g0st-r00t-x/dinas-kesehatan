@@ -15,21 +15,32 @@
     # Enable logs
     log {
         output file /var/log/caddy/access.log
-        output file ./caddy-access.log
-            format json
+        format json
     }
-
 
     # Serve PHP with FrankenPHP
     php_server
 
-    # Enable file browsing (optional, bisa dihapus kalau tidak perlu)
-    file_server
+    # Handle static files with proper permissions
+    @static {
+        path *.css *.js *.ico *.gif *.jpg *.jpeg *.png *.svg *.woff *.woff2 *.ttf *.eot
+    }
+    
+    header @static {
+        Cache-Control "public, max-age=31536000"
+        # Remove Permissions-Policy for static files to avoid issues
+        -Permissions-Policy
+    }
+
+    # File server with better caching for assets
+    file_server {
+        precompressed br gzip
+    }
 
     # Enable compression
     encode gzip zstd
 
-    # Set security headers
+    # Set security headers for non-static files
     header {
         # Enable HSTS
         Strict-Transport-Security "max-age=31536000;"
@@ -45,8 +56,6 @@
         -Server
     }
 }
-
-
 
 # Websockets for Reverb on a separate port
 :8081 {

@@ -219,13 +219,5 @@
                 </div>
             </div>
         </div>
-        
-        <!-- CTA -->
-        <div class="mt-16 text-center">
-            <a href="/dinas-kesehatan/login" class="inline-block px-8 py-4 bg-blue-600 text-white rounded-full font-medium hover:bg-blue-700 transition-colors transform hover:scale-105">
-                Akses Admin Panel
-            </a>
-            <p class="text-gray-500 mt-4">Login diperlukan untuk mengakses fitur admin panel</p>
-        </div>
     </div>
 </section>

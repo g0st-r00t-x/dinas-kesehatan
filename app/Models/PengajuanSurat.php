@@ -14,18 +14,37 @@ class PengajuanSurat extends Model
     protected $table = 'pengajuan_surat';
 
     protected $fillable = [
-        'id_diajukan',
         'id_pengajuan',
-        'id_pemohon',
+        'jenis_pengajuan_id',
+        'jenis_pengajuan_type',
         'status_pengajuan',
         'tgl_pengajuan',
         'tgl_diterima',
-        'id_jenis_surat',
+        'id_pemohon',
+        'id_diajukan',
+        'kode_jenis_surat',
+        'no_referensi',
+        'data_pengajuan',
+        'tgl_persetujuan',
+        'tgl_penolakan',
+        'id_penyetuju',
+        'id_penolak',
+        'catatan',
+        'alasan_penolakan',
+        'file_surat',
     ];
 
+    /**
+     * Atribut yang seharusnya dikonversi ke tipe lain
+     *
+     * @var array
+     */
     protected $casts = [
         'tgl_pengajuan' => 'datetime',
         'tgl_diterima' => 'datetime',
+        'tgl_persetujuan' => 'datetime',
+        'tgl_penolakan' => 'datetime',
+        'data_pengajuan' => 'array', // cast JSON column to array
     ];
 
     public function arsipSurat(): HasOne
@@ -43,13 +62,18 @@ class PengajuanSurat extends Model
         return $this->belongsTo(Pegawai::class, 'id_diajukan');
     }
 
-    public function suratKeluar(): BelongsTo
+    public function suratKeluar(): HasOne
     {
-        return $this->belongsTo(SuratKeluar::class, 'id_pengajuan', 'id');
+        return $this->hasOne(SuratKeluar::class, 'id_pengajuan', 'id');
     }
 
     public function jenisSurat(): BelongsTo
     {
         return $this->belongsTo(JenisSurat::class, 'id_jenis_surat');
+    }
+
+    public function jenisPengajuan()
+    {
+        return $this->morphTo();
     }
 }

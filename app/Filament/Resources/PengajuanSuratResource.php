@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\PengajuanSuratResource\Pages;
 use App\Filament\Resources\PengajuanSuratResource\RelationManagers;
 use App\Http\Controllers\PenerimaanPengajuan;
+use App\Http\Controllers\PenerimaanSuratController;
 use App\Models\PengajuanSurat;
 use Filament\Forms;
 use Filament\Forms\Components\Actions\Action;
@@ -66,20 +67,10 @@ class PengajuanSuratResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('suratKeluar.nomor_surat')
+                Tables\Columns\TextColumn::make('no_referensi')
                     ->label('Nomor SK')
                     ->searchable(),
-                
-                Tables\Columns\TextColumn::make('suratKeluar.jenisSurat.nama')
-                    ->label('Jenis Surat')
-                    ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'Surat Masuk' => 'success',
-                        'Surat Keluar' => 'warning',
-                        default => 'gray',
-                    }),
-                
-                Tables\Columns\TextColumn::make('suratKeluar.perihal')
+                Tables\Columns\TextColumn::make('jenis_pengajuan_type')
                     ->label('Perihal')
                     ->searchable(),
                 
@@ -98,7 +89,7 @@ class PengajuanSuratResource extends Resource
                     ->dateTime()
                     ->sortable(),
                 
-                Tables\Columns\TextColumn::make('tgl_diterima')
+                Tables\Columns\TextColumn::make('tgl_persetujuan')
                     ->label('Tanggal Diterima')
                     ->dateTime()
                     ->sortable()
@@ -128,8 +119,9 @@ class PengajuanSuratResource extends Resource
                         ->color('success')
                         ->visible(fn($record) => $record->status_pengajuan === 'Diajukan')
                         ->action(function (PengajuanSurat $record) {
+                            $controller = app(PenerimaanSuratController::class);
                             try {
-                                app(PenerimaanPengajuan::class)($record);
+                                $controller->handle($record);
                             } catch (\Exception $e) {
                                 Notification::make()
                                     ->danger()

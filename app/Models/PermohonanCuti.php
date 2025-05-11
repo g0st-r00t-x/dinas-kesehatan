@@ -34,4 +34,5 @@ class PermohonanCuti extends Model
     {
         return $this->belongsTo(JenisCuti::class, 'jenis_cuti_id', 'jenis_cuti_id');
     }
+
 }

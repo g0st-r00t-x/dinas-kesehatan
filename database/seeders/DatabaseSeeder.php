@@ -8,10 +8,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
-use DataDukunganSeeder;
-use JenisSuratSeeder;
-use UnitKerjaSeeder;
-use ShieldSeeder;
+
 
 
 class DatabaseSeeder extends Seeder
@@ -21,10 +18,16 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        DataDukunganSeeder::class;
-        JenisSuratSeeder::class;
-        UnitKerjaSeeder::class;
-        ShieldSeeder::class;
+        $this->call([
+        RoleSeeder::class,
+        DataDukunganSeeder::class,
+        JenisSuratSeeder::class,
+        UnitKerjaSeeder::class,
+        ShieldSeeder::class,
+        UserSeeder::class,
+        PegawaiSeeder::class,
+        InventarisAJJSeeder::class,
+        ]);
     }
 }
 

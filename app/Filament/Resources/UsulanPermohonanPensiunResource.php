@@ -217,9 +217,9 @@ class UsulanPermohonanPensiunResource extends Resource
                 ActionGroup::make([
                     Tables\Actions\EditAction::make(),
                     Tables\Actions\DeleteAction::make(),
-                    Action::make('Ajukan Cuti')
+                    Action::make('Ajukan')
                         ->icon('heroicon-o-document-plus')
-                        ->action(fn(UsulanPermohonanPensiun $record) => (new PengajuanSuratController())->handle($record, 'Permohonan Pensiun')),
+                        ->action(fn(UsulanPermohonanPensiun $record) => (new PengajuanSuratController())->handle($record, 'PermohonanPensiun')),
                     Action::make('download')
                         ->label('Download')
                         ->icon('heroicon-o-arrow-down-tray')

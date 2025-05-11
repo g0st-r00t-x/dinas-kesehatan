@@ -120,14 +120,42 @@ class DocumentController extends Controller
     }
 
     /**
-     * Process image replacement
+     * Process image replacement with better path handling
      */
     private function processImageReplacement(TemplateProcessor $template, string $search, string $imagePath): void
     {
-        $fullPath = $this->getPublicPath($imagePath);
-        if (!file_exists($fullPath)) {
-            throw new Exception("Image tidak ditemukan: {$imagePath}");
+        // Start with empty fullPath
+        $fullPath = null;
+        $attempts = [];
+
+        // Try various path combinations to find the image
+        $pathVariations = [
+            $imagePath, // As provided
+            $this->getPublicPath($imagePath), // public/storage/path
+            storage_path('app/public/' . $imagePath), // storage/app/public/path
+        ];
+
+        // Add some normalized variations
+        $normalizedPath = str_replace(['\\', '//'], '/', $imagePath);
+        $pathVariations[] = $normalizedPath;
+        $pathVariations[] = storage_path('app/public/' . $normalizedPath);
+        $pathVariations[] = public_path('storage/' . $normalizedPath);
+
+        // Try each path until we find one that exists
+        foreach ($pathVariations as $path) {
+            $attempts[] = $path;
+            if (file_exists($path)) {
+                $fullPath = $path;
+                break;
+            }
         }
+
+        if (!$fullPath) {
+            Log::error('Image not found after trying multiple paths', ['attempts' => $attempts]);
+            throw new Exception("Image tidak ditemukan untuk '{$search}' setelah mencoba beberapa path");
+        }
+
+        Log::info('Found image at path', ['search' => $search, 'path' => $fullPath]);
 
         foreach ($this->getVariableVariants($search) as $variant) {
             $template->setImageValue($variant, [
@@ -221,11 +249,13 @@ class DocumentController extends Controller
     }
 
     /**
-     * Get full public path
+     * Get full public path with normalized slashes
      */
     private function getPublicPath(string $path): string
     {
-        return public_path('storage/' . $path);
+        // Normalize path slashes to be consistent
+        $normalizedPath = str_replace(['\\', '//'], '/', $path);
+        return public_path('storage/' . $normalizedPath);
     }
 
     /**

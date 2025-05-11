@@ -3,8 +3,9 @@ FROM dunglas/frankenphp:1-php8.3-alpine AS build
 
 # Install build dependencies
 RUN apk add --no-cache \
-    git curl zip unzip libzip-dev libpng-dev oniguruma-dev libxml2-dev \
-    mysql-client icu-dev bash
+    git curl zip unzip libzip-dev libpng-dev libxml2-dev \
+    mysql-client icu-dev bash oniguruma-dev \
+    && docker-php-ext-install pdo_mysql zip intl
 
 # Allow composer as root
 ENV COMPOSER_ALLOW_SUPERUSER=1
@@ -39,9 +40,10 @@ RUN composer dump-autoload --optimize
 # Stage 2: Final image
 FROM dunglas/frankenphp:1-php8.3-alpine
 
-# Install runtime dependencies only
+# Install runtime dependencies
 RUN apk add --no-cache \
-    libzip libpng oniguruma libxml2 mysql-client icu netcat-openbsd shadow \
+    libzip libpng libxml2 mysql-client icu netcat-openbsd shadow su-exec bash \
+    libzip-dev libpng-dev libxml2-dev icu-dev oniguruma-dev \
     && docker-php-ext-install pdo_mysql mbstring zip exif pcntl gd intl
 
 # Set working directory
@@ -60,22 +62,30 @@ RUN mkdir -p storage/framework/cache \
 # Copy application from build stage
 COPY --from=build /app /app
 
-# Set permissions
-RUN chown -R www-data:www-data storage bootstrap/cache \
-    && chmod -R 775 storage bootstrap/cache
-
-# Copy the Caddyfile
+# Copy Caddyfile and entrypoint
 COPY Caddyfile /etc/caddy/Caddyfile
-
-# Copy and set up entrypoint
 COPY entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 
-# Add healthcheck
+# Create storage symlink
+RUN php artisan storage:link || true
+
+# Set proper permissions - very important for asset access
+RUN chown -R www-data:www-data /app && \
+    chmod -R 755 /app/public && \
+    chmod -R 775 /app/storage /app/bootstrap/cache
+
+# Add simple healthcheck
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
     CMD curl -f http://localhost:8082/ || exit 1
 
-# Expose ports for FrankenPHP and Reverb
+# Set environment variables
+ENV APP_ENV=local
+ENV APP_DEBUG=true
+ENV BROADCAST_DRIVER=reverb
+ENV OCTANE_SERVER=frankenphp
+
+# Expose ports for FrankenPHP and Reverb WebSockets
 EXPOSE 8082 8443 8081
 
 # Set the entrypoint

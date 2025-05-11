@@ -20,8 +20,18 @@ class SuratKeluar extends Model
         'tujuan_surat',
         'tanggal_surat',
         'file_surat',
+        'kode_jenis_surat',
+        'nomor_urut',
+        'id_pengajuan',
+        'path_file',
+        'created_by',
     ];
 
+    /**
+     * Atribut yang seharusnya dikonversi ke tipe lain
+     *
+     * @var array
+     */
     protected $casts = [
         'tanggal_surat' => 'date',
     ];
