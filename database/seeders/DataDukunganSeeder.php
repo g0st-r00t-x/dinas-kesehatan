@@ -15,16 +15,16 @@ class DataDukunganSeeder extends Seeder
     public function run()
     {
         $dataDukungans = [
-            ['jenis' => 'SK PEMBERIAN TUNJANGAN'],
-            ['jenis' => 'SK PENCANTUMAN GELAR S-1'],
-            ['jenis' => 'IBEL S-1'],
-            ['jenis' => 'SK KP TERAKHIR'],
-            ['jenis' => 'IJAZAH TERAKHIR'],
+            ['data_dukungan_id' => 001,'jenis' => 'SK PEMBERIAN TUNJANGAN'],
+            ['data_dukungan_id' => 002,'jenis' => 'SK PENCANTUMAN GELAR S-1'],
+            ['data_dukungan_id' => 003,'jenis' => 'IBEL S-1'],
+            ['data_dukungan_id' => 004,'jenis' => 'SK KP TERAKHIR'],
+            ['data_dukungan_id' => 005,'jenis' => 'IJAZAH TERAKHIR'],
         ];
 
         foreach ($dataDukungans as $data) {
             DataDukungan::updateOrCreate(
-                ['jenis' => $data['jenis']],
+                ['data_dukungan_id' => $data['data_dukungan_id'], 'jenis' => $data['jenis']],
                 $data
             );
         }

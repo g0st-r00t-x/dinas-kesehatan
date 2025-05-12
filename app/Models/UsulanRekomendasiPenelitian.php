@@ -10,7 +10,7 @@ class UsulanRekomendasiPenelitian extends Model
 {
     use HasFactory;
 
-    protected $table = 'usulan_rekomendasi_penelitians';
+    protected $table = 'usulan_rekomendasi_penelitian';
 
     protected $fillable = [
         'nama',

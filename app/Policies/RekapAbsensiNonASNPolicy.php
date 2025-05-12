@@ -63,7 +63,7 @@ class RekapAbsensiNonASNPolicy
      */
     public function forceDelete(User $user, RekapAbsensiNonASN $rekapAbsensiNonASN): bool
     {
-        return $user->can('force_delete_rekap::absensi::non::a::s::n');
+        return $user->can('{{ ForceDelete }}');
     }
 
     /**
@@ -71,7 +71,7 @@ class RekapAbsensiNonASNPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_rekap::absensi::non::a::s::n');
+        return $user->can('{{ ForceDeleteAny }}');
     }
 
     /**
@@ -79,7 +79,7 @@ class RekapAbsensiNonASNPolicy
      */
     public function restore(User $user, RekapAbsensiNonASN $rekapAbsensiNonASN): bool
     {
-        return $user->can('restore_rekap::absensi::non::a::s::n');
+        return $user->can('{{ Restore }}');
     }
 
     /**
@@ -87,7 +87,7 @@ class RekapAbsensiNonASNPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_rekap::absensi::non::a::s::n');
+        return $user->can('{{ RestoreAny }}');
     }
 
     /**
@@ -95,7 +95,7 @@ class RekapAbsensiNonASNPolicy
      */
     public function replicate(User $user, RekapAbsensiNonASN $rekapAbsensiNonASN): bool
     {
-        return $user->can('replicate_rekap::absensi::non::a::s::n');
+        return $user->can('{{ Replicate }}');
     }
 
     /**
@@ -103,6 +103,6 @@ class RekapAbsensiNonASNPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_rekap::absensi::non::a::s::n');
+        return $user->can('{{ Reorder }}');
     }
 }

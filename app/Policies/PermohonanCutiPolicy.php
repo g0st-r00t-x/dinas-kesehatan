@@ -63,7 +63,7 @@ class PermohonanCutiPolicy
      */
     public function forceDelete(User $user, PermohonanCuti $permohonanCuti): bool
     {
-        return $user->can('force_delete_usulan::permohonan::cuti');
+        return $user->can('{{ ForceDelete }}');
     }
 
     /**
@@ -71,7 +71,7 @@ class PermohonanCutiPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_usulan::permohonan::cuti');
+        return $user->can('{{ ForceDeleteAny }}');
     }
 
     /**
@@ -79,7 +79,7 @@ class PermohonanCutiPolicy
      */
     public function restore(User $user, PermohonanCuti $permohonanCuti): bool
     {
-        return $user->can('restore_usulan::permohonan::cuti');
+        return $user->can('{{ Restore }}');
     }
 
     /**
@@ -87,7 +87,7 @@ class PermohonanCutiPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_usulan::permohonan::cuti');
+        return $user->can('{{ RestoreAny }}');
     }
 
     /**
@@ -95,7 +95,7 @@ class PermohonanCutiPolicy
      */
     public function replicate(User $user, PermohonanCuti $permohonanCuti): bool
     {
-        return $user->can('replicate_usulan::permohonan::cuti');
+        return $user->can('{{ Replicate }}');
     }
 
     /**
@@ -103,6 +103,6 @@ class PermohonanCutiPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_usulan::permohonan::cuti');
+        return $user->can('{{ Reorder }}');
     }
 }

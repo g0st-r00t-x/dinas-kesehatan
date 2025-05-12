@@ -3,6 +3,7 @@
 /public/build
 /public/hot
 /public/storage
+/public/qr-codes
 /storage/*.key
 /vendor
 .env
@@ -17,3 +18,11 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+
+**/caddy
+frankenphp
+frankenphp-worker.php
+
+**/caddy
+frankenphp
+frankenphp-worker.php

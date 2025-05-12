@@ -3,56 +3,84 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\UsulanRevisiSkPangkatResource\Pages;
-use App\Filament\Resources\UsulanRevisiSkPangkatResource\RelationManagers;
+use App\Http\Controllers\PengajuanSuratController;
 use App\Models\UsulanRevisiSkPangkat;
 use Filament\Forms;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\ActionGroup;
+use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class UsulanRevisiSkPangkatResource extends Resource
 {
     protected static ?string $model = UsulanRevisiSkPangkat::class;
 
+    public static function getPermissionPrefixes(): array
+    {
+        return ['view', 'view_any', 'view_own', 'download_file', 'create', 'update', 'delete', 'delete_any', 'kirim_notif'];
+    }
+
+
     protected static ?string $navigationIcon = 'heroicon-o-pencil';
 
-    protected static ?string $navigationLabel = 'Usulan Revisi SK Pangkat';
+    protected static ?string $navigationLabel = 'Revisi SK Pangkat';
     
-    protected static ?string $modelLabel = 'Usulan Revisi SK Pangkat';
+    protected static ?string $modelLabel = 'Revisi SK Pangkat';
 
     protected static ?string $navigationGroup = 'Usulan';
 
-    protected static ?string $label = 'Usulan Revisi SK Pangkat';
+    protected static ?string $label = 'Revisi SK Pangkat';
 
-    protected static ?string $pluralLabel = 'Usulan Revisi SK Pangkat';
+    protected static ?string $pluralLabel = 'Revisi SK Pangkat';
 
+    protected static ?string $path = 'usulan-revisi-sk-pangkat';
     protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
+            Forms\Components\Hidden::make('user_id')
+                ->default(Auth::user()->id),
                 Section::make('Informasi Pegawai')
                     ->schema([
-                        Forms\Components\TextInput::make('nama')
-                            ->required()
-                            ->maxLength(255),
-                        Forms\Components\TextInput::make('nip')
-                            ->required()
-                            ->maxLength(50),
-                        Forms\Components\TextInput::make('pangkat_golongan')
-                            ->maxLength(50),
-                        Forms\Components\TextInput::make('no_wa')
-                            ->required()
-                            ->tel()
-                            ->maxLength(20),
+                        Select::make('pegawai_nip')
+                        ->label('Pegawai')
+                        ->relationship('pegawai', 'nama')
+                        ->searchable()
+                        ->required()
+                        ->createOptionForm([
+                            Forms\Components\TextInput::make('nip')
+                                ->required()
+                                ->unique(),
+                            Forms\Components\TextInput::make('nama')
+                                ->required(),
+                            Forms\Components\TextInput::make('no_telepon')
+                                ->tel()
+                                ->maxLength(20)
+                                ->required(),
+                            Forms\Components\Select::make('unit_kerja_id')
+                                ->relationship('unitKerja', 'nama')
+                                ->required(),
+                            Forms\Components\TextInput::make('jabatan'),
+                            Forms\Components\Select::make('status_kepegawaian')
+                                ->options([
+                                    'PNS' => 'PNS',
+                                    'PPPK' => 'PPPK',
+                                    'Honorer' => 'Honorer'
+                                ])
+                        ]),
                     ])->columns(2),
 
                     Section::make('Detail Revisi')
@@ -68,22 +96,34 @@ class UsulanRevisiSkPangkatResource extends Resource
                 Section::make('Upload Dokumen')
                     ->schema([
                         Forms\Components\FileUpload::make('upload_sk_salah')
+                            ->preserveFilenames()
+                            ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                                return now()->timestamp . '_' . $file->getClientOriginalName();
+                            })
                             ->required()
-                            ->directory('sk_salah')
+                            ->directory('revisi_sk_pangkat/sk_salah')
                             ->preserveFilenames()
                             ->acceptedFileTypes(['application/pdf'])
                             ->maxSize(5120), // 5MB
                         
                         Forms\Components\FileUpload::make('upload_data_dukung')
+                            ->preserveFilenames()
+                            ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                                return now()->timestamp . '_' . $file->getClientOriginalName();
+                            })
                             ->required()
-                            ->directory('data_dukung')
+                            ->directory('revisi_sk_pangkat/data_dukungan')
                             ->preserveFilenames()
                             ->acceptedFileTypes(['application/pdf'])
                             ->maxSize(5120),
                             
                         Forms\Components\FileUpload::make('surat_pengantar')
+                            ->preserveFilenames()
+                            ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                                return now()->timestamp . '_' . $file->getClientOriginalName();
+                            })
                             ->required()
-                            ->directory('surat_pengantar')
+                            ->directory('revisi_sk_pangkat/surat_pengantar')
                             ->preserveFilenames()
                             ->acceptedFileTypes(['application/pdf'])
                             ->maxSize(5120),
@@ -125,9 +165,38 @@ class UsulanRevisiSkPangkatResource extends Resource
                     ]),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                ActionGroup::make([
+                    EditAction::make(),
+                    DeleteAction::make(),
+                    Action::make('Ajukan')
+                        ->icon('heroicon-o-document-plus')
+                        ->action(fn(UsulanRevisiSkPangkat $record) => (new PengajuanSuratController())->handle($record, 'UsulanSkPemberhentianSementara')),
+                    Action::make('download')
+                        ->label('Download')
+                        ->icon('heroicon-o-arrow-down-tray')
+                        ->action(function (UsulanRevisiSkPangkat $record) {
+                            // Mengambil arsip surat melalui relasi
+                            $arsipSurat = $record->pengajuanSurat->arsipSurat;
+
+                            if (!$arsipSurat || !$arsipSurat->file_surat_path) {
+                                return;
+                            }
+
+                            if (str_starts_with($arsipSurat->file_surat_path, 'http')) {
+                                // Untuk file dengan URL eksternal
+                                return redirect($arsipSurat->file_surat_path);
+                            } else {
+                                // Untuk file yang disimpan lokal
+                                return response()->download(storage_path('app/public/' . $arsipSurat->file_surat_path));
+                            }
+                        })
+                        ->visible(function (UsulanRevisiSkPangkat $record) {
+                            return $record->pengajuanSurat &&
+                                $record->pengajuanSurat->status_pengajuan === 'Diterima' &&
+                                $record->pengajuanSurat->arsipSurat &&
+                                $record->pengajuanSurat->arsipSurat->file_surat_path !== null;
+                        }),
+                ])
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

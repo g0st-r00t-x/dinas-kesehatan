@@ -1,0 +1,39 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Docker
+.docker
+docker-compose.yml
+
+# PHPUnit
+phpunit.xml
+.phpunit.result.cache
+
+# Node
+node_modules
+npm-debug.log
+yarn-error.log
+
+# Laravel
+.env
+.env.backup
+.env.example
+storage/app/public/*
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/testing/*
+storage/framework/views/*
+storage/logs/*
+bootstrap/cache/*
+
+# IDE
+.idea
+.vscode
+*.sublime-project
+*.sublime-workspace
+
+# OS files
+.DS_Store
+Thumbs.db

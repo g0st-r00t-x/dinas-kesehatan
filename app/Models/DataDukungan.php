@@ -9,15 +9,10 @@ class DataDukungan extends Model
 {
     use HasFactory;
 
-    protected $table = 'jenis_data_dukungans';
+    protected $table = 'data_dukungan';
 
     protected $fillable = [
+        'data_dukungan_id',
         'jenis',
     ];
-
-    // Relasi ke InventarisirPermasalahanKepegawaian
-    public function inventarisirPermasalahan()
-    {
-        return $this->hasMany(InventarisirPermasalahanKepegawaian::class, 'data_dukungan_id');
-    }
 }

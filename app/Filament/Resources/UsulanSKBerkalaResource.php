@@ -2,66 +2,99 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\UsulanSKBerkalaResource\Pages;
-use App\Filament\Resources\UsulanSKBerkalaResource\RelationManagers;
-use App\Models\UsulanSKBerkala;
+use App\Filament\Resources\UsulanSkBerkalaResource\Pages;
+use App\Filament\Resources\UsulanSkBerkalaResource\RelationManagers;
+use App\Http\Controllers\PengajuanSuratController;
+use App\Models\UsulanSkBerkala;
 use Filament\Forms;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\ActionGroup;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\ForceDeleteAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
-class UsulanSKBerkalaResource extends Resource
+class UsulanSkBerkalaResource extends Resource
 {
-    protected static ?string $model = UsulanSKBerkala::class;
+    protected static ?string $model = UsulanSkBerkala::class;
+
+    public static function getPermissionPrefixes(): array
+    {
+        return ['view', 'view_any', 'view_own', 'download_file', 'create', 'update', 'delete', 'delete_any', 'kirim_notif'];
+    }
+
 
     protected static ?string $navigationIcon = 'heroicon-o-queue-list';
 
     protected static ?string $navigationGroup = 'Usulan';
+    protected static ?string $navigationLabel = 'SK Berkala';
+    
+    protected static ?string $modelLabel = 'SK Berkala';
+    protected static ?string $label = 'SK Berkala';
+
+    protected static ?string $pluralLabel = 'SK Berkala';
+
+    protected static ?string $path = 'usulan-sk-pangkat';
 
     public static function form(Form $form): Form
     {
          return $form
             ->schema([
-                Forms\Components\TextInput::make('nama')
-                    ->required()
-                    ->label('Nama'),
-                Forms\Components\TextInput::make('nip')
-                    ->required()
-                    ->label('NIP')
-                    ->unique(),
-                Forms\Components\TextInput::make('unit_kerja')
-                    ->required()
-                    ->label('Unit Kerja'),
-                Forms\Components\TextInput::make('pangkat_golongan')
-                    ->required()
-                    ->label('Pangkat/Golongan'),
-                Forms\Components\TextInput::make('jabatan')
-                    ->required()
-                    ->label('Jabatan'),
-                Forms\Components\DatePicker::make('tmt_sk_pangkat_terakhir')
+            Forms\Components\Hidden::make('user_id')
+                ->default(Auth::id()),
+                Select::make('pegawai_nip')
+                        ->label('Pegawai')
+                        ->relationship('pegawai', 'nama')
+                        ->searchable()
+                        ->required()
+                        ->createOptionForm([
+                            TextInput::make('nip')
+                                ->required()
+                                ->unique(),
+                            TextInput::make('nama')
+                                ->required(),
+                            TextInput::make('no_telepon')
+                                ->required(),
+                            Select::make('unit_kerja_id')
+                                ->relationship('unitKerja', 'nama')
+                                ->required(),
+                            TextInput::make('jabatan'),
+                            Select::make('status_kepegawaian')
+                                ->options([
+                                    'PNS' => 'PNS',
+                                    'PPPK' => 'PPPK',
+                                    'Honorer' => 'Honorer'
+                                ])
+                        ]),
+                DatePicker::make('tmt_sk_pangkat_terakhir')
                     ->required()
                     ->label('TMT SK Pangkat Terakhir'),
-                Forms\Components\DatePicker::make('tanggal_penerbitan_pangkat_terakhir')
+                DatePicker::make('tanggal_penerbitan_pangkat_terakhir')
                     ->required()
                     ->label('Tanggal Penerbitan Pangkat Terakhir'),
-                Forms\Components\DatePicker::make('tmt_sk_berkala_terakhir')
+                DatePicker::make('tmt_sk_berkala_terakhir')
                     ->required()
                     ->label('TMT SK Berkala Terakhir'),
-                Forms\Components\DatePicker::make('tanggal_penerbitan_sk_berkala_terakhir')
+                DatePicker::make('tanggal_penerbitan_sk_berkala_terakhir')
                     ->required()
                     ->label('Tanggal Penerbitan SK Berkala Terakhir'),
-                Forms\Components\FileUpload::make('upload_sk_pangkat_terakhir')
+                FileUpload::make('upload_sk_pangkat_terakhir')
                     ->required()
                     ->label('Upload SK Pangkat Terakhir'),
-                Forms\Components\FileUpload::make('upload_sk_berkala_terakhir')
+                FileUpload::make('upload_sk_berkala_terakhir')
                     ->required()
                     ->label('Upload SK Berkala Terakhir'),
-                Forms\Components\FileUpload::make('upload_surat_pengantar')
+                FileUpload::make('upload_surat_pengantar')
                     ->required()
                     ->label('Upload Surat Pengantar'),
             ]);
@@ -71,24 +104,36 @@ class UsulanSKBerkalaResource extends Resource
     {
        return $table
             ->columns([
-                TextColumn::make('nama')
+            Forms\Components\Hidden::make('user_id')
+                ->default(Auth::user()->id),
+                TextColumn::make('pegawai.nama')
                     ->label('Nama')
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('nip')
+                TextColumn::make('pegawai.nip')
                     ->label('NIP')
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('unit_kerja')
+                TextColumn::make('pegawai.unit_kerja.nama')
                     ->label('Unit Kerja')
                     ->sortable(),
-                TextColumn::make('pangkat_golongan')
+                TextColumn::make('pegawai.pangkat_golongan')
                     ->label('Pangkat/Golongan'),
-                TextColumn::make('jabatan')
+                TextColumn::make('pegawai.jabatan')
                     ->label('Jabatan'),
+            TextColumn::make('pengajuanSurat.status_pengajuan')
+            ->badge()
+                ->color(fn(string $state): string => match ($state) {
+                    'Diajukan' => 'warning',
+                    'Ditolak' => 'danger',
+                    'Diterima' => 'success',
+                    default => 'gray',
+                })
+                ->label("Status Pengajuan"),
                 TextColumn::make('tmt_sk_pangkat_terakhir')
                     ->label('TMT SK Pangkat Terakhir')
-                    ->date(),
+                    ->date()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('tanggal_penerbitan_pangkat_terakhir')
                     ->label('Tanggal Penerbitan Pangkat Terakhir')
                     ->date(),
@@ -99,17 +144,48 @@ class UsulanSKBerkalaResource extends Resource
                     ->label('Tanggal Penerbitan SK Berkala Terakhir')
                     ->date(),
             ])
+            ->actions([
+                Tables\Actions\Action::make('Ajukan')
+                    ->icon('heroicon-o-document-plus')
+                    ->action(fn(Model $record) => (new PengajuanSuratController())->handle($record, 'UsulanSkBerkala')),
+                ActionGroup::make([
+                    EditAction::make(),
+                    ForceDeleteAction::make(),
+                    Action::make('Ajukan Cuti')
+                        ->icon('heroicon-o-document-plus')
+                        ->action(fn(UsulanSkBerkala $record) => (new PengajuanSuratController())->handle($record, 'SK Berkala')),
+                    Action::make('download')
+                        ->label('Download')
+                        ->icon('heroicon-o-arrow-down-tray')
+                        ->action(function (UsulanSkBerkala $record) {
+                            // Mengambil arsip surat melalui relasi
+                            $arsipSurat = $record->pengajuanSurat->arsipSurat;
+
+                            if (!$arsipSurat || !$arsipSurat->file_surat_path) {
+                                return;
+                            }
+
+                            if (str_starts_with($arsipSurat->file_surat_path, 'http')) {
+                                // Untuk file dengan URL eksternal
+                                return redirect($arsipSurat->file_surat_path);
+                            } else {
+                                // Untuk file yang disimpan lokal
+                                return response()->download(storage_path('app/public/' . $arsipSurat->file_surat_path));
+                            }
+                        })
+                        ->visible(function (UsulanSkBerkala $record) {
+                            return $record->pengajuanSurat &&
+                                $record->pengajuanSurat->status_pengajuan === 'Diterima' &&
+                                $record->pengajuanSurat->arsipSurat &&
+                                $record->pengajuanSurat->arsipSurat->file_surat_path !== null;
+                        }),
+                ])
+            ])
             ->filters([
                 SelectFilter::make('pangkat_golongan')
                     ->label('Filter Pangkat/Golongan')
-                    ->options(function () {
-                        return UsulanSkBerkala::query()
-                            ->distinct()
-                            ->pluck('pangkat_golongan', 'pangkat_golongan')
-                            ->toArray();
-                    }),
             ])
-            ->defaultSort('nama');
+            ->defaultSort('pegawai.nama');
     }
 
     public static function getRelations(): array
@@ -122,9 +198,9 @@ class UsulanSKBerkalaResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListUsulanSKBerkalas::route('/'),
-            'create' => Pages\CreateUsulanSKBerkala::route('/create'),
-            'edit' => Pages\EditUsulanSKBerkala::route('/{record}/edit'),
+            'index' => Pages\ListUsulanSkBerkalas::route('/'),
+            'create' => Pages\CreateUsulanSkBerkala::route('/create'),
+            'edit' => Pages\EditUsulanSkBerkala::route('/{record}/edit'),
         ];
     }
 }

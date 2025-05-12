@@ -1,8 +1,12 @@
 <?php
 
-use App\Http\Controllers\WhatsappNotification;
+use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\DownloadPdfController;
+use App\Http\Controllers\FileController;
+use App\Http\Controllers\PenerimaanPengajuan;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
+use LaravelQRCode\Facades\QRCode;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,35 +20,22 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('app');
+});
+Route::get('/test', function () {
+    return view('home');
 });
 
-// Define Twilio credentials as environment variables
-// In your .env file:
-// TWILIO_AUTH_TOKEN=YOUR_TWILIO_AUTH_TOKEN
-// TWILIO_ACCOUNT_SID=YOUR_TWILIO_ACCOUNT_SID
-// TWILIO_FROM_NUMBER=+1234567890
+Route::get('download/{path}', [FileController::class, 'download'])
+    ->name('download.private.file')
+    ->middleware('signed'); 
+Route::get('pdf/{ajj}', DownloadPdfController::class)->name('pdf');
 
-Route::get('/send-wa', function () {
+Route::post('/pengajuan/{pengajuan}/izinkan', [PenerimaanPengajuan::class, 'izinkan']);
 
-    $response = Http::withHeaders([
-        'Authorization' => "A5crhvScDqWs4PC8Lo9c",
-    ])->post("https://api.fonnte.com/send", [
-        // Add 'To' and 'Body' parameters to send a message
-        'target' => '6287880433119', // Replace with the recipient's number
-        'message' => 'Hello from Iqmam!', // Replace with the message body
-    ]);
+Route::get('/upload', [DocumentController::class, 'showForm'])->name('uploadForm');
+Route::post('/process-document', [DocumentController::class, 'processDocument'])->name('processDocument');
 
-    // Handle the response
-    if ($response->successful()) {
-        // Message sent successfully
-        return 'Message sent successfully!';
-    } else {
-        // Handle errors
-        return 'Error sending message: ' . $response->status();
-    }
+Route::get('/info', function () {
+    phpinfo();
 });
-
-Route::post('/send-whatsapp', [WhatsappNotification::class, 'send'])
-    ->name('whatsapp.send');
-

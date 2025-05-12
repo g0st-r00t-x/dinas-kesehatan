@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\UsulanRekomendasiPenelitianResource\Pages;
 use App\Filament\Resources\UsulanRekomendasiPenelitianResource\RelationManagers;
+use App\Http\Controllers\PengajuanSuratController;
 use App\Models\UsulanRekomendasiPenelitian;
 use Filament\Forms;
 use Filament\Forms\Components\FileUpload;
@@ -15,21 +16,38 @@ use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class UsulanRekomendasiPenelitianResource extends Resource
 {
     protected static ?string $model = UsulanRekomendasiPenelitian::class;
 
+
+    public static function getPermissionPrefixes(): array
+    {
+        return ['view', 'view_any', 'view_own', 'download_file', 'create', 'update', 'delete', 'delete_any', 'kirim_notif'];
+    }
+
+
     protected static ?string $navigationIcon = 'heroicon-o-document-magnifying-glass';
 
     protected static ?string $navigationGroup = 'Usulan';
+    protected static ?string $label = 'Rekomendasi Penelitian';
+
+    protected static ?string $pluralLabel = 'Rekomendasi Penelitian';
+
+    protected static ?string $path = 'usulan-rekomendasi-penelitian';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
+            Forms\Components\Hidden::make('user_id')
+                ->default(Auth::user()->id),
                 TextInput::make('nama')
                     ->required()
                     ->maxLength(255)
@@ -61,6 +79,11 @@ class UsulanRekomendasiPenelitianResource extends Resource
                     ->label('NIM/NIP'),
                 
                 FileUpload::make('surat_pengantar_path')
+                    ->preserveFilenames()
+                            ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                                return now()->timestamp . '_' . $file->getClientOriginalName();
+                            })
+                    ->required()
                     ->directory('rekomendasi-penelitian/surat-pengantar')
                     ->visibility('private')
                     ->label('Surat Pengantar')
@@ -130,6 +153,9 @@ class UsulanRekomendasiPenelitianResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('Ajukan')
+                    ->icon('heroicon-o-document-plus')
+                    ->action(fn(Model $record) => (new PengajuanSuratController())->handle($record, 'UsulanRekomendasiPenelitian')),
                 Tables\Actions\Action::make('download_surat')
                     ->label('Unduh Surat')
                     ->icon('heroicon-o-arrow-down-tray')

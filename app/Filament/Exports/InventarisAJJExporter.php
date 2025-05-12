@@ -16,9 +16,9 @@ class InventarisAJJExporter extends Exporter
         return [
             ExportColumn::make('id')
                 ->label('ID'),
-            ExportColumn::make('nama'),
-            ExportColumn::make('nip'),
-            ExportColumn::make('unit_kerja'),
+            ExportColumn::make('pegawai.nama'),
+            ExportColumn::make('pegawai.nip'),
+            ExportColumn::make('pegawai.unit_kerja.nama'),
             ExportColumn::make('tmt_pemberian_tunjangan'),
             ExportColumn::make('sk_jabatan'),
             ExportColumn::make('upload_berkas'),
